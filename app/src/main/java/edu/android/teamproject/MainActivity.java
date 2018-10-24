@@ -32,7 +32,11 @@ public class MainActivity extends AppCompatActivity {
 
                     return true;
                 case R.id.navigation_my:
-
+                    FragmentManager manager1 = getSupportFragmentManager();
+                    MyPageFragment fragment1 = new MyPageFragment();
+                    if(fragment1 != null){
+                        manager1.beginTransaction().replace(R.id.container, fragment1).commit();
+                    }
                     return true;
 
             }
@@ -52,4 +56,5 @@ public class MainActivity extends AppCompatActivity {
         navigation.setOnNavigationItemSelectedListener(itemSelectedListener);
 
     }
+
 }
