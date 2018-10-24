@@ -14,6 +14,18 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
+                case R.id.navigation_home:
+
+                    return true;
+                case R.id.navigation_com:
+
+                    return true;
+                case R.id.navigation_map:
+
+                    return true;
+                case R.id.navigation_my:
+
+                    return true;
 
             }
             return false;
@@ -21,13 +33,17 @@ public class MainActivity extends AppCompatActivity {
 
     };
 
+    private BottomNavigationView navigation;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final BottomNavigationView navigation = findViewById(R.id.navigation);
+        navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(itemSelectedListener);
+
+
 
     }
 }
