@@ -1,0 +1,24 @@
+package edu.android.teamproject;
+
+import android.content.Context;
+import android.content.Intent;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+
+public class ComItemActivity extends AppCompatActivity {
+
+    public static final String ITEM_ID = "comItemId";
+
+    public static Intent newIntent(Context context, String comid){
+        Intent intent = new Intent(context, ComItemActivity.class);
+        intent.putExtra(ITEM_ID, comid);
+
+        return  intent;
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_com_item);
+    }
+}

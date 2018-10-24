@@ -22,11 +22,10 @@ public class MainActivity extends AppCompatActivity {
 
                     return true;
                 case R.id.navigation_com:
-
                     FragmentManager manager = getSupportFragmentManager();
                     ComItemListFragment fragment = new ComItemListFragment();
                     if(fragment != null){
-                        manager.beginTransaction().add(R.id.container, fragment).commit();
+                        manager.beginTransaction().replace(R.id.container, fragment).commit();
                     }
                     return true;
                 case R.id.navigation_map:

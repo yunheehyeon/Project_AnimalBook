@@ -1,6 +1,7 @@
 package edu.android.teamproject;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -11,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 /**
@@ -58,7 +60,7 @@ public class ComItemListFragment extends Fragment {
             private ImageView imageView;
             public ComItemListViewHolder(@NonNull View itemView) {
                 super(itemView);
-                textTitle = itemView.findViewById(R.id.textTitle);
+                textTitle = itemView.findViewById(R.id.comItemTitle);
                 textUserId = itemView.findViewById(R.id.textUserId);
                 textData = itemView.findViewById(R.id.textDate);
                 textViewCount = itemView.findViewById(R.id.textViewCount);
@@ -79,8 +81,16 @@ public class ComItemListFragment extends Fragment {
         }
 
         @Override
-        public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
+        public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, final int i) {
             ComItemListViewHolder holder = (ComItemListViewHolder) viewHolder;
+
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startComItemActivity(i);
+                }
+            });
+
         }
 
         @Override
@@ -88,6 +98,11 @@ public class ComItemListFragment extends Fragment {
             return 3;
         }
 
+    }
+
+    private void startComItemActivity(int i){
+        Intent intent = ComItemActivity.newIntent(getActivity(), "1");
+        startActivity(intent);
     }
 
 }
