@@ -85,6 +85,7 @@ public class ComItemList {
         return commentCount;
     }
 
+    
     public void setCommentCount(int commentCount) {
         this.commentCount = commentCount;
     }
