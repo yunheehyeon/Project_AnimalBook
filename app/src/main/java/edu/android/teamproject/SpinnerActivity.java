@@ -1,4 +1,4 @@
-package android.edu.myapplication;
+package edu.android.teamproject;
 
 import android.app.Activity;
 import android.support.v7.app.AppCompatActivity;
@@ -11,7 +11,7 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-public class MainActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
+public class SpinnerActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
     private Spinner spinner;
     private ImageView ivPhoto;
@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        myActivity = MainActivity.this;
+        myActivity = SpinnerActivity.this;
         myAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, names);
 
         spinner = findViewById(R.id.spinner);
