@@ -31,7 +31,17 @@ public class DiaryItemFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_diary_item, container, false);
+        View view =  inflater.inflate(R.layout.fragment_diary_item, container, false);
+
+        Button btnInsert = view.findViewById(R.id.btnInsert);
+        btnInsert.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startDiaryItemEdit();
+            }
+        });
+
+        return view;
     }
 
     @Override
@@ -53,7 +63,7 @@ public class DiaryItemFragment extends Fragment {
 
             private ImageView imageView;
             private TextView text, textDate, textTag;
-            private Button btnFavorites, btnShare, btnUpdate, btnDelete, btnInsert;
+            private Button btnFavorites, btnShare, btnUpdate, btnDelete;
 
             public DiaryItemViewHolder(@NonNull View itemview) {
                 super(itemview);
@@ -66,7 +76,6 @@ public class DiaryItemFragment extends Fragment {
                 btnShare = itemview.findViewById(R.id.btnShare);
                 btnUpdate = itemview.findViewById(R.id.btnUpdate);
                 btnDelete = itemview.findViewById(R.id.btnDelete);
-                btnInsert = itemview.findViewById(R.id.btnInsert);
             }
         }
 
@@ -81,7 +90,7 @@ public class DiaryItemFragment extends Fragment {
         }
 
         @Override
-        public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
+        public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, final int i) {
             DiaryItemViewHolder holder = (DiaryItemViewHolder) viewHolder;
         }
 
@@ -90,5 +99,10 @@ public class DiaryItemFragment extends Fragment {
             return 3;
         }
 
+    }
+
+    private void startDiaryItemEdit() {
+        Intent intent = DiaryItemEdit.newIntent(getActivity(), "1");
+        startActivity(intent);
     }
 }
