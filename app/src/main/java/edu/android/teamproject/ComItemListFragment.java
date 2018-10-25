@@ -84,6 +84,8 @@ public class ComItemListFragment extends Fragment {
         public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, final int i) {
             ComItemListViewHolder holder = (ComItemListViewHolder) viewHolder;
 
+
+
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

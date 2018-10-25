@@ -1,34 +1,47 @@
 package edu.android.teamproject;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 
-public class DiaryItemEdit extends AppCompatActivity implements View.OnClickListener {
+public class  DiaryItemEdit extends AppCompatActivity implements View.OnClickListener {
 
     private static final int PIC_FROM_CAMERA = 0;
     private static final int PICK_FROM_ALBUM = 1;
     private static final int CROP_FROM_iMAGE = 2;
 
-    private Uri mlmageCaptureUri;
+    public Uri mlmageCaptureUri;
     private int id_view;
     private String absoultePath;
+
+    private String imageFilePath;
+    private Uri photoUri;
+
 
     public static final String DIARY_ID = "diaryId";
 
@@ -54,82 +67,9 @@ public class DiaryItemEdit extends AppCompatActivity implements View.OnClickList
         imageView = findViewById(R.id.imageView);
 
         btnInsert.setOnClickListener(this);
-    }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+        //TedPermission 라이브러리 -> 카메라 권한 획득
 
-        if (resultCode != RESULT_OK)
-            return;
-
-        switch (requestCode) {
-            case PICK_FROM_ALBUM:
-                mlmageCaptureUri = data.getData();
-
-            case PIC_FROM_CAMERA:
-                Intent intent = new Intent("com.android.camera.action.CROP");
-                intent.setDataAndType(mlmageCaptureUri, "image/*");
-
-                intent.putExtra("outputX", 200);
-                intent.putExtra("outputY", 200);
-                intent.putExtra("aspectX", 1);
-                intent.putExtra("aspectY", 1);
-                intent.putExtra("scale", true);
-                intent.putExtra("return-data", true);
-                startActivityForResult(intent, CROP_FROM_iMAGE);
-
-                break;
-
-            case CROP_FROM_iMAGE:
-                if (requestCode != RESULT_OK)
-                    return;
-
-                final Bundle extras = data.getExtras();
-
-                String filePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/SmartWheel/" + System.currentTimeMillis() + ".jpg";
-
-                if (extras != null) {
-                    Bitmap photo = extras.getParcelable("data");
-                    imageView.setImageBitmap(photo);
-
-                    storeCropImage(photo, filePath);
-                    absoultePath = filePath;
-                    break;
-                }
-
-                File f = new File(mlmageCaptureUri.getPath());
-
-                if (f.exists()) {
-                    f.delete();
-                }
-        }
-
-
-    }
-
-    private void storeCropImage(Bitmap photo, String filePath) {
-        String dirPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/SmartWheel";
-        File directory_SmartWheel = new File(dirPath);
-
-        if (!directory_SmartWheel.exists())
-            directory_SmartWheel.mkdir();
-
-        File copyFile = new File(filePath);
-        BufferedOutputStream out = null;
-
-        try {
-            copyFile.createNewFile();
-            out = new BufferedOutputStream(new FileOutputStream(copyFile));
-            photo.compress(Bitmap.CompressFormat.JPEG, 100, out);
-
-            sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(copyFile)));
-
-            out.flush();
-            out.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
@@ -168,20 +108,72 @@ public class DiaryItemEdit extends AppCompatActivity implements View.OnClickList
 
     }
 
+    private void doTakePhotoAction() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                // Error occurred while creating the File
+            }
 
-    public void doTakePhotoAction() {
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            if (photoFile != null) {
+                photoUri = FileProvider.getUriForFile(this, getPackageName(), photoFile);
 
-        String url = "tmp_ " + String.valueOf(System.currentTimeMillis()) + ".jpg";
-        mlmageCaptureUri = Uri.fromFile(new File(Environment.getExternalStorageDirectory(), url));
-
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, mlmageCaptureUri);
-        startActivityForResult(intent, PIC_FROM_CAMERA);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
+                startActivityForResult(takePictureIntent, PIC_FROM_CAMERA);
+            }
+        }
     }
 
     private void doTakeAlbumAction() {
-        Intent intent = new Intent(Intent.ACTION_PICK);
-        intent.setType(MediaStore.Images.Media.CONTENT_TYPE);
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(intent, PICK_FROM_ALBUM);
     }
+
+    private File createImageFile() throws IOException {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "TEST_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,      /* prefix */
+                ".jpg",         /* suffix */
+                storageDir          /* directory */
+        );
+        imageFilePath = image.getAbsolutePath();
+        return image;
+    }
+
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // Check which request we're responding to
+        if (requestCode == PICK_FROM_ALBUM) {
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK) {
+                try {
+                    // 선택한 이미지에서 비트맵 생성
+                    InputStream in = getContentResolver().openInputStream(data.getData());
+                    Bitmap img = BitmapFactory.decodeStream(in);
+                    in.close();
+                    // 이미지 표시
+                    imageView.setImageBitmap(img);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        if(requestCode == PIC_FROM_CAMERA){
+            if (resultCode == RESULT_OK) {
+                imageView.setImageURI(photoUri);
+            }
+        }
+
+
+
+    }
+
 }
