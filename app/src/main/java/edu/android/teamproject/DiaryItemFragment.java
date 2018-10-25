@@ -52,21 +52,21 @@ public class DiaryItemFragment extends Fragment {
         class DiaryItemViewHolder extends RecyclerView.ViewHolder {
 
             private ImageView imageView;
-            private EditText diaryText;
-            private TextView textDate, textTag;
-            private Button btnFavorites, btnShare, btnUpdate, btnDelete;
+            private TextView text, textDate, textTag;
+            private Button btnFavorites, btnShare, btnUpdate, btnDelete, btnInsert;
 
             public DiaryItemViewHolder(@NonNull View itemview) {
                 super(itemview);
 
                 imageView = itemview.findViewById(R.id.imageView);
-                diaryText = itemview.findViewById(R.id.diaryText);
+                text = itemview.findViewById(R.id.text);
                 textDate = itemview.findViewById(R.id.textDate);
                 textTag = itemview.findViewById(R.id.textTag);
                 btnFavorites = itemview.findViewById(R.id.btnFavorites);
                 btnShare = itemview.findViewById(R.id.btnShare);
                 btnUpdate = itemview.findViewById(R.id.btnUpdate);
                 btnDelete = itemview.findViewById(R.id.btnDelete);
+                btnInsert = itemview.findViewById(R.id.btnInsert);
             }
         }
 
