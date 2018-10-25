@@ -162,17 +162,6 @@
 
         </android.support.constraint.ConstraintLayout>
 
-        <android.support.design.widget.CoordinatorLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <android.support.design.bottomappbar.BottomAppBar
-                android:id="@+id/bottomBar"
-                android:layout_height="60dp"
-                android:layout_width="match_parent" />
-
-        </android.support.design.widget.CoordinatorLayout>
-
 
     </LinearLayout>
 

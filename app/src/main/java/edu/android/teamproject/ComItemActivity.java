@@ -35,8 +35,6 @@ public class ComItemActivity extends AppCompatActivity {
             comLayout.addView(commentItem);
         }
 
-
-
     }
 
     class CommentItem extends CardView {
