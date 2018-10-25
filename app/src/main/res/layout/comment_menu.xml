@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom">
+
+    <EditText
+        android:id="@+id/commentEdText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:hint="댓글을 입력하세요"
+        android:background="@drawable/bordel"
+        android:layout_margin="8dp"
+        android:layout_weight="10"/>
+
+    <Button
+        android:id="@+id/btnCommentUpdate"
+        android:layout_width="40dp"
+        android:layout_height="20dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/bordel"
+        android:text="등록"
+        android:textSize="16sp"
+        android:layout_weight="1"
+        android:layout_margin="8dp"/>
+
+
+</LinearLayout>
