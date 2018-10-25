@@ -26,6 +26,7 @@ public class ImageFragment extends Fragment {
         Bundle args = new Bundle();
         args.putInt(POSITION, sectionNumber);
         fragment.setArguments(args);
+        
         return fragment;
     }
 
