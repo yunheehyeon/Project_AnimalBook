@@ -24,11 +24,9 @@ public class MainActivity extends AppCompatActivity {
                 case R.id.navigation_home:
                     FragmentManager diaryManager = getSupportFragmentManager();
                     DiaryItemFragment diaryFragment = new DiaryItemFragment();
-
                     if (diaryFragment != null) {
                         diaryManager.beginTransaction().replace(R.id.container, diaryFragment).commit();
                     }
-
 
                     return true;
                 case R.id.navigation_com:
@@ -64,6 +62,12 @@ public class MainActivity extends AppCompatActivity {
 
         navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(itemSelectedListener);
+
+        FragmentManager diaryManager = getSupportFragmentManager();
+        DiaryItemFragment diaryFragment = new DiaryItemFragment();
+        if (diaryFragment != null) {
+            diaryManager.beginTransaction().replace(R.id.container, diaryFragment).commit();
+        }
 
     }
 

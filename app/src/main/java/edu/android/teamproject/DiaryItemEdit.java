@@ -147,7 +147,6 @@ public class  DiaryItemEdit extends AppCompatActivity implements View.OnClickLis
         return image;
     }
 
-
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // Check which request we're responding to
         if (requestCode == PICK_FROM_ALBUM) {
@@ -171,8 +170,6 @@ public class  DiaryItemEdit extends AppCompatActivity implements View.OnClickLis
                 imageView.setImageURI(photoUri);
             }
         }
-
-
 
     }
 

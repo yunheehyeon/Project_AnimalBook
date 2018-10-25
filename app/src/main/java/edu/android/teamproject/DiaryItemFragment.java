@@ -1,16 +1,22 @@
 package edu.android.teamproject;
 
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -20,15 +26,16 @@ import android.widget.TextView;
  */
 public class DiaryItemFragment extends Fragment {
 
+    private ViewPager viewPager;
     private ImageView imageView;
     private TextView text, textDate, textTag;
-    private Button btnFavorites, btnShare, btnUpdate, btnDelete, btnInsert;
+    private Button btnFavorites, btnShare, btnUpdate, btnDelete ;
+    private FloatingActionButton btnInsert;
 
 
     public DiaryItemFragment() {
         // Required empty public constructor
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -66,7 +73,7 @@ public class DiaryItemFragment extends Fragment {
 
             public DiaryItemViewHolder(@NonNull View itemview) {
                 super(itemview);
-                imageView = itemview.findViewById(R.id.imageView);
+                viewPager = itemview.findViewById(R.id.imageContainer);
                 text = itemview.findViewById(R.id.comItemTag);
                 textDate = itemview.findViewById(R.id.textDate);
                 textTag = itemview.findViewById(R.id.textTag);
@@ -91,6 +98,8 @@ public class DiaryItemFragment extends Fragment {
         public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, final int i) {
             DiaryItemViewHolder holder = (DiaryItemViewHolder) viewHolder;
 
+            ImagesPagerAdapter pagerAdapter = new ImagesPagerAdapter(getActivity().getSupportFragmentManager());
+            viewPager.setAdapter(pagerAdapter);
         }
 
         @Override
@@ -104,4 +113,24 @@ public class DiaryItemFragment extends Fragment {
         Intent intent = DiaryItemEdit.newIntent(getActivity(), "1");
         startActivity(intent);
     }
+
+
+    public class ImagesPagerAdapter extends FragmentPagerAdapter {
+
+        public ImagesPagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return ImageFragment.newInstance(position + 1);
+        }
+
+        @Override
+        public int getCount() {
+            return 3;
+        }
+    }
+
+
 }
