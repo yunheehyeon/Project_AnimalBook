@@ -13,9 +13,9 @@ public class ComItemActivity extends AppCompatActivity {
 
     public static final String ITEM_ID = "comItemId";
 
-    public static Intent newIntent(Context context, String comId){
+    public static Intent newIntent(Context context, String comid){
         Intent intent = new Intent(context, ComItemActivity.class);
-        intent.putExtra(ITEM_ID, comId);
+        intent.putExtra(ITEM_ID, comid);
 
         return  intent;
     }
