@@ -17,7 +17,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".ComItemActivity" />
-        <activity android:name=".DiaryItemEdit"></activity>
+        <activity android:name=".DiaryItemEdit" />
+        <activity android:name=".ComItemEditActivity"></activity>
+        <activity android:name=".MyPageFragmentActivity"></activity>
     </application>
 
 </manifest>
