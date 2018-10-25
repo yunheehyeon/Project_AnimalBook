@@ -19,6 +19,12 @@ public class MainActivity extends AppCompatActivity {
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.navigation_home:
+                    FragmentManager diaryManager = getSupportFragmentManager();
+                    DiaryItemFragment diaryFragment = new DiaryItemFragment();
+
+                    if (diaryFragment != null) {
+                        diaryManager.beginTransaction().replace(R.id.container, diaryFragment).commit();
+                    }
 
                     return true;
                 case R.id.navigation_com:
