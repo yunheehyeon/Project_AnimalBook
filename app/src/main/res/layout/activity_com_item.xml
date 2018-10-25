@@ -99,7 +99,7 @@
                 android:textColor="@color/colorPrimaryDark"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView9" />
+                app:layout_constraintTop_toBottomOf="@+id/comItemTag" />
 
             <TextView
                 android:id="@+id/itemCommentCount"
@@ -114,7 +114,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/btnComment"
                 app:layout_constraintStart_toEndOf="@+id/comItemViewCount"
-                app:layout_constraintTop_toBottomOf="@+id/textView9" />
+                app:layout_constraintTop_toBottomOf="@+id/comItemTag" />
 
             <Button
                 android:id="@+id/btnComment"
@@ -128,7 +128,7 @@
                 android:textSize="9sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/btnBookmark"
-                app:layout_constraintTop_toBottomOf="@+id/textView9" />
+                app:layout_constraintTop_toBottomOf="@+id/comItemTag" />
 
             <Button
                 android:id="@+id/btnBookmark"
@@ -142,10 +142,10 @@
                 android:textSize="9sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView9" />
+                app:layout_constraintTop_toBottomOf="@+id/comItemTag" />
 
             <TextView
-                android:id="@+id/textView9"
+                android:id="@+id/comItemTag"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -161,6 +161,18 @@
                 app:layout_constraintVertical_bias="0.0" />
 
         </android.support.constraint.ConstraintLayout>
+
+        <android.support.design.widget.CoordinatorLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <android.support.design.bottomappbar.BottomAppBar
+                android:id="@+id/bottomBar"
+                android:layout_height="60dp"
+                android:layout_width="match_parent" />
+
+        </android.support.design.widget.CoordinatorLayout>
+
 
     </LinearLayout>
 

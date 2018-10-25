@@ -1,7 +1,6 @@
 package edu.android.teamproject;
 
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -11,7 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -59,7 +57,7 @@ public class DiaryItemFragment extends Fragment {
                 super(itemview);
 
                 imageView = itemview.findViewById(R.id.imageView);
-                text = itemview.findViewById(R.id.text);
+                text = itemview.findViewById(R.id.comItemTag);
                 textDate = itemview.findViewById(R.id.textDate);
                 textTag = itemview.findViewById(R.id.textTag);
                 btnFavorites = itemview.findViewById(R.id.btnFavorites);
