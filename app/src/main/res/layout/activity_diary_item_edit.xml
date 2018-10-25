@@ -6,6 +6,7 @@
     android:layout_height="match_parent">
 
     <Button
+        android:onClick="onClick"
         android:id="@+id/btnInsert"
         android:layout_width="100dp"
         android:layout_height="37dp"
@@ -19,6 +20,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
+        android:onClick="onClick"
         android:id="@+id/imageView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -65,7 +67,7 @@
         app:layout_constraintTop_toBottomOf="@+id/editText" />
 
     <Button
-        android:id="@+id/button5"
+        android:id="@+id/btnPlus"
         android:layout_width="41dp"
         android:layout_height="35dp"
         android:layout_marginStart="8dp"

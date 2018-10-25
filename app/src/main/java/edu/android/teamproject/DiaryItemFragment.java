@@ -20,6 +20,10 @@ import android.widget.TextView;
  */
 public class DiaryItemFragment extends Fragment {
 
+    private ImageView imageView;
+    private TextView text, textDate, textTag;
+    private Button btnFavorites, btnShare, btnUpdate, btnDelete, btnInsert;
+
 
     public DiaryItemFragment() {
         // Required empty public constructor
@@ -32,7 +36,7 @@ public class DiaryItemFragment extends Fragment {
         // Inflate the layout for this fragment
         View view =  inflater.inflate(R.layout.fragment_diary_item, container, false);
 
-        Button btnInsert = view.findViewById(R.id.btnInsert);
+        btnInsert = view.findViewById(R.id.btnInsert);
         btnInsert.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -60,13 +64,8 @@ public class DiaryItemFragment extends Fragment {
 
         class DiaryItemViewHolder extends RecyclerView.ViewHolder {
 
-            private ImageView imageView;
-            private TextView text, textDate, textTag;
-            private Button btnFavorites, btnShare, btnUpdate, btnDelete;
-
             public DiaryItemViewHolder(@NonNull View itemview) {
                 super(itemview);
-
                 imageView = itemview.findViewById(R.id.imageView);
                 text = itemview.findViewById(R.id.comItemTag);
                 textDate = itemview.findViewById(R.id.textDate);
@@ -91,6 +90,7 @@ public class DiaryItemFragment extends Fragment {
         @Override
         public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, final int i) {
             DiaryItemViewHolder holder = (DiaryItemViewHolder) viewHolder;
+
         }
 
         @Override
