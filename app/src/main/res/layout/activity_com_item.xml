@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ComItemActivity">
+
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
@@ -112,12 +113,12 @@
                 android:text="댓글 2"
                 android:textColor="@color/colorPrimaryDark"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/btnComment"
+                app:layout_constraintEnd_toStartOf="@+id/btnCommentWrite"
                 app:layout_constraintStart_toEndOf="@+id/comItemViewCount"
                 app:layout_constraintTop_toBottomOf="@+id/comItemTag" />
 
             <Button
-                android:id="@+id/btnComment"
+                android:id="@+id/btnCommentWrite"
                 android:layout_width="40dp"
                 android:layout_height="20dp"
                 android:layout_marginTop="8dp"
@@ -161,8 +162,7 @@
                 app:layout_constraintVertical_bias="0.0" />
 
         </android.support.constraint.ConstraintLayout>
-
-
+        
     </LinearLayout>
 
 
