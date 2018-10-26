@@ -1,6 +1,7 @@
 package edu.android.teamproject;
 
 
+import android.content.Intent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -36,6 +37,7 @@ public class DiaryItemFragment extends Fragment {
     public DiaryItemFragment() {
         // Required empty public constructor
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

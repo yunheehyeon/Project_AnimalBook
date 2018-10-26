@@ -15,6 +15,8 @@ import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
+
+
     private BottomNavigationView.OnNavigationItemSelectedListener itemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
@@ -60,6 +62,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Intent intent = getIntent();
+
+
+
         navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(itemSelectedListener);
 
@@ -70,5 +76,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
+
 
 }
