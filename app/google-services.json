@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "425793604059",
+    "firebase_url": "https://timproject-14aaa.firebaseio.com",
+    "project_id": "timproject-14aaa",
+    "storage_bucket": "timproject-14aaa.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:425793604059:android:88419b8519bff019",
+        "android_client_info": {
+          "package_name": "edu.android.teamproject"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "425793604059-8tbd89l4k2a7ipv1i2l2nel8ktnkj80b.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "edu.android.teamproject",
+            "certificate_hash": "a302c1de2472b86f3ffc26d426040c7420587e1e"
+          }
+        },
+        {
+          "client_id": "425793604059-gfl6nmafgkfmmfkhihqafog4n1dof4al.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC1-F3SV6x5QPsG1kHFj6ScZGt5WGowfj8"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "425793604059-gfl6nmafgkfmmfkhihqafog4n1dof4al.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
