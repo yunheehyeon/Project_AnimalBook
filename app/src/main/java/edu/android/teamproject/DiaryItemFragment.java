@@ -86,6 +86,7 @@ public class DiaryItemFragment extends Fragment {
             }
         }
 
+        
         @NonNull
         @Override
         public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
