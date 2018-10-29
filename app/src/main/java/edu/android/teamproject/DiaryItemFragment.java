@@ -20,6 +20,11 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 
 /**
@@ -32,6 +37,8 @@ public class DiaryItemFragment extends Fragment {
     private TextView text, textDate, textTag;
     private Button btnFavorites, btnShare, btnUpdate, btnDelete ;
     private FloatingActionButton btnInsert;
+
+    HashMap<Integer, Integer> mViewPagerState = new HashMap<>();
 
 
     public DiaryItemFragment() {
@@ -67,6 +74,8 @@ public class DiaryItemFragment extends Fragment {
         DiaryItemAdapter adapter = new DiaryItemAdapter();
         recyclerView.setAdapter(adapter);
         recyclerView.setHasFixedSize(true);
+
+
     }
 
     class DiaryItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -100,14 +109,25 @@ public class DiaryItemFragment extends Fragment {
         @Override
         public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, final int i) {
             DiaryItemViewHolder holder = (DiaryItemViewHolder) viewHolder;
-
             ImagesPagerAdapter pagerAdapter = new ImagesPagerAdapter(getActivity().getSupportFragmentManager());
+            viewPager.setId(i+1000);
             viewPager.setAdapter(pagerAdapter);
+
+            if (mViewPagerState.containsKey(i)) {
+                viewPager.setCurrentItem(mViewPagerState.get(i));
+            }
+
         }
 
         @Override
         public int getItemCount() {
             return 3;
+        }
+
+        @Override
+        public void onViewRecycled(RecyclerView.ViewHolder holder) {
+            mViewPagerState.put(holder.getAdapterPosition(), viewPager.getCurrentItem());
+            super.onViewRecycled(holder);
         }
 
     }

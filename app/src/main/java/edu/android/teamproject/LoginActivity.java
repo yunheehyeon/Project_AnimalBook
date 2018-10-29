@@ -1,6 +1,7 @@
 package edu.android.teamproject;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -24,13 +25,19 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.FirebaseOptions;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthCredential;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.UserInfo;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 
 
 public class LoginActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
@@ -38,6 +45,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     private static final int RC_SIGN_IN = 1000;
     public static final int REQ_CODE = 1000;
     private static final String KEY_MSG = "message";
+
     private FirebaseAuth mAuth;
     private GoogleApiClient mGoogleApiClient;
     private SignInButton google_Login;
@@ -45,16 +53,27 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     private CallbackManager mCallbackManager;
     private LoginButton loginButton;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        if (user != null) {
+
+            startActivity(new Intent(LoginActivity.this, MainActivity.class));
+            this.finish();
+
+        }
 
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
+
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .enableAutoManage(this, this)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
@@ -71,6 +90,10 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 if (signInIntent != null) {
                     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                     if (user != null) {
+
+                        startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                        finish();
+
                         for (UserInfo profile : user.getProviderData()) {
                             // Id of the provider (ex: google.com)
                             String providerId = profile.getProviderId();
@@ -78,17 +101,16 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                             // UID specific to the provider
                             String uid = profile.getUid();
 
+
                             // Name, email address, and profile photo Url
                             String name = profile.getDisplayName();
                             String email = profile.getEmail();
                             Uri photoUrl = profile.getPhotoUrl();
-                        } ;
+                        }
+                    } else {
+                        Toast.makeText(LoginActivity.this, "로그인해주세요", Toast.LENGTH_SHORT).show();
                     }
-                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                    startActivity(intent);
-                    finish();
-                } else {
-                    Toast.makeText(LoginActivity.this, "로그인해주세요", Toast.LENGTH_SHORT).show();
+
                 }
             }
         });
@@ -130,6 +152,10 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                             // Sign in success, update UI with the signed-in user's information
                             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                             if (user != null) {
+
+                                startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                                finish();
+
                                 for (UserInfo profile : user.getProviderData()) {
                                     // Id of the provider (ex: google.com)
                                     String providerId = profile.getProviderId();
@@ -144,14 +170,15 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                                 }
 
                             }
-                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                            startActivity(intent);
-                            finish();
+
 
                         }
 
-                        // ...
+
                     }
+
+                    // ...
+
                 });
 
 
