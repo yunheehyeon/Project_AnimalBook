@@ -10,6 +10,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
@@ -39,6 +40,7 @@ public class  DiaryItemEdit extends AppCompatActivity implements View.OnClickLis
 
     private static final int PIC_FROM_CAMERA = 0;
     private static final int PICK_FROM_ALBUM = 1;
+    private static final int CROP_FROM_iMAGE = 2;
 
     public Uri mlmageCaptureUri;
     private int id_view;
@@ -59,6 +61,9 @@ public class  DiaryItemEdit extends AppCompatActivity implements View.OnClickLis
 
         return  intent;
     }
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -202,6 +207,7 @@ public class  DiaryItemEdit extends AppCompatActivity implements View.OnClickLis
             inflater.inflate(R.layout.tag_item, this, true);
         }
     }
+
 
 
 }

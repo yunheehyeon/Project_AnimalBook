@@ -10,6 +10,10 @@ public class DiaryItem {
     private List<String> diaryTag;
     private int diaryId;
 
+    public DiaryItem(){
+
+    }
+
     public DiaryItem(List<String> diaryImages, String diaryText, Date diaryDate, List<String> diaryTag, int diaryId) {
         this.diaryImages = diaryImages;
         this.diaryText = diaryText;
@@ -56,5 +60,16 @@ public class DiaryItem {
 
     public void setDiaryId(int diaryId) {
         this.diaryId = diaryId;
+    }
+
+    @Override
+    public String toString() {
+        return "DiaryItem{" +
+                "diaryImages=" + diaryImages +
+                ", diaryText='" + diaryText + '\'' +
+                ", diaryDate=" + diaryDate +
+                ", diaryTag=" + diaryTag +
+                ", diaryId=" + diaryId +
+                '}';
     }
 }
