@@ -13,9 +13,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-public class MainActivity extends AppCompatActivity {
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
-
+public class MainActivity extends AppCompatActivity{
 
     private BottomNavigationView.OnNavigationItemSelectedListener itemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -29,23 +34,26 @@ public class MainActivity extends AppCompatActivity {
                     if (diaryFragment != null) {
                         diaryManager.beginTransaction().replace(R.id.container, diaryFragment).commit();
                     }
-
                     return true;
                 case R.id.navigation_com:
                     FragmentManager manager = getSupportFragmentManager();
                     ComItemListFragment fragment = new ComItemListFragment();
-                    if(fragment != null){
+                    if(fragment!= null){
                         manager.beginTransaction().replace(R.id.container, fragment).commit();
                     }
                     return true;
                 case R.id.navigation_map:
-
+                    FragmentManager managerGMap = getSupportFragmentManager();
+                    GMapFragment fragmentGMap = new GMapFragment();
+                    if(fragmentGMap!= null){
+                        managerGMap.beginTransaction().replace(R.id.container, fragmentGMap).commit();
+                    }
                     return true;
                 case R.id.navigation_my:
-                    FragmentManager manager1 = getSupportFragmentManager();
-                    MyPageFragment fragment1 = new MyPageFragment();
-                    if(fragment1 != null){
-                        manager1.beginTransaction().replace(R.id.container, fragment1).commit();
+                    FragmentManager managerMyPage = getSupportFragmentManager();
+                    MyPageFragment fragmentMyPage = new MyPageFragment();
+                    if(fragmentMyPage != null){
+                        managerMyPage.beginTransaction().replace(R.id.container, fragmentMyPage).commit();
                     }
                     return true;
 
@@ -64,8 +72,6 @@ public class MainActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
 
-
-
         navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(itemSelectedListener);
 
@@ -76,6 +82,5 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
-
 
 }

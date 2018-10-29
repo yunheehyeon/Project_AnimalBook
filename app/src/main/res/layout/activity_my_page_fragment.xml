@@ -23,7 +23,7 @@
         app:srcCompat="@android:drawable/ic_menu_report_image" />
 
     <TextView
-        android:id="@+id/textAdoptA"
+        android:id="@+id/textAdoptDateA"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
@@ -51,8 +51,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/cBoxAdopt"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/textAdoptA"
-        app:layout_constraintTop_toTopOf="@+id/textAdoptA"
+        app:layout_constraintStart_toEndOf="@+id/textAdoptDateA"
+        app:layout_constraintTop_toTopOf="@+id/textAdoptDateA"
         app:layout_constraintVertical_bias="0.0" />
 
     <CheckBox
@@ -65,7 +65,7 @@
         app:layout_constraintTop_toTopOf="@+id/editAdoptA" />
 
     <TextView
-        android:id="@+id/textAgeA"
+        android:id="@+id/textPetAgeA"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
@@ -78,7 +78,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textAdoptA"
+        app:layout_constraintTop_toBottomOf="@+id/textAdoptDateA"
         app:layout_constraintVertical_bias="0.0" />
 
     <EditText
@@ -92,8 +92,8 @@
         android:inputType="none"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/cBoxAdopt"
-        app:layout_constraintStart_toEndOf="@+id/textAdoptA"
-        app:layout_constraintTop_toTopOf="@+id/textAgeA"
+        app:layout_constraintStart_toEndOf="@+id/textAdoptDateA"
+        app:layout_constraintTop_toTopOf="@+id/textPetAgeA"
         app:layout_constraintVertical_bias="0.0" />
 
     <CheckBox
@@ -121,7 +121,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textAgeA"
+        app:layout_constraintTop_toBottomOf="@+id/textPetAgeA"
         app:layout_constraintVertical_bias="0.0" />
 
     <EditText
@@ -136,7 +136,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/cBoxAdopt"
         app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/textAdoptA"
+        app:layout_constraintStart_toEndOf="@+id/textAdoptDateA"
         app:layout_constraintTop_toTopOf="@+id/textPetTypeA"
         app:layout_constraintVertical_bias="0.0" />
 
@@ -181,7 +181,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/cBoxAdopt"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/textAdoptA"
+        app:layout_constraintStart_toEndOf="@+id/textAdoptDateA"
         app:layout_constraintTop_toTopOf="@+id/textPetWeightA"
         app:layout_constraintVertical_bias="0.0" />
 
@@ -224,7 +224,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/textPetNameA"
         app:layout_constraintEnd_toStartOf="@+id/cBoxAdopt"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/textAdoptA"
+        app:layout_constraintStart_toEndOf="@+id/textAdoptDateA"
         app:layout_constraintTop_toTopOf="@+id/textPetNameA"
         app:layout_constraintVertical_bias="0.0" />
 
