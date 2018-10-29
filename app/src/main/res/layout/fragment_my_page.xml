@@ -7,7 +7,7 @@
     tools:context=".MyPageFragment">
 
     <ScrollView
-        android:id="@+id/scrollView2"
+        android:id="@+id/scrollView"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="8dp"
@@ -50,7 +50,7 @@
                     app:layout_constraintVertical_bias="0.159" />
 
                 <TextView
-                    android:id="@+id/textAdoptF"
+                    android:id="@+id/textAdoptDateF"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
@@ -76,7 +76,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toEndOf="@+id/imageProfile"
-                    app:layout_constraintTop_toBottomOf="@+id/textAdoptF"
+                    app:layout_constraintTop_toBottomOf="@+id/textAdoptDateF"
                     app:layout_constraintVertical_bias="0.005" />
 
                 <TextView
@@ -130,17 +130,19 @@
                     app:layout_constraintHorizontal_bias="0.866"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/imageProfile"
-                    app:layout_constraintVertical_bias="0.0" />
+                    app:layout_constraintVertical_bias="0.0"
+                    android:background="@drawable/bordel"/>
 
             </android.support.constraint.ConstraintLayout>
 
-            <android.support.constraint.ConstraintLayout
+            <LinearLayout
+                android:id="@+id/lLPosting"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:orientation="vertical">
 
                 <LinearLayout
-                    android:id="@+id/LLPosting"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="8dp"
@@ -157,7 +159,7 @@
                         android:layout_width="240dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="TextView"
+                        android:text="내가 쓴글"
                         android:textSize="20sp" />
 
                     <Button
@@ -165,20 +167,26 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Button" />
-
+                        android:text="+"
+                        android:background="@drawable/bordel"/>
                 </LinearLayout>
 
-            </android.support.constraint.ConstraintLayout>
+                <LinearLayout
+                    android:id="@+id/lLPostingView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"></LinearLayout>
 
-            <android.support.constraint.ConstraintLayout
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/lLDiaryBM"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                tools:layout_editor_absoluteX="39dp"
-                tools:layout_editor_absoluteY="361dp">
+                android:orientation="vertical">
 
                 <LinearLayout
-                    android:id="@+id/LLDiaryBm"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
@@ -192,30 +200,37 @@
                     app:layout_constraintTop_toTopOf="parent">
 
                     <TextView
-                        android:id="@+id/textDiaryBm"
+                        android:id="@+id/textDiaryBM"
                         android:layout_width="240dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="TextView"
+                        android:text="다이어리 북마크"
                         android:textSize="20sp" />
 
                     <Button
-                        android:id="@+id/btnDiaryBm"
+                        android:id="@+id/btnDiaryBM"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Button" />
+                        android:text="+"
+                        android:background="@drawable/bordel"/>
                 </LinearLayout>
-            </android.support.constraint.ConstraintLayout>
 
-            <android.support.constraint.ConstraintLayout
+                <LinearLayout
+                    android:id="@+id/lLDiaryBMView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"></LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/lLHospitalBM"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                tools:layout_editor_absoluteX="115dp"
-                tools:layout_editor_absoluteY="368dp">
+                android:layout_height="match_parent"
+                android:orientation="vertical">
 
                 <LinearLayout
-                    android:id="@+id/LLHospitalBm"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
@@ -229,21 +244,29 @@
                     app:layout_constraintTop_toTopOf="parent">
 
                     <TextView
-                        android:id="@+id/textHospitalBm"
+                        android:id="@+id/textHospitalBM"
                         android:layout_width="240dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="TextView"
+                        android:text="병원 북마크"
                         android:textSize="20sp" />
 
                     <Button
-                        android:id="@+id/btnHospitalBm"
+                        android:id="@+id/btnHospitalBM"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Button" />
+                        android:text="+"
+                        android:background="@drawable/bordel"/>
                 </LinearLayout>
-            </android.support.constraint.ConstraintLayout>
+
+                <LinearLayout
+                    android:id="@+id/lLHospitalBMView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"></LinearLayout>
+
+            </LinearLayout>
 
         </LinearLayout>
     </ScrollView>
