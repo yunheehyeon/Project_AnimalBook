@@ -13,28 +13,25 @@ public class MyPageDao implements ChildEventListener {
 
     private FirebaseDatabase database;
     private DatabaseReference messageReference; // 테이블 주소
-    private ChildEventListener childEventListener;
 
+    private static MyPageDao myPageInstance;
 
-    private static MyPageDao myPageinstance;
-
-    public static MyPageDao getMyPageinstance(){
-        if(myPageinstance == null){
-            myPageinstance = new MyPageDao();
+    public static MyPageDao getMyPageInstance(){
+        if(myPageInstance == null){
+            myPageInstance = new MyPageDao();
         }
 
-        return myPageinstance;
+        return myPageInstance;
     }
 
     private MyPageDao() {
         database = FirebaseDatabase.getInstance();
         messageReference = database.getReference().child("MyPage");
-        messageReference.addChildEventListener(childEventListener);
+        messageReference.addChildEventListener(this);
     }
 
     public void insert(MyPageProfile myPageProfile){
-        MyPageProfile profile = new MyPageProfile("예시", 15);
-        messageReference.push().setValue(profile);
+        messageReference.push().setValue(myPageProfile);
     }
 
 

@@ -38,6 +38,11 @@ public class MyPageFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
+        dao = MyPageDao.getMyPageInstance();
+
+        dao.insert(new MyPageProfile("연습", 15));
+
+
         btnProfileChange = getView().findViewById(R.id.btnProfileChange);
 
         btnProfileChange.setOnClickListener(new View.OnClickListener() {
