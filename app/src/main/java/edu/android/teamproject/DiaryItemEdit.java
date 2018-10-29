@@ -1,16 +1,11 @@
 package edu.android.teamproject;
 
-import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.annotation.Nullable;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -18,19 +13,16 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.theartofdev.edmodo.cropper.CropImage;
-import com.theartofdev.edmodo.cropper.CropImageView;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -40,18 +32,21 @@ public class  DiaryItemEdit extends AppCompatActivity implements View.OnClickLis
     private static final int PIC_FROM_CAMERA = 0;
     private static final int PICK_FROM_ALBUM = 1;
 
-    public Uri mlmageCaptureUri;
-    private int id_view;
-    private String absoultePath;
+    private static final int MAX_TAG_ITEM = 6;
+    private static final int MAX_PHOTO = 3;
 
+    private int id_view;
     private String imageFilePath;
     private Uri photoUri;
+    private int photoNum = 0;
 
+    private int tagNum = 0;
+    private ArrayList<TagItem> tagItems = new ArrayList<>();
 
     public static final String DIARY_ID = "diaryId";
 
-    private Button btnInsert, btnPlus, btnCofirm, btnCancel;
-    private ImageView imageView;
+    private EditText editTag, editText;
+    private Button btnInsert, btnPlusTag, btnCofirm, btnCancel;
 
     public static Intent newIntent(Context context, String diaryid) {
         Intent intent = new Intent(context, DiaryItemEdit.class);
@@ -66,29 +61,65 @@ public class  DiaryItemEdit extends AppCompatActivity implements View.OnClickLis
         setContentView(R.layout.activity_diary_item_edit);
 
         btnInsert = findViewById(R.id.btnInsert);
-        btnPlus = findViewById(R.id.btnPlus);
+        btnInsert.setOnClickListener(this);
+
+        btnPlusTag = findViewById(R.id.btnPlusTag);
+        editTag = findViewById(R.id.editTag);
+
         btnCofirm = findViewById(R.id.btnConfirm);
         btnCancel = findViewById(R.id.btnCancel);
-        imageView = findViewById(R.id.imageView);
-
-        btnInsert.setOnClickListener(this);
 
         //TedPermission 라이브러리 -> 카메라 권한 획득
 
 
-        btnPlus.setOnClickListener(new View.OnClickListener() {
+        btnPlusTag.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                addTagItem();
             }
         });
+        
+    }
+
+
+
+    private void addTagItem() {
+        if(tagNum < MAX_TAG_ITEM) {
+            TagItem tagItem = new TagItem(DiaryItemEdit.this);
+            tagItem.setId(tagNum+100);
+            tagItems.add(tagItem);
+            TextView textTag = tagItem.findViewById(R.id.textTag);
+            textTag.setText(editTag.getText().toString());
+
+            LinearLayout tagLayout = findViewById(R.id.tagItemLayout);
+            tagLayout.addView(tagItem);
+
+            editTag.setText("");
+            tagNum++;
+        }else {
+            Toast.makeText(this, "태그는 6개까지 추가가능", Toast.LENGTH_SHORT).show();
+        }
+
+        for(final TagItem t : tagItems){
+            Button btnDeleteTag = t.findViewById(R.id.btnDeleteTag);
+            btnDeleteTag.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    LinearLayout tagLayout = findViewById(R.id.tagItemLayout);
+                    tagLayout.removeView(t);
+                    tagItems.remove(t);
+                    tagNum--;
+                }
+            });
+        }
+
     }
 
     @Override
     public void onClick(View v) {
         id_view = v.getId();
 
-        if (v.getId() == R.id.btnInsert) {
+        if (id_view == R.id.btnInsert && photoNum < MAX_PHOTO) {
             DialogInterface.OnClickListener cameraListener = new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
@@ -116,6 +147,8 @@ public class  DiaryItemEdit extends AppCompatActivity implements View.OnClickLis
                     .setNeutralButton("앨범선택", albumListener)
                     .setNegativeButton("취소", cancelListener)
                     .show();
+        }else {
+            Toast.makeText(this, "사진 최대 3장", Toast.LENGTH_SHORT).show();
         }
 
     }
@@ -186,10 +219,38 @@ public class  DiaryItemEdit extends AppCompatActivity implements View.OnClickLis
             CropImage.ActivityResult result = CropImage.getActivityResult(data);
             if (resultCode == RESULT_OK) {
                 Uri resultUri = result.getUri();
-                imageView.setImageURI(resultUri);
+
+                addImage(resultUri);
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                 Exception error = result.getError();
             }
+        }
+    }
+
+    private ArrayList<PhotoItem> photoItems = new ArrayList<>();
+    private void addImage(Uri resultUri) {
+            PhotoItem photoItem = new PhotoItem(DiaryItemEdit.this);
+            photoItem.setId(photoNum+1000);
+            photoItems.add(photoItem);
+            LinearLayout tagLayout = findViewById(R.id.imageItemLayout);
+            tagLayout.addView(photoItem);
+
+            ImageView photo = photoItem.findViewById(R.id.photo);
+            photo.setImageURI(resultUri);
+
+            photoNum++;
+
+        for(final PhotoItem p : photoItems){
+            Button btnDeletePhoto = p.findViewById(R.id.btnDeletePhoto);
+            btnDeletePhoto.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    LinearLayout tagLayout = findViewById(R.id.tagItemLayout);
+                    tagLayout.removeView(p);
+                    tagItems.remove(p);
+                    photoNum --;
+                }
+            });
         }
     }
 
@@ -203,5 +264,13 @@ public class  DiaryItemEdit extends AppCompatActivity implements View.OnClickLis
         }
     }
 
+    class PhotoItem extends LinearLayout {
+
+        public PhotoItem(Context context) {
+            super(context);
+            LayoutInflater inflater = getLayoutInflater();
+            inflater.inflate(R.layout.photo_item, this, true);
+        }
+    }
 
 }
