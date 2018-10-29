@@ -37,7 +37,6 @@ public class MyPageFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-
         
         dao = MyPageDao.getMyPageInstance();
 
