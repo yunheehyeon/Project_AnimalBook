@@ -15,10 +15,16 @@ import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import com.theartofdev.edmodo.cropper.CropImage;
+import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -33,7 +39,6 @@ public class  DiaryItemEdit extends AppCompatActivity implements View.OnClickLis
 
     private static final int PIC_FROM_CAMERA = 0;
     private static final int PICK_FROM_ALBUM = 1;
-    private static final int CROP_FROM_iMAGE = 2;
 
     public Uri mlmageCaptureUri;
     private int id_view;
@@ -70,6 +75,13 @@ public class  DiaryItemEdit extends AppCompatActivity implements View.OnClickLis
 
         //TedPermission 라이브러리 -> 카메라 권한 획득
 
+
+        btnPlus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
     }
 
     @Override
@@ -153,12 +165,9 @@ public class  DiaryItemEdit extends AppCompatActivity implements View.OnClickLis
             // Make sure the request was successful
             if (resultCode == RESULT_OK) {
                 try {
-                    // 선택한 이미지에서 비트맵 생성
-                    InputStream in = getContentResolver().openInputStream(data.getData());
-                    Bitmap img = BitmapFactory.decodeStream(in);
-                    in.close();
-                    // 이미지 표시
-                    imageView.setImageBitmap(img);
+                    photoUri = data.getData();
+                    CropImage.activity(photoUri)
+                            .start(this);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -167,10 +176,32 @@ public class  DiaryItemEdit extends AppCompatActivity implements View.OnClickLis
 
         if(requestCode == PIC_FROM_CAMERA){
             if (resultCode == RESULT_OK) {
-                imageView.setImageURI(photoUri);
+                // start cropping activity for pre-acquired image saved on the device
+                CropImage.activity(photoUri)
+                        .start(this);
             }
         }
 
+        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+            CropImage.ActivityResult result = CropImage.getActivityResult(data);
+            if (resultCode == RESULT_OK) {
+                Uri resultUri = result.getUri();
+                imageView.setImageURI(resultUri);
+            } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
+                Exception error = result.getError();
+            }
+        }
     }
+
+
+    class TagItem extends LinearLayout {
+
+        public TagItem(Context context) {
+            super(context);
+            LayoutInflater inflater = getLayoutInflater();
+            inflater.inflate(R.layout.tag_item, this, true);
+        }
+    }
+
 
 }

@@ -65,32 +65,32 @@
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
-            <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent">
-                <EditText
-                    android:id="@+id/editTag"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:hint="태그"
-                    android:inputType="text"
-                    android:layout_weight="6"
-                    android:background="@drawable/ic_line"
-                    android:textSize="20sp"
-                    android:layout_margin="8dp"/>
 
-                <Button
-                    android:id="@+id/btnPlus"
-                    android:layout_width="40dp"
-                    android:layout_height="35dp"
-                    android:text="+"
-                    android:layout_weight="1"
-                    android:layout_margin="8dp"/>
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent">
+                    <EditText
+                        android:id="@+id/editTag"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:hint="태그"
+                        android:inputType="text"
+                        android:layout_weight="6"
+                        android:background="@drawable/ic_line"
+                        android:textSize="20sp"
+                        android:layout_margin="8dp" />
 
-            </LinearLayout>
+                    <Button
+                        android:id="@+id/btnPlus"
+                        android:layout_width="30dp"
+                        android:layout_height="25dp"
+                        android:text="+"
+                        android:layout_weight="1"
+                        android:layout_margin="8dp"
+                        android:background="@drawable/bordel"/>
 
-
+                </LinearLayout>
 
             </LinearLayout>
 
