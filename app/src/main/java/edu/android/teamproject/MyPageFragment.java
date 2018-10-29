@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 /**
 
@@ -37,7 +36,7 @@ public class MyPageFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        
+
         dao = MyPageDao.getMyPageInstance();
 
         dao.insert(new MyPageProfile("연습", 15));
@@ -48,7 +47,7 @@ public class MyPageFragment extends Fragment {
         btnProfileChange.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), MyPageFragmentActivity.class);
+                Intent intent = new Intent(getActivity(), MyPageEditActivity.class);
                 startActivity(intent);
             }
         });
