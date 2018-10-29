@@ -15,6 +15,9 @@ import android.widget.Button;
  */
 public class MyPageFragment extends Fragment {
 
+
+    private MyPageDao dao;
+
     public static final String KEY = "msg";
 
     private Button btnProfileChange;
