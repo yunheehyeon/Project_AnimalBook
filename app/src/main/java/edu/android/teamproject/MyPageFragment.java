@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 /**
 
@@ -36,6 +37,15 @@ public class MyPageFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+
+        dao = MyPageDao.getMyPageInstance();
+        MyPageProfile myPageProfile = dao.Update();
+
+        if(myPageProfile != null) {
+            Toast.makeText(getActivity(), myPageProfile.toString(), Toast.LENGTH_SHORT).show();
+        }else {
+            Toast.makeText(getActivity(), "없음", Toast.LENGTH_SHORT).show();
+        }
 
         btnProfileChange = getView().findViewById(R.id.btnProfileChange);
 

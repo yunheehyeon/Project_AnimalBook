@@ -8,6 +8,9 @@ public class MyPageProfile {
         private String profileItemName;
         private String profileItemText;
 
+        public ProfileItem() {
+        }
+
         public ProfileItem(String profileItemName, String profileItemText) {
             this.profileItemName = profileItemName;
             this.profileItemText = profileItemText;
@@ -20,10 +23,21 @@ public class MyPageProfile {
         public String getProfileItemText() {
             return profileItemText;
         }
+
+        public void setProfileItemName(String profileItemName) {
+            this.profileItemName = profileItemName;
+        }
+
+        public void setProfileItemText(String profileItemText) {
+            this.profileItemText = profileItemText;
+        }
     }
 
     private String photoUri;
     private List<ProfileItem> profileItems;
+
+    public MyPageProfile() {
+    }
 
     public MyPageProfile(String photoUri, List<ProfileItem> profileItems) {
         this.photoUri = photoUri;
@@ -46,4 +60,11 @@ public class MyPageProfile {
         this.profileItems = profileItems;
     }
 
+    @Override
+    public String toString() {
+        return "MyPageProfile{" +
+                "photoUri='" + photoUri + '\'' +
+                ", profileItems=" + profileItems +
+                '}';
+    }
 }

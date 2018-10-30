@@ -1,8 +1,10 @@
 package edu.android.teamproject;
 
 import android.net.Uri;
+import android.nfc.Tag;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -51,7 +53,6 @@ public class MyPageDao implements ChildEventListener {
 
         }
 
-
         database = FirebaseDatabase.getInstance();
         messageReference = database.getReference().child("MyPage");
         messageReference.addChildEventListener(this);
@@ -61,16 +62,22 @@ public class MyPageDao implements ChildEventListener {
         messageReference.child(uid).setValue(myPageProfile);
     }
 
+    private MyPageProfile myPageProfile;
 
+    public MyPageProfile Update(){
+
+        return myPageProfile;
+    }
 
     @Override
     public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
+        String key = dataSnapshot.getKey();
+        Log.i("aaa", key);
     }
 
     @Override
     public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
+            myPageProfile = dataSnapshot.getValue(MyPageProfile.class);
     }
 
     @Override
