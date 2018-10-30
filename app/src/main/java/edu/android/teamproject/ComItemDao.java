@@ -40,6 +40,7 @@ public class ComItemDao implements ChildEventListener{
         database = FirebaseDatabase.getInstance();
         reference = database.getReference().child("ComItem");
         reference.addChildEventListener(this);
+        
     }
 
     public void insert(ComItem comItem) {
