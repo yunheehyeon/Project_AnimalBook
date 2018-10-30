@@ -41,46 +41,45 @@ public class MyPageEditActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
 
-        photo = findViewById(R.id.imBtnProfile);
 
         photo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                DialogInterface.OnClickListener cameraListener = new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            doTakePhotoAction();
-                        }
-                };
-
-                DialogInterface.OnClickListener albumListener = new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            doTakeAlbumAction();
-                        }
-                };
-
-                DialogInterface.OnClickListener cancelListener = new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                };
-                new AlertDialog.Builder(MyPageEditActivity.this)
-                            .setTitle("업로드할 이미지 선택")
-                            .setPositiveButton("사진촬영", cameraListener)
-                            .setNeutralButton("앨범선택", albumListener)
-                            .setNegativeButton("취소", cancelListener)
-                            .show();
-
+                showMyDialog();
             }
         });
 
     }
 
-    public void MPFActivityFinish(View view) {
-        finish();
+    private void showMyDialog() {
+
+        DialogInterface.OnClickListener cameraListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                doTakePhotoAction();
+            }
+        };
+
+        DialogInterface.OnClickListener albumListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                doTakeAlbumAction();
+            }
+        };
+
+        DialogInterface.OnClickListener cancelListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        };
+        new AlertDialog.Builder(MyPageEditActivity.this)
+                .setTitle("업로드할 이미지 선택")
+                .setPositiveButton("사진촬영", cameraListener)
+                .setNeutralButton("앨범선택", albumListener)
+                .setNegativeButton("취소", cancelListener)
+                .show();
+
     }
 
     private void doTakePhotoAction() {
@@ -156,7 +155,6 @@ public class MyPageEditActivity extends AppCompatActivity {
         }
     }
 
-    private ArrayList<DiaryItemEdit.PhotoItem> photoItems = new ArrayList<>();
     private void addImage(Uri resultUri) {
         photo.setImageURI(resultUri);
         uploadPhoto = resultUri;
