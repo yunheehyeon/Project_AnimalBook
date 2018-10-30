@@ -69,7 +69,7 @@
         <activity android:name=".ComItemActivity" />
         <activity android:name=".DiaryItemEdit" />
         <activity android:name=".ComItemEditActivity"></activity>
-        <activity android:name=".MyPageFragmentActivity"></activity>
+        <activity android:name=".MyPageEditActivity"></activity>
 
         <provider
             android:name="android.support.v4.content.FileProvider"
