@@ -45,6 +45,7 @@ public class ComItemListFragment extends Fragment {
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     String getTime = sdf.format(date);
     List<String> tag = new ArrayList<>();
+    
 
 
     @Override
