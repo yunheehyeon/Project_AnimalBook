@@ -1,9 +1,12 @@
 package edu.android.teamproject;
 
+import android.provider.BaseColumns;
+
 import java.util.Date;
 import java.util.List;
 
 public class DiaryItem {
+
     private List<String> diaryImages;
     private String diaryText;
     private Date diaryDate;

@@ -14,11 +14,18 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class ComItemListFragment extends Fragment {
+
+    private ComItemDao dao;
 
     public static final String TAG = "comitemfragment";
 
@@ -33,9 +40,20 @@ public class ComItemListFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_com_item_list, container, false);
     }
 
+    long now = System.currentTimeMillis();
+    Date date = new Date(now);
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+    String getTime = sdf.format(date);
+    List<String> tag = new ArrayList<>();
+
+
     @Override
     public void onStart() {
         super.onStart();
+
+        dao = ComItemDao.getComItemInstance();
+        tag.add("새해");
+        dao.insert(new ComItem("아이디", "연습", "anay", date, 1, tag, "연습", tag, "연습"));
 
         View view = getView();
 

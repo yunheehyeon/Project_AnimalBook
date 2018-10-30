@@ -26,6 +26,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import java.util.ArrayList;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -37,6 +39,7 @@ public class DiaryItemFragment extends Fragment {
     private TextView text, textDate, textTag;
     private Button btnFavorites, btnShare, btnUpdate, btnDelete ;
     private FloatingActionButton btnInsert;
+    private ArrayList<DiaryItem> diaryList;
 
     HashMap<Integer, Integer> mViewPagerState = new HashMap<>();
 
@@ -89,9 +92,33 @@ public class DiaryItemFragment extends Fragment {
                 textDate = itemview.findViewById(R.id.textDate);
                 textTag = itemview.findViewById(R.id.textTag);
                 btnFavorites = itemview.findViewById(R.id.btnFavorites);
-                btnShare = itemview.findViewById(R.id.btnShare);
                 btnUpdate = itemview.findViewById(R.id.btnUpdate);
+                btnShare = itemview.findViewById(R.id.btnShare);
                 btnDelete = itemview.findViewById(R.id.btnDelete);
+
+
+                btnUpdate.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        startDiaryItemEdit();
+                    }
+                });
+
+//                btnDelete.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        diaryList.remove(getAdapterPosition());
+//                        notifyItemRemoved(getAdapterPosition());
+//                        notifyItemRangeChanged(getAdapterPosition(), diaryList.size());
+//                    }
+//                });
+
+                btnShare.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                    }
+                });
             }
         }
 
