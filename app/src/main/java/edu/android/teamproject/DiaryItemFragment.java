@@ -22,7 +22,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -41,7 +43,11 @@ public class DiaryItemFragment extends Fragment {
     private FloatingActionButton btnInsert;
     private ArrayList<DiaryItem> diaryList;
 
+
+
     HashMap<Integer, Integer> mViewPagerState = new HashMap<>();
+
+    private DiaryItemDao dao;
 
 
     public DiaryItemFragment() {
@@ -69,6 +75,23 @@ public class DiaryItemFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+
+        long now = System.currentTimeMillis();
+        Date date = new Date(now);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String getTime = simpleDateFormat.format(date);
+
+        List<String> tag = new ArrayList<>();
+
+        dao = DiaryItemDao.getDiaryItemInstance();
+
+
+         dao.insert(new DiaryItem(null,"안녕",date,tag,0,null));
+
+
+
+
+
 
         View view = getView();
 

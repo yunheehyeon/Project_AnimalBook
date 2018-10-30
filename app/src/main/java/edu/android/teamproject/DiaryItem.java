@@ -12,17 +12,20 @@ public class DiaryItem {
     private Date diaryDate;
     private List<String> diaryTag;
     private int diaryId;
+    private String uid;
 
     public DiaryItem(){
 
     }
 
-    public DiaryItem(List<String> diaryImages, String diaryText, Date diaryDate, List<String> diaryTag, int diaryId) {
+
+    public DiaryItem(List<String> diaryImages, String diaryText, Date diaryDate, List<String> diaryTag, int diaryId,String uid) {
         this.diaryImages = diaryImages;
         this.diaryText = diaryText;
         this.diaryDate = diaryDate;
         this.diaryTag = diaryTag;
         this.diaryId = diaryId;
+        this.uid = uid;
     }
 
     public List<String> getDiaryImages() {
@@ -65,6 +68,14 @@ public class DiaryItem {
         this.diaryId = diaryId;
     }
 
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
+
     @Override
     public String toString() {
         return "DiaryItem{" +
@@ -73,6 +84,7 @@ public class DiaryItem {
                 ", diaryDate=" + diaryDate +
                 ", diaryTag=" + diaryTag +
                 ", diaryId=" + diaryId +
+                ", uid=" + uid +
                 '}';
     }
 }
