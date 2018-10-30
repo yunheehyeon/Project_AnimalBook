@@ -1,19 +1,25 @@
 package edu.android.teamproject;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Layout;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.theartofdev.edmodo.cropper.CropImage;
@@ -23,6 +29,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class MyPageEditActivity extends AppCompatActivity {
 
@@ -31,9 +38,13 @@ public class MyPageEditActivity extends AppCompatActivity {
     private int id_view;
     private Uri photoUri;
     private String imageFilePath;
-    private ImageButton photo;
-    private Uri uploadPhoto;
+    private ImageView photo;
 
+    private Uri uploadPhoto;
+    private EditText editProfileItemName;
+    private Button btnProfileItemAdd;
+
+    private MyPageDao dao;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,13 +52,61 @@ public class MyPageEditActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
 
+        dao = MyPageDao.getMyPageInstance();
 
+        editProfileItemName = findViewById(R.id.editProfileItemName);
+
+        btnProfileItemAdd = findViewById(R.id.btnProfileItemAdd);
+        btnProfileItemAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addProfileItem();
+            }
+        });
+
+        photo = findViewById(R.id.profileImageView);
         photo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showMyDialog();
             }
         });
+
+    }
+
+    private static final int MAX_PROFILE_ITEM = 6;
+    private int profileItemNum = 0;
+    private List<ProfileItemLayout> profileItemLayouts = new ArrayList<>();
+    private void addProfileItem() {
+
+        if(profileItemNum < MAX_PROFILE_ITEM){
+            ProfileItemLayout profileItemLayout = new ProfileItemLayout(this);
+            TextView textView = profileItemLayout.findViewById(R.id.profileItem);
+            textView.setText(editProfileItemName.getText().toString());
+            profileItemLayouts.add(profileItemLayout);
+
+            LinearLayout layout = findViewById(R.id.profileLayout);
+            layout.addView(profileItemLayout);
+            profileItemNum ++;
+
+            editProfileItemName.setText("");
+
+            for(final ProfileItemLayout p : profileItemLayouts){
+                Button button = p.findViewById(R.id.btnProfileItemDelete);
+                button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        LinearLayout layout = findViewById(R.id.profileLayout);
+                        layout.removeView(p);
+                        profileItemLayouts.remove(p);
+                        profileItemNum--;
+                    }
+                });
+            }
+
+        }else {
+            Toast.makeText(this, "최대 6개까지", Toast.LENGTH_SHORT).show();
+        }
 
     }
 
@@ -160,5 +219,32 @@ public class MyPageEditActivity extends AppCompatActivity {
         uploadPhoto = resultUri;
     }
 
+    public void profileUpdateCancel(View view) {
+        finish();
+    }
+
+    public void profileUpdate(View view) {
+        String photoUri = PhotoUploadUtil.PhotoUpload(this, uploadPhoto);
+        List<MyPageProfile.ProfileItem> profileItems = new ArrayList<>();
+        for(ProfileItemLayout p : profileItemLayouts) {
+            TextView textView = p.findViewById(R.id.profileItem);
+            EditText editText = p.findViewById(R.id.editProfileItem);
+            MyPageProfile.ProfileItem profileItem = new MyPageProfile.ProfileItem(textView.getText().toString(), editText.getText().toString());
+            profileItems.add(profileItem);
+        }
+        MyPageProfile myPageProfile = new MyPageProfile(photoUri, profileItems);
+        dao.insert(myPageProfile);
+
+    }
+
+
+    class ProfileItemLayout extends ConstraintLayout {
+
+        public ProfileItemLayout(Context context) {
+            super(context);
+            LayoutInflater inflater = getLayoutInflater();
+            inflater.inflate(R.layout.profile_item, this, true);
+        }
+    }
 
 }

@@ -58,7 +58,7 @@ public class MyPageDao implements ChildEventListener {
     }
 
     public void insert(MyPageProfile myPageProfile){
-        messageReference.push().setValue(myPageProfile);
+        messageReference.child(uid).setValue(myPageProfile);
     }
 
 

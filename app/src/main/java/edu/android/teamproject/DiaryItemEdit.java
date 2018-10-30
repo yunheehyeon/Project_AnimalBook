@@ -247,7 +247,7 @@ public class  DiaryItemEdit extends AppCompatActivity implements View.OnClickLis
             btnDeletePhoto.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    LinearLayout tagLayout = findViewById(R.id.tagItemLayout);
+                    LinearLayout tagLayout = findViewById(R.id.imageItemLayout);
                     tagLayout.removeView(p);
                     tagItems.remove(p);
                     photoNum --;
