@@ -11,12 +11,10 @@ import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -224,7 +222,7 @@ public class MyPageEditActivity extends AppCompatActivity {
     }
 
     public void profileUpdate(View view) {
-        String photoUri = PhotoUploadUtil.PhotoUpload(this, uploadPhoto);
+        String photoUri = PhotoFirebaseStorageUtil.PhotoUpload(this, uploadPhoto);
         List<MyPageProfile.ProfileItem> profileItems = new ArrayList<>();
         for(ProfileItemLayout p : profileItemLayouts) {
             TextView textView = p.findViewById(R.id.profileItem);

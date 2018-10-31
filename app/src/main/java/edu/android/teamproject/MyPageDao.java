@@ -14,6 +14,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class MyPageDao implements ChildEventListener {
 
@@ -71,8 +72,10 @@ public class MyPageDao implements ChildEventListener {
 
     @Override
     public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-        String key = dataSnapshot.getKey();
-        Log.i("aaa", key);
+        if(uid.equals(dataSnapshot.getKey())){
+            myPageProfile = dataSnapshot.getValue(MyPageProfile.class);
+        }
+
     }
 
     @Override
@@ -94,4 +97,5 @@ public class MyPageDao implements ChildEventListener {
     public void onCancelled(@NonNull DatabaseError databaseError) {
 
     }
+
 }

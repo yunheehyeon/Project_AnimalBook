@@ -3,14 +3,19 @@ package edu.android.teamproject;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
+import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 /**
@@ -42,10 +47,12 @@ public class MyPageFragment extends Fragment {
         MyPageProfile myPageProfile = dao.Update();
 
         if(myPageProfile != null) {
-            Toast.makeText(getActivity(), myPageProfile.toString(), Toast.LENGTH_SHORT).show();
+            showMyProfile(myPageProfile);
         }else {
             Toast.makeText(getActivity(), "없음", Toast.LENGTH_SHORT).show();
         }
+
+
 
         btnProfileChange = getView().findViewById(R.id.btnProfileChange);
 
@@ -80,6 +87,22 @@ public class MyPageFragment extends Fragment {
             }
         });
 
+    }
+
+    private void showMyProfile(MyPageProfile myPageProfile) {
+        LinearLayout layout = getView().findViewById(R.id.myProfileLayout);
+        layout.removeAllViews();
+        for(MyPageProfile.ProfileItem p : myPageProfile.getProfileItems()){
+            MyProfileItemLayout myProfileItemLayout = new MyProfileItemLayout(getActivity());
+            TextView myProfileItem = myProfileItemLayout.findViewById(R.id.myProfileItem);
+            TextView myProfileText = myProfileItemLayout.findViewById(R.id.myProfileText);
+            myProfileItem.setText(p.getProfileItemName());
+            myProfileText.setText(p.getProfileItemText());
+            layout.addView(myProfileItemLayout);
+        }
+        ImageView myProfileImage = getView().findViewById(R.id.imageProfile);
+        Bitmap bitmap = PhotoFirebaseStorageUtil.photoDownload(myPageProfile.getPhotoUri(), getActivity());
+        myProfileImage.setImageBitmap(bitmap);
     }
 
     @Override
@@ -146,4 +169,14 @@ public class MyPageFragment extends Fragment {
     private void onClickHospitalBM() {
 
     }
+
+    class MyProfileItemLayout extends LinearLayout {
+
+        public MyProfileItemLayout(Context context) {
+            super(context);
+            LayoutInflater inflater = getLayoutInflater();
+            inflater.inflate(R.layout.myprofile_item, this, true);
+        }
+    }
+
 }
