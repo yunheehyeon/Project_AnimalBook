@@ -4,7 +4,11 @@ package edu.android.teamproject;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
@@ -18,11 +22,19 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
+import static android.content.Context.CONNECTIVITY_SERVICE;
+
 /**
 
  * A simple {@link Fragment} subclass.
  */
-public class MyPageFragment extends Fragment {
+public class MyPageFragment extends Fragment{
 
 
     private MyPageDao dao;
@@ -42,17 +54,6 @@ public class MyPageFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-
-        dao = MyPageDao.getMyPageInstance();
-        MyPageProfile myPageProfile = dao.Update();
-
-        if(myPageProfile != null) {
-            showMyProfile(myPageProfile);
-        }else {
-            Toast.makeText(getActivity(), "없음", Toast.LENGTH_SHORT).show();
-        }
-
-
 
         btnProfileChange = getView().findViewById(R.id.btnProfileChange);
 
@@ -87,22 +88,15 @@ public class MyPageFragment extends Fragment {
             }
         });
 
-    }
+        dao = MyPageDao.getMyPageInstance();
+        MyPageProfile myPageProfile = dao.update(getActivity());
 
-    private void showMyProfile(MyPageProfile myPageProfile) {
-        LinearLayout layout = getView().findViewById(R.id.myProfileLayout);
-        layout.removeAllViews();
-        for(MyPageProfile.ProfileItem p : myPageProfile.getProfileItems()){
-            MyProfileItemLayout myProfileItemLayout = new MyProfileItemLayout(getActivity());
-            TextView myProfileItem = myProfileItemLayout.findViewById(R.id.myProfileItem);
-            TextView myProfileText = myProfileItemLayout.findViewById(R.id.myProfileText);
-            myProfileItem.setText(p.getProfileItemName());
-            myProfileText.setText(p.getProfileItemText());
-            layout.addView(myProfileItemLayout);
+        if(myPageProfile != null) {
+            Toast.makeText(getActivity(), myPageProfile.toString(), Toast.LENGTH_SHORT).show();
+            showMyProfile(myPageProfile);
         }
-        ImageView myProfileImage = getView().findViewById(R.id.imageProfile);
-        Bitmap bitmap = PhotoFirebaseStorageUtil.photoDownload(myPageProfile.getPhotoUri(), getActivity());
-        myProfileImage.setImageBitmap(bitmap);
+
+
     }
 
     @Override
@@ -170,6 +164,22 @@ public class MyPageFragment extends Fragment {
 
     }
 
+    private void showMyProfile(MyPageProfile myPageProfile) {
+
+        LinearLayout layout = getView().findViewById(R.id.myProfileLayout);
+        layout.removeAllViews();
+        for(MyPageProfile.ProfileItem p : myPageProfile.getProfileItems()){
+            MyProfileItemLayout myProfileItemLayout = new MyProfileItemLayout(getActivity());
+            TextView myProfileItem = myProfileItemLayout.findViewById(R.id.myProfileItem);
+            TextView myProfileText = myProfileItemLayout.findViewById(R.id.myProfileText);
+            myProfileItem.setText(p.getProfileItemName());
+            myProfileText.setText(p.getProfileItemText());
+            layout.addView(myProfileItemLayout);
+        }
+        ImageView myProfileImage = getView().findViewById(R.id.imageProfile);
+        //myProfileImage.setImageBitmap(bitmap);
+    }
+
     class MyProfileItemLayout extends LinearLayout {
 
         public MyProfileItemLayout(Context context) {
@@ -178,5 +188,8 @@ public class MyPageFragment extends Fragment {
             inflater.inflate(R.layout.myprofile_item, this, true);
         }
     }
+
+
+
 
 }

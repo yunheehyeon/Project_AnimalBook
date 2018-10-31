@@ -3,14 +3,9 @@ package edu.android.teamproject;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -20,15 +15,9 @@ import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import static android.content.Context.CONNECTIVITY_SERVICE;
 import static com.facebook.FacebookSdk.getApplicationContext;
 
 public class PhotoFirebaseStorageUtil {
@@ -86,7 +75,7 @@ public class PhotoFirebaseStorageUtil {
     static Uri downloadPhoto = null;
     static Bitmap download = null;
 
-    public static Bitmap photoDownload(String fileRef, final Context context){
+    public static Uri photoDownload(String fileRef, final Context context){
 
         FirebaseStorage storage = FirebaseStorage.getInstance();
 
@@ -97,7 +86,6 @@ public class PhotoFirebaseStorageUtil {
             public void onSuccess(Uri uri) {
                 Log.i("aaa", uri.toString());
                 downloadPhoto = uri;
-                downloadImage(context);
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -106,65 +94,7 @@ public class PhotoFirebaseStorageUtil {
             }
         });
 
-        return download;
-    }
-
-
-    public static void downloadImage(Context context) {
-
-        ConnectivityManager manager =
-                (ConnectivityManager) context.getSystemService(CONNECTIVITY_SERVICE);
-        NetworkInfo info = manager.getActiveNetworkInfo();
-        if(info != null && info.isConnected()){
-            ImageDownloadTask task = new ImageDownloadTask();
-            task.execute(String.valueOf(downloadPhoto));
-        }else{
-            Toast.makeText(context, "사용가능한 네트워크가 없습니다.", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    static class ImageDownloadTask extends AsyncTask<String, Void, Bitmap> {
-
-        @Override
-        protected Bitmap doInBackground(String... params) {
-            Bitmap bitmap = null;
-
-            HttpURLConnection connection = null;
-            InputStream in = null;
-            BufferedInputStream bis = null;
-            try {
-                URL url = new URL(params[0]);
-                connection = (HttpURLConnection) url.openConnection();
-                connection.setConnectTimeout(5000);
-                connection.setReadTimeout(5000);
-                connection.setRequestMethod("GET");
-
-                connection.connect();
-
-                int responseCode = connection.getResponseCode();
-                if(responseCode == HttpURLConnection.HTTP_OK){
-                    in = connection.getInputStream();
-                    bis = new BufferedInputStream(in);
-                    bitmap = BitmapFactory.decodeStream(bis);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                try {
-                    bis.close();
-                    connection.disconnect();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            return bitmap;
-        }
-
-        @Override
-        protected void onPostExecute(Bitmap bitmap) {
-            download = bitmap;
-        }
+        return downloadPhoto;
     }
 
 
