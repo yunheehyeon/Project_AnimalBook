@@ -20,8 +20,9 @@ public class DiaryItemDao implements ChildEventListener {
     private DatabaseReference reference;
 
     private FirebaseAuth mAuth;
-    private String email;
-
+    private String providerId,uid,name,email;
+    private Uri photoUrl;
+    private UserInfo profile;
 
 
 
@@ -40,15 +41,15 @@ public class DiaryItemDao implements ChildEventListener {
         if (user != null) {
             for (UserInfo profile : user.getProviderData()) {
                 // Id of the provider (ex: google.com)
-                String providerId = profile.getProviderId();
+                providerId = profile.getProviderId();
 
                 // UID specific to the provider
-                String uid = profile.getUid();
+                uid = profile.getUid();
 
                 // Name, email address, and profile photo Url
-                String name = profile.getDisplayName();
+                name = profile.getDisplayName();
                 email =  profile.getEmail();
-                Uri photoUrl = profile.getPhotoUrl();
+                photoUrl = profile.getPhotoUrl();
             }
 
         }
@@ -63,7 +64,7 @@ public class DiaryItemDao implements ChildEventListener {
     }
 
     public void insert(DiaryItem diaryItem){
-        diaryItem.setUid(email);
+        diaryItem.setUid(providerId  + "/" + email);
         reference.push().setValue(diaryItem);
 
 
