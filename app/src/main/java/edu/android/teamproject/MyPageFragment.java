@@ -34,7 +34,7 @@ import static android.content.Context.CONNECTIVITY_SERVICE;
 
  * A simple {@link Fragment} subclass.
  */
-public class MyPageFragment extends Fragment{
+public class MyPageFragment extends Fragment implements MyPageDao.DataCallback {
 
 
     private MyPageDao dao;
@@ -89,13 +89,8 @@ public class MyPageFragment extends Fragment{
         });
 
         dao = MyPageDao.getMyPageInstance();
-        MyPageProfile myPageProfile = dao.update(getActivity());
 
-        if(myPageProfile != null) {
-            Toast.makeText(getActivity(), myPageProfile.toString(), Toast.LENGTH_SHORT).show();
-            showMyProfile(myPageProfile);
-        }
-
+        dao.update(getActivity());
 
     }
 
@@ -106,6 +101,11 @@ public class MyPageFragment extends Fragment{
         View view = inflater.inflate(R.layout.fragment_my_page, container, false);
 
         return view;
+    }
+
+    @Override
+    public void proFileCallback(MyPageProfile myPageProfile, Bitmap bitmap) {
+
     }
 
     class myPosting extends CardView {

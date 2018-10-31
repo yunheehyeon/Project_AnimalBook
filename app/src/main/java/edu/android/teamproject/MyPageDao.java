@@ -34,6 +34,12 @@ import static android.content.Context.CONNECTIVITY_SERVICE;
 
 public class MyPageDao {
 
+    interface DataCallback{
+        void proFileCallback(MyPageProfile myPageProfile, Bitmap bitmap);
+    }
+
+    private DataCallback callback;
+
     private FirebaseDatabase database;
     private DatabaseReference messageReference; // 테이블 주소
     private static MyPageDao myPageInstance;
@@ -80,11 +86,13 @@ public class MyPageDao {
 
     private MyPageProfile myPageProfile;
     private Context context;
-    public MyPageProfile update(Context context){
+    public void update(Context context){
+        if(context instanceof DataCallback){
+            callback = (DataCallback) context;
+        }
         this.context = context;
         FirebaseTask firebaseTask = new FirebaseTask();
         firebaseTask.execute();
-        return myPageProfile;
     }
 
     class FirebaseTask extends AsyncTask<MyPageProfile, MyPageProfile, MyPageProfile> implements ChildEventListener{
@@ -112,21 +120,8 @@ public class MyPageDao {
             Log.i("aaa", dataSnapshot.getKey());
             if(uid.equals(dataSnapshot.getKey())){
                 myPageProfile = dataSnapshot.getValue(MyPageProfile.class);
-
-                Uri uri = PhotoFirebaseStorageUtil.photoDownload(myPageProfile.getPhotoUri(), context);
-
-                ConnectivityManager manager =
-                        (ConnectivityManager) context.getSystemService(CONNECTIVITY_SERVICE);
-                NetworkInfo info = manager.getActiveNetworkInfo();
-
-                if(info != null && info.isConnected()){
-                    ImageDownload imageDownload = new ImageDownload();
-                    //imageDownload.execute(String.valueOf(uri));
-                    Toast.makeText(context, "" + String.valueOf(uri), Toast.LENGTH_SHORT).show();
-                }else{
-                    Toast.makeText(context, "사용가능한 네트워크가 없습니다.", Toast.LENGTH_SHORT).show();
-                }
-
+                Bitmap bitmap = PhotoFirebaseStorageUtil.photoDownload(myPageProfile.getPhotoUri(), context);
+                callback.proFileCallback(myPageProfile, bitmap);
             }
         }
 
@@ -151,48 +146,7 @@ public class MyPageDao {
         }
     }
 
-    class ImageDownload extends AsyncTask<String, String, Bitmap> {
 
-        @Override
-        protected Bitmap doInBackground(String... strings) {
-            Bitmap bitmap = null;
-
-            HttpURLConnection connection = null;
-            InputStream in = null;
-            BufferedInputStream bis = null;
-            try {
-                URL url = new URL(strings[0]);
-                connection = (HttpURLConnection) url.openConnection();
-                connection.setConnectTimeout(5000);
-                connection.setReadTimeout(5000);
-                connection.setRequestMethod("GET");
-
-                connection.connect();
-
-                int responseCode = connection.getResponseCode();
-                if(responseCode == HttpURLConnection.HTTP_OK){
-                    in = connection.getInputStream();
-                    bis = new BufferedInputStream(in);
-                    bitmap = BitmapFactory.decodeStream(bis);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                try {
-                    bis.close();
-                    connection.disconnect();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            return bitmap;
-        }
-
-        @Override
-        protected void onPostExecute(Bitmap bitmap) {
-        }
-    }
 
 
 
