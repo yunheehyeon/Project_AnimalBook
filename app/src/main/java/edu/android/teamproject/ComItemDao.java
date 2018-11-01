@@ -71,8 +71,6 @@ public class ComItemDao implements ChildEventListener{
         reference.push().setValue(comItem);
     }
 
-
-
     @Override
     public void onChildAdded( DataSnapshot dataSnapshot,  String s) {
 

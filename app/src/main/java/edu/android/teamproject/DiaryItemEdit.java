@@ -73,7 +73,7 @@ public class  DiaryItemEdit extends AppCompatActivity implements View.OnClickLis
         setTitle("다이어리 글쓰기");
         setContentView(R.layout.activity_diary_item_edit);
 
-        dao = DiaryItemDao.getDiaryItemInstance();
+        dao = DiaryItemDao.getDiaryItemInstance(this);
 
         editTitle = findViewById(R.id.editTitle);
         editText = findViewById(R.id.editText);

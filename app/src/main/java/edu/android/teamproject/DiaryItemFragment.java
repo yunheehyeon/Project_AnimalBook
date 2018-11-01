@@ -11,6 +11,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,16 +29,14 @@ import java.util.List;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class DiaryItemFragment extends Fragment {
+public class DiaryItemFragment extends Fragment implements DiaryItemDao.DiaryItemCallback {
 
     private ViewPager viewPager;
     private ImageView imageView;
     private TextView text, textDate, textTag;
     private Button btnFavorites, btnShare, btnUpdate, btnDelete ;
     private FloatingActionButton btnInsert;
-    private ArrayList<DiaryItem> diaryList;
-
-
+    private ArrayList<DiaryItem> diaryList = new ArrayList<>();
 
     HashMap<Integer, Integer> mViewPagerState = new HashMap<>();
 
@@ -75,6 +74,9 @@ public class DiaryItemFragment extends Fragment {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String getTime = simpleDateFormat.format(date);
 
+
+        dao = DiaryItemDao.getDiaryItemInstance(this);
+
         List<String> tag = new ArrayList<>();
 
         View view = getView();
@@ -86,6 +88,12 @@ public class DiaryItemFragment extends Fragment {
         recyclerView.setHasFixedSize(true);
 
 
+    }
+
+    @Override
+    public void itemCallback(DiaryItem diaryItem) {
+        diaryList.add(diaryItem);
+        Log.i("aaa", diaryList.toString());
     }
 
     class DiaryItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
