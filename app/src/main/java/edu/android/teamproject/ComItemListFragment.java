@@ -10,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -37,7 +38,22 @@ public class ComItemListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_com_item_list, container, false);
+        View view = inflater.inflate(R.layout.fragment_com_item_list, container, false);
+
+        Button btnInsert = view.findViewById(R.id.btnInsert);
+        btnInsert.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startComItemEdit();
+            }
+        });
+
+        return view;
+    }
+
+    private void startComItemEdit() {
+        Intent intent = ComItemEditActivity.newIntent(getActivity(), "1");
+        startActivity(intent);
     }
 
     long now = System.currentTimeMillis();
@@ -52,9 +68,9 @@ public class ComItemListFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
-        dao = ComItemDao.getComItemInstance();
-        tag.add("새해");
-        dao.insert(new ComItem("아이디", "연습", "anay", date, 1, tag, "연습", tag, "연습"));
+//        dao = ComItemDao.getComItemInstance();
+//        tag.add("새해");
+//        dao.insert(new ComItem("아이디", "연습", "anay", date, 1, tag, "연습", tag, "연습"));
 
         View view = getView();
 

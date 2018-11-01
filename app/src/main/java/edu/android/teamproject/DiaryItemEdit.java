@@ -72,6 +72,7 @@ public class  DiaryItemEdit extends AppCompatActivity implements View.OnClickLis
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTitle("다이어리 글쓰기");
         setContentView(R.layout.activity_diary_item_edit);
 
         dao = DiaryItemDao.getDiaryItemInstance();
