@@ -186,6 +186,7 @@ public class MyPageFragment extends Fragment implements MyPageDao.DataCallback {
             myProfileItem.setText(p.getProfileItemName());
             myProfileText.setText(p.getProfileItemText());
             layout.addView(myProfileItemLayout);
+
             dao.photoDownload(myPageProfile.getPhotoUri());
         }
     }
