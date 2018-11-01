@@ -4,12 +4,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.support.annotation.NonNull;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -19,15 +15,10 @@ import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import static android.content.Context.CONNECTIVITY_SERVICE;
+
 import static com.facebook.FacebookSdk.getApplicationContext;
 
 public class PhotoFirebaseStorageUtil {
@@ -82,86 +73,27 @@ public class PhotoFirebaseStorageUtil {
         return filename;
     }
 
-    static Uri downloadPhoto = null;
-    static Bitmap download = null;
+    static Bitmap DOWNLOAD_IMAGE = null;
 
-    public static Bitmap photoDownload(String fileRef, final Context context){
+    public static void photoDownload(final String fileRef, final Context context){
 
         FirebaseStorage storage = FirebaseStorage.getInstance();
-
         StorageReference storageRef = storage.getReferenceFromUrl("gs://timproject-14aaa.appspot.com").child("images/" + fileRef);
         //Url을 다운받기
-        storageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+        final long ONE_MEGABYTE = 1024 * 1024;
+        storageRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
             @Override
-            public void onSuccess(Uri uri) {
-                Log.i("aaa", uri.toString());
-                downloadPhoto = uri;
-
-                ConnectivityManager manager =
-                        (ConnectivityManager) context.getSystemService(CONNECTIVITY_SERVICE);
-                NetworkInfo info = manager.getActiveNetworkInfo();
-
-                if(info != null && info.isConnected()){
-                    ImageDownload imageDownload = new ImageDownload();
-                    imageDownload.execute(String.valueOf(uri));
-                    Toast.makeText(context, "" + String.valueOf(uri), Toast.LENGTH_SHORT).show();
-                }else{
-                    Toast.makeText(context, "사용가능한 네트워크가 없습니다.", Toast.LENGTH_SHORT).show();
-                }
-
+            public void onSuccess(byte[] bytes) {
+                Bitmap bitmap = BitmapFactory.decodeByteArray( bytes, 0, bytes.length );
+                DOWNLOAD_IMAGE = bitmap;
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(context, "다운로드 실패", Toast.LENGTH_SHORT).show();
+            public void onFailure(@NonNull Exception exception) {
+
             }
         });
-
-        return download;
     }
 
-    static class ImageDownload extends AsyncTask<String, String, Bitmap> {
-
-        @Override
-        protected Bitmap doInBackground(String... strings) {
-            Bitmap bitmap = null;
-
-            HttpURLConnection connection = null;
-            InputStream in = null;
-            BufferedInputStream bis = null;
-            try {
-                URL url = new URL(strings[0]);
-                connection = (HttpURLConnection) url.openConnection();
-                connection.setConnectTimeout(5000);
-                connection.setReadTimeout(5000);
-                connection.setRequestMethod("GET");
-
-                connection.connect();
-
-                int responseCode = connection.getResponseCode();
-                if(responseCode == HttpURLConnection.HTTP_OK){
-                    in = connection.getInputStream();
-                    bis = new BufferedInputStream(in);
-                    bitmap = BitmapFactory.decodeStream(bis);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                try {
-                    bis.close();
-                    connection.disconnect();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            return bitmap;
-        }
-
-        @Override
-        protected void onPostExecute(Bitmap bitmap) {
-            download = bitmap;
-        }
-    }
 
 }

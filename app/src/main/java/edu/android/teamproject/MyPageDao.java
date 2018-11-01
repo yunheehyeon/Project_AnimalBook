@@ -35,7 +35,7 @@ import static android.content.Context.CONNECTIVITY_SERVICE;
 public class MyPageDao {
 
     interface DataCallback{
-        void proFileCallback(MyPageProfile myPageProfile, Bitmap bitmap);
+        void proFileCallback(MyPageProfile myPageProfile);
     }
 
     private DataCallback callback;
@@ -85,12 +85,10 @@ public class MyPageDao {
     }
 
     private MyPageProfile myPageProfile;
-    private Context context;
-    public void update(Context context){
-        if(context instanceof DataCallback){
-            callback = (DataCallback) context;
-        }
-        this.context = context;
+
+    public void update(DataCallback dataCallback){
+        callback = dataCallback;
+
         FirebaseTask firebaseTask = new FirebaseTask();
         firebaseTask.execute();
     }
@@ -107,6 +105,7 @@ public class MyPageDao {
                 messageReference.child(uid).setValue(myPageProfiles[0]);
             }else {
 
+
             }
             return null;
         }
@@ -120,8 +119,7 @@ public class MyPageDao {
             Log.i("aaa", dataSnapshot.getKey());
             if(uid.equals(dataSnapshot.getKey())){
                 myPageProfile = dataSnapshot.getValue(MyPageProfile.class);
-                Bitmap bitmap = PhotoFirebaseStorageUtil.photoDownload(myPageProfile.getPhotoUri(), context);
-                callback.proFileCallback(myPageProfile, bitmap);
+                callback.proFileCallback(myPageProfile);
             }
         }
 

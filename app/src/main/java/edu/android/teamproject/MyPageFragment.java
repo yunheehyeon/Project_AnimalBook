@@ -10,6 +10,7 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
 import android.text.Layout;
@@ -21,6 +22,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -90,7 +96,7 @@ public class MyPageFragment extends Fragment implements MyPageDao.DataCallback {
 
         dao = MyPageDao.getMyPageInstance();
 
-        dao.update(getActivity());
+        dao.update(this);
 
     }
 
@@ -101,11 +107,6 @@ public class MyPageFragment extends Fragment implements MyPageDao.DataCallback {
         View view = inflater.inflate(R.layout.fragment_my_page, container, false);
 
         return view;
-    }
-
-    @Override
-    public void proFileCallback(MyPageProfile myPageProfile, Bitmap bitmap) {
-
     }
 
     class myPosting extends CardView {
@@ -164,6 +165,11 @@ public class MyPageFragment extends Fragment implements MyPageDao.DataCallback {
 
     }
 
+    @Override
+    public void proFileCallback(MyPageProfile myPageProfile) {
+        showMyProfile(myPageProfile);
+    }
+
     private void showMyProfile(MyPageProfile myPageProfile) {
 
         LinearLayout layout = getView().findViewById(R.id.myProfileLayout);
@@ -176,8 +182,25 @@ public class MyPageFragment extends Fragment implements MyPageDao.DataCallback {
             myProfileText.setText(p.getProfileItemText());
             layout.addView(myProfileItemLayout);
         }
-        ImageView myProfileImage = getView().findViewById(R.id.imageProfile);
-        //myProfileImage.setImageBitmap(bitmap);
+
+        final ImageView myProfileImage = getView().findViewById(R.id.imageProfile);
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReferenceFromUrl("gs://timproject-14aaa.appspot.com").child("images/" + myPageProfile.getPhotoUri());
+
+        final long ONE_MEGABYTE = 1024 * 1024;
+        storageRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+            @Override
+            public void onSuccess(byte[] bytes) {
+                Bitmap bitmap = BitmapFactory.decodeByteArray( bytes, 0, bytes.length );
+                myProfileImage.setImageBitmap(bitmap);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+
+            }
+        });
+        
     }
 
     class MyProfileItemLayout extends LinearLayout {
