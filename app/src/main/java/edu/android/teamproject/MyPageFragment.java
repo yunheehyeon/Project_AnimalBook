@@ -170,6 +170,11 @@ public class MyPageFragment extends Fragment implements MyPageDao.DataCallback {
         showMyProfile(myPageProfile);
     }
 
+    @Override
+    public void proFileCallback(Bitmap bitmap) {
+        ImageView myProfileImage = getView().findViewById(R.id.imageProfile);
+        myProfileImage.setImageBitmap(bitmap);
+    }
     private void showMyProfile(MyPageProfile myPageProfile) {
 
         LinearLayout layout = getView().findViewById(R.id.myProfileLayout);
@@ -181,26 +186,8 @@ public class MyPageFragment extends Fragment implements MyPageDao.DataCallback {
             myProfileItem.setText(p.getProfileItemName());
             myProfileText.setText(p.getProfileItemText());
             layout.addView(myProfileItemLayout);
+            dao.photoDownload(myPageProfile.getPhotoUri());
         }
-
-        final ImageView myProfileImage = getView().findViewById(R.id.imageProfile);
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference storageRef = storage.getReferenceFromUrl("gs://timproject-14aaa.appspot.com").child("images/" + myPageProfile.getPhotoUri());
-
-        final long ONE_MEGABYTE = 1024 * 1024;
-        storageRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-            @Override
-            public void onSuccess(byte[] bytes) {
-                Bitmap bitmap = BitmapFactory.decodeByteArray( bytes, 0, bytes.length );
-                myProfileImage.setImageBitmap(bitmap);
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-
-            }
-        });
-        
     }
 
     class MyProfileItemLayout extends LinearLayout {

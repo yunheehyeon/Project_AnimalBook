@@ -62,15 +62,12 @@ public class DiaryItemDao implements ChildEventListener {
 
 
     }
-
     public void insert(DiaryItem diaryItem){
         diaryItem.setUid(providerId  + "/" + email);
         reference.push().setValue(diaryItem);
 
 
     }
-
-
     @Override
     public void onChildAdded( DataSnapshot dataSnapshot,  String s) {
 

@@ -72,28 +72,4 @@ public class PhotoFirebaseStorageUtil {
 
         return filename;
     }
-
-    static Bitmap DOWNLOAD_IMAGE = null;
-
-    public static void photoDownload(final String fileRef, final Context context){
-
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference storageRef = storage.getReferenceFromUrl("gs://timproject-14aaa.appspot.com").child("images/" + fileRef);
-        //Url을 다운받기
-        final long ONE_MEGABYTE = 1024 * 1024;
-        storageRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-            @Override
-            public void onSuccess(byte[] bytes) {
-                Bitmap bitmap = BitmapFactory.decodeByteArray( bytes, 0, bytes.length );
-                DOWNLOAD_IMAGE = bitmap;
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-
-            }
-        });
-    }
-
-
 }
