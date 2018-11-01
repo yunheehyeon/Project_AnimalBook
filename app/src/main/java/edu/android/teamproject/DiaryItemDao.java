@@ -12,6 +12,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 
 public class DiaryItemDao implements ChildEventListener {
@@ -35,7 +37,6 @@ public class DiaryItemDao implements ChildEventListener {
 
         return diaryItemInstance;
     }
-
     private DiaryItemDao(){
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
@@ -57,20 +58,16 @@ public class DiaryItemDao implements ChildEventListener {
         database = FirebaseDatabase.getInstance();
         reference = database.getReference().child("DiaryItem");
         reference.addChildEventListener(this);
-
-
-
-
     }
+    public void insert(DiaryItem diaryItem) {
 
-    public void insert(DiaryItem diaryItem){
-        diaryItem.setUid(providerId  + "/" + email);
-        reference.push().setValue(diaryItem);
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy 년 MM 월 HH 일");
+        Date now = new Date();
+        String date = formatter.format(now);
+        diaryItem.setDiaryDate(date);
 
-
+        reference.child(uid).push().setValue(diaryItem);
     }
-
-
     @Override
     public void onChildAdded( DataSnapshot dataSnapshot,  String s) {
 

@@ -83,16 +83,6 @@ public class DiaryItemFragment extends Fragment {
 
         List<String> tag = new ArrayList<>();
 
-        dao = DiaryItemDao.getDiaryItemInstance();
-
-
-         dao.insert(new DiaryItem(null,"안녕",date,tag,0,null));
-
-
-
-
-
-
         View view = getView();
 
         RecyclerView recyclerView = view.findViewById(R.id.diaryRecycleView);

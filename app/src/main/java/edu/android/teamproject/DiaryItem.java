@@ -7,25 +7,32 @@ import java.util.List;
 
 public class DiaryItem {
 
+    private String diaryTitle;
     private List<String> diaryImages;
     private String diaryText;
-    private Date diaryDate;
     private List<String> diaryTag;
-    private int diaryId;
-    private String uid;
+    private String diaryDate;
+    private String diaryId;
 
     public DiaryItem(){
 
     }
 
-
-    public DiaryItem(List<String> diaryImages, String diaryText, Date diaryDate, List<String> diaryTag, int diaryId,String uid) {
+    public DiaryItem(String diaryTitle, List<String> diaryImages, String diaryText, List<String> diaryTag, String diaryDate, String diaryId) {
+        this.diaryTitle = diaryTitle;
         this.diaryImages = diaryImages;
         this.diaryText = diaryText;
-        this.diaryDate = diaryDate;
         this.diaryTag = diaryTag;
+        this.diaryDate = diaryDate;
         this.diaryId = diaryId;
-        this.uid = uid;
+    }
+
+    public String getDiaryTitle() {
+        return diaryTitle;
+    }
+
+    public void setDiaryTitle(String diaryTitle) {
+        this.diaryTitle = diaryTitle;
     }
 
     public List<String> getDiaryImages() {
@@ -44,14 +51,6 @@ public class DiaryItem {
         this.diaryText = diaryText;
     }
 
-    public Date getDiaryDate() {
-        return diaryDate;
-    }
-
-    public void setDiaryDate(Date diaryDate) {
-        this.diaryDate = diaryDate;
-    }
-
     public List<String> getDiaryTag() {
         return diaryTag;
     }
@@ -60,31 +59,19 @@ public class DiaryItem {
         this.diaryTag = diaryTag;
     }
 
-    public int getDiaryId() {
+    public String getDiaryDate() {
+        return diaryDate;
+    }
+
+    public void setDiaryDate(String diaryDate) {
+        this.diaryDate = diaryDate;
+    }
+
+    public String getDiaryId() {
         return diaryId;
     }
 
-    public void setDiaryId(int diaryId) {
+    public void setDiaryId(String diaryId) {
         this.diaryId = diaryId;
-    }
-
-    public String getUid() {
-        return uid;
-    }
-
-    public void setUid(String uid) {
-        this.uid = uid;
-    }
-
-    @Override
-    public String toString() {
-        return "DiaryItem{" +
-                "diaryImages=" + diaryImages +
-                ", diaryText='" + diaryText + '\'' +
-                ", diaryDate=" + diaryDate +
-                ", diaryTag=" + diaryTag +
-                ", diaryId=" + diaryId +
-                ", uid=" + uid +
-                '}';
     }
 }

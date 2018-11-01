@@ -14,6 +14,8 @@ import android.util.Log;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
@@ -23,6 +25,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -35,7 +39,8 @@ import static android.content.Context.CONNECTIVITY_SERVICE;
 public class MyPageDao {
 
     interface DataCallback{
-        void proFileCallback(MyPageProfile myPageProfile, Bitmap bitmap);
+        void proFileCallback(MyPageProfile myPageProfile);
+        void proFileCallback(Bitmap bitmap);
     }
 
     private DataCallback callback;
@@ -85,12 +90,10 @@ public class MyPageDao {
     }
 
     private MyPageProfile myPageProfile;
-    private Context context;
-    public void update(Context context){
-        if(context instanceof DataCallback){
-            callback = (DataCallback) context;
-        }
-        this.context = context;
+
+    public void update(DataCallback dataCallback){
+        callback = dataCallback;
+
         FirebaseTask firebaseTask = new FirebaseTask();
         firebaseTask.execute();
     }
@@ -107,6 +110,7 @@ public class MyPageDao {
                 messageReference.child(uid).setValue(myPageProfiles[0]);
             }else {
 
+
             }
             return null;
         }
@@ -117,11 +121,9 @@ public class MyPageDao {
 
         @Override
         public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-            Log.i("aaa", dataSnapshot.getKey());
             if(uid.equals(dataSnapshot.getKey())){
                 myPageProfile = dataSnapshot.getValue(MyPageProfile.class);
-                Bitmap bitmap = PhotoFirebaseStorageUtil.photoDownload(myPageProfile.getPhotoUri(), context);
-                callback.proFileCallback(myPageProfile, bitmap);
+                callback.proFileCallback(myPageProfile);
             }
         }
 
@@ -146,7 +148,27 @@ public class MyPageDao {
         }
     }
 
+    static Bitmap bitmap = null;
 
+    public void photoDownload(final String fileRef){
+
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReferenceFromUrl("gs://timproject-14aaa.appspot.com").child("images/" + fileRef);
+        //Url을 다운받기
+        final long ONE_MEGABYTE = 1024 * 1024;
+        storageRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+            @Override
+            public void onSuccess(byte[] bytes) {
+                Bitmap bitmap = BitmapFactory.decodeByteArray( bytes, 0, bytes.length );
+                callback.proFileCallback(bitmap);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+
+            }
+        });
+    }
 
 
 
