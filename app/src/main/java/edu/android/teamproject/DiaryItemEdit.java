@@ -5,7 +5,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
-import android.provider.ContactsContract;
 import android.provider.MediaStore;
 
 import android.support.v4.content.FileProvider;
@@ -26,7 +25,6 @@ import com.theartofdev.edmodo.cropper.CropImage;
 
 import java.io.File;
 import java.io.IOException;
-import java.security.PrivateKey;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -89,7 +87,7 @@ public class  DiaryItemEdit extends AppCompatActivity implements View.OnClickLis
         btnConfirm = findViewById(R.id.btnConfirm);
         btnCancel = findViewById(R.id.btnCancel);
 
-        //TedPermission 라이브러리 -> 카메라 권한 획득
+        //TedPermission 라이브러리 -> 카메라 권한 획득 추가
 
 
         btnPlusTag.setOnClickListener(new View.OnClickListener() {
@@ -120,7 +118,7 @@ public class  DiaryItemEdit extends AppCompatActivity implements View.OnClickLis
         diaryItem.setDiaryTitle(editTitle.getText().toString());
         diaryItem.setDiaryText(editText.getText().toString());
         Log.i("aaa", photoItems.toString());
-        for(int i = 0; i < photoItemLayouts.size(); i ++) {
+        for(int i = 0; i < photoItemLayouts.size(); i++) {
             Uri temp = photoItems.get(photoItemLayouts.get(i).getId());
             photoUris.add(PhotoFirebaseStorageUtil.PhotoUpload(this, temp));
         }
