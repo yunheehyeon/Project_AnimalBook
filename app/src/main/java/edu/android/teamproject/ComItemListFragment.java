@@ -13,7 +13,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -138,7 +137,7 @@ public class ComItemListFragment extends Fragment {
     }
 
     private void startComItemActivity(int i){
-        Intent intent = ComItemActivity.newIntent(getActivity(), "1");
+        Intent intent = ComItemDetailActivity.newIntent(getActivity(), "1");
         startActivity(intent);
     }
 
