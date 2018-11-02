@@ -50,7 +50,7 @@ public class MyPageEditActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
 
-        dao = MyPageDao.getMyPageInstance();
+        dao = MyPageDao.getMyPageInstance(this);
 
         editProfileItemName = findViewById(R.id.editProfileItemName);
 
@@ -222,14 +222,17 @@ public class MyPageEditActivity extends AppCompatActivity {
     }
 
     public void profileUpdate(View view) {
+
         String photoUri = PhotoFirebaseStorageUtil.PhotoUpload(this, uploadPhoto);
         List<MyPageProfile.ProfileItem> profileItems = new ArrayList<>();
+
         for(ProfileItemLayout p : profileItemLayouts) {
             TextView textView = p.findViewById(R.id.profileItem);
             EditText editText = p.findViewById(R.id.editProfileItem);
             MyPageProfile.ProfileItem profileItem = new MyPageProfile.ProfileItem(textView.getText().toString(), editText.getText().toString());
             profileItems.add(profileItem);
         }
+
         MyPageProfile myPageProfile = new MyPageProfile(photoUri, profileItems);
         dao.insert(myPageProfile);
 

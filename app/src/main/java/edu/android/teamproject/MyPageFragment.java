@@ -5,9 +5,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +17,10 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 /**
 
@@ -37,6 +43,22 @@ public class MyPageFragment extends Fragment implements MyPageDao.DataCallback {
     LinearLayout lLPostingView, lLDiaryBMView;
     private int count;
     boolean b1,b2,b3 = false;
+    //private View view;
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+
+        // Inflate the layout for this fragment
+        View view = inflater.inflate(R.layout.fragment_my_page, container, false);
+
+        return view;
+    }
     @Override
     public void onStart() {
         super.onStart();
@@ -74,19 +96,10 @@ public class MyPageFragment extends Fragment implements MyPageDao.DataCallback {
             }
         });
 
-        dao = MyPageDao.getMyPageInstance();
-
-        dao.update(this);
-
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_my_page, container, false);
-
-        return view;
+        dao = MyPageDao.getMyPageInstance(this);
+        if(dao.update() != null) {
+            showMyProfile(dao.update());
+        }
     }
 
     class myPosting extends CardView {
@@ -102,7 +115,7 @@ public class MyPageFragment extends Fragment implements MyPageDao.DataCallback {
             b1 = true;
             for (int i = 0; i < 5; i++) {
                 myPosting= new myPosting(getActivity());
-                lLPostingView = (LinearLayout) getView().findViewById(R.id.lLPostingView);
+                lLPostingView = getView().findViewById(R.id.lLPostingView);
                 lLPostingView.addView(myPosting);
             }
         } else {
@@ -132,7 +145,7 @@ public class MyPageFragment extends Fragment implements MyPageDao.DataCallback {
             b2 = true;
             for (int i = 0; i < 5; i++) {
                 myDiaryBM = new myDiaryBM(getActivity());
-                lLDiaryBMView = (LinearLayout) getView().findViewById(R.id.lLDiaryBMView);
+                lLDiaryBMView = getView().findViewById(R.id.lLDiaryBMView);
                 lLDiaryBMView.addView(myDiaryBM);
             }
         } else {
@@ -146,15 +159,20 @@ public class MyPageFragment extends Fragment implements MyPageDao.DataCallback {
     }
 
     @Override
-    public void proFileCallback(MyPageProfile myPageProfile) {
-        showMyProfile(myPageProfile);
+    public void proFileCallback() {
+        showMyProfile(dao.update());
     }
 
     @Override
-    public void proFileCallback(Bitmap bitmap) {
-        ImageView myProfileImage = getView().findViewById(R.id.imageProfile);
-        myProfileImage.setImageBitmap(bitmap);
+    public void proFileImageCallback() {
+        View view = getView();
+        if (view != null) {
+            ImageView myProfileImage = view.findViewById(R.id.imageProfile);
+            myProfileImage.setImageBitmap(dao.updateImage());
+        } else {
+        }
     }
+
     private void showMyProfile(MyPageProfile myPageProfile) {
 
         LinearLayout layout = getView().findViewById(R.id.myProfileLayout);
@@ -167,8 +185,6 @@ public class MyPageFragment extends Fragment implements MyPageDao.DataCallback {
             myProfileText.setText(p.getProfileItemText());
             layout.addView(myProfileItemLayout);
 
-
-            ImageView myProfileImage = getView().findViewById(R.id.imageProfile);
             dao.photoDownload(myPageProfile.getPhotoUri());
         }
     }

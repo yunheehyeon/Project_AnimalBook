@@ -2,6 +2,9 @@ package edu.android.teamproject;
 
 import android.content.Context;
 import android.net.Uri;
+import android.os.AsyncTask;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 
@@ -15,18 +18,19 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 
-public class DiaryItemDao implements ChildEventListener  {
+public class DiaryItemDao implements ChildEventListener {
 
     interface DiaryItemCallback{
-        void itemCallback(DiaryItem diaryItem);
+        void itemCallback();
     }
 
     private FirebaseDatabase database;
     private DatabaseReference reference;
-
+    private ArrayList<DiaryItem> diaryList = new ArrayList<>();
     private FirebaseAuth mAuth;
     private String providerId,uid,name,email;
     private Uri photoUrl;
@@ -64,45 +68,57 @@ public class DiaryItemDao implements ChildEventListener  {
                 email =  profile.getEmail();
                 photoUrl = profile.getPhotoUrl();
             }
-
         }
 
         database = FirebaseDatabase.getInstance();
         reference = database.getReference().child("DiaryItem").child(uid);
         reference.addChildEventListener(this);
+
     }
+    public ArrayList upDate(){
+        return diaryList;
+    }
+
     public void insert(DiaryItem diaryItem) {
 
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy 년 MM 월 HH 일");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy 년 MM 월 dd일");
         Date now = new Date();
         String date = formatter.format(now);
         diaryItem.setDiaryDate(date);
 
         reference.push().setValue(diaryItem);
     }
+
     @Override
-    public void onChildAdded( DataSnapshot dataSnapshot,  String s) {
+    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
         Log.i("aaa", dataSnapshot.getKey());
-        callback.itemCallback(dataSnapshot.getValue(DiaryItem.class));
+        DiaryItem diaryItem = dataSnapshot.getValue(DiaryItem.class);
+        diaryItem.setDiaryId(dataSnapshot.getKey());
+        diaryList.add(diaryItem);
+        callback.itemCallback();
     }
 
     @Override
-    public void onChildChanged( DataSnapshot dataSnapshot,  String s) {
-
-    }
-
-    @Override
-    public void onChildRemoved( DataSnapshot dataSnapshot) {
+    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
     }
 
     @Override
-    public void onChildMoved( DataSnapshot dataSnapshot,  String s) {
+    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
 
     }
 
     @Override
-    public void onCancelled( DatabaseError databaseError) {
+    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
     }
+
+    @Override
+    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+    }
+
+
+
+
 }
