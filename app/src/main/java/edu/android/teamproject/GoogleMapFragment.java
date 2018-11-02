@@ -147,6 +147,7 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback,
                         PackageManager.PERMISSION_GRANTED) {
             return;
         }
+
         mlastlocation = LocationServices.FusedLocationApi.getLastLocation(mgoogleApiClient);
         if (mlastlocation != null) {
             final double latitude = mlastlocation.getLatitude();
