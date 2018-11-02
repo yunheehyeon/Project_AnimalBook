@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity{
                     return true;
                 case R.id.navigation_map:
                     FragmentManager managerGMap = getSupportFragmentManager();
-                    GMapFragment fragmentGMap = new GMapFragment();
+                    GoogleMapFragment fragmentGMap = new GoogleMapFragment();
                     if(fragmentGMap!= null){
                         managerGMap.beginTransaction().replace(R.id.container, fragmentGMap).commit();
                     }
