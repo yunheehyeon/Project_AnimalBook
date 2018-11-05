@@ -116,6 +116,13 @@ public class ComItemDao implements ChildEventListener{
         reference.setValue((comItem.getViewCount()+1));
     }
 
+    public void commentCountUpdate(ComItem comItem){
+        reference = database.getReference().child("ComItem").child(comItem.getItemId()).child("commentCount");
+        reference.addChildEventListener(this);
+
+        reference.setValue((comItem.getCommentCount()+1));
+    }
+
     @Override
     public void onChildAdded( DataSnapshot dataSnapshot,  String s) {
         ComItem comItem = dataSnapshot.getValue(ComItem.class);
@@ -127,8 +134,6 @@ public class ComItemDao implements ChildEventListener{
 
     @Override
     public void onChildChanged( DataSnapshot dataSnapshot,  String s) {
-        Log.i("aaa","댓글 업데이트" + dataSnapshot.getKey());
-        Log.i("aaa","내용" + dataSnapshot.toString());
         ComItem comItem = dataSnapshot.getValue(ComItem.class);
         String key = dataSnapshot.getKey();
         comItem.setItemId(key);

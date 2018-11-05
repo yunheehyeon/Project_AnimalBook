@@ -58,6 +58,9 @@ public class ImageFragment extends Fragment {
         return rootView;
     }
 
-
-
+    @Override
+    public void onDestroy() {
+        // GlideApp 터지는거 처리
+        super.onDestroy();
+    }
 }

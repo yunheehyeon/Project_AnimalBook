@@ -19,7 +19,9 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-public class ComItemDetailActivity extends AppCompatActivity {
+import java.util.List;
+
+public class ComItemDetailActivity extends AppCompatActivity implements CommentDown.DataCallback {
 
     private static final String ITEM_ID = "comItemId";
     private static final int ITEM_ERROR = -1;
@@ -40,6 +42,10 @@ public class ComItemDetailActivity extends AppCompatActivity {
     private TextView textView;
     private ImageView imageView1, imageView2, imageView3;
     private ComItem comItem;
+
+    private CommentDown commentDown;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,10 +64,8 @@ public class ComItemDetailActivity extends AppCompatActivity {
         if(position != ITEM_ERROR){
             dao = ComItemDao.getComItemInstance(this);
             comItem = dao.update().get(position);
-            dao.viewCountUpdate(comItem);
+
         }
-
-
 
         textTitle.setText(comItem.getTitle());
         textUserId.setText("아이디 : " + comItem.getUserEmail());
@@ -101,25 +105,18 @@ public class ComItemDetailActivity extends AppCompatActivity {
             imageView.setPadding(8, 8, 8, 8);
         }
 
-        commentCount = comItem.getCommentCount();
-
-        for(int i = 0; i < commentCount; i++){
-            CommentItem commentItem = new CommentItem(this);
-            LinearLayout comLayout = findViewById(R.id.comItemLayout);
-            comLayout.addView(commentItem);
-        }
-
-        for(int i = 0; i < commentCount; i++){
-            CommentMasterItem commentMasterItem = new CommentMasterItem(this);
-            LinearLayout comLayout = findViewById(R.id.comItemLayout);
-            comLayout.addView(commentMasterItem);
-        }
-
         final CommentAddMenu commentAddMenu = new CommentAddMenu(this);
         LinearLayout comLayout = findViewById(R.id.comItemLayout);
         comLayout.addView(commentAddMenu);
-        commentEdText = commentAddMenu.findViewById(R.id.commentEdText);
 
+        commentEdText = commentAddMenu.findViewById(R.id.commentEdText);
+        Button btnCommentUpdate = commentAddMenu.findViewById(R.id.btnCommentUpdateM);
+        btnCommentUpdate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                commentUpdate();
+            }
+        });
 
         btncommentAdd.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -138,11 +135,35 @@ public class ComItemDetailActivity extends AppCompatActivity {
 
     }
 
-    class CommentItem extends CardView {
+    private void commentUpdate() {
 
-        private TextView comUserId;
+    }
 
-        public CommentItem(Context context) {
+    @Override
+    public void CommentCallback() {
+        List<CommentItem> commentItemList = commentDown.update();
+        commentCount = commentItemList.size();
+
+        for(int i = 0; i < commentCount; i++){
+            if(commentItemList.get(i).getCommentUserId().equals(commentDown.userEmail())){
+                CommentMasterItem commentMasterItem = new CommentMasterItem(this);
+                LinearLayout comLayout = findViewById(R.id.comItemLayout);
+                //TextView textUserEmail = comLayout.findViewById(R.id.)
+
+
+                comLayout.addView(commentMasterItem);
+            }else {
+                CommentItemLayout commentItem = new CommentItemLayout(this);
+                LinearLayout comLayout = findViewById(R.id.comItemLayout);
+                comLayout.addView(commentItem);
+            }
+        }
+
+    }
+
+    class CommentItemLayout extends CardView {
+
+        public CommentItemLayout(Context context) {
             super(context);
             LayoutInflater inflater = getLayoutInflater();
             inflater.inflate(R.layout.comment_item, this, true);
@@ -150,8 +171,6 @@ public class ComItemDetailActivity extends AppCompatActivity {
     }
 
     class CommentMasterItem extends CardView {
-
-        private TextView comUserId;
 
         public CommentMasterItem(Context context) {
             super(context);
@@ -162,8 +181,6 @@ public class ComItemDetailActivity extends AppCompatActivity {
 
     class CommentAddMenu extends LinearLayout {
 
-        private TextView comUserId;
-
         public CommentAddMenu(Context context) {
             super(context);
             LayoutInflater inflater = getLayoutInflater();
@@ -171,6 +188,9 @@ public class ComItemDetailActivity extends AppCompatActivity {
         }
     }
 
-
-
+    @Override
+    protected void onDestroy() {
+        dao.viewCountUpdate(comItem);
+        super.onDestroy();
+    }
 }
