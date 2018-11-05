@@ -49,23 +49,11 @@ public class ImageFragment extends Fragment {
         storageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
-//                GlideApp.with(getActivity())
-//                        .load(uri)
-//                        .into(imageView);
+                GlideApp.with(getActivity())
+                        .load(uri)
+                        .into(imageView);
             }
         });
-
-//        switch (getArguments().getInt(POSITION)) {
-//            case 1:
-//                imageView.setImageResource(R.drawable.n1);
-//                break;
-//            case 2:
-//                imageView.setImageResource(R.drawable.n2);
-//                break;
-//            case 3:
-//                imageView.setImageResource(R.drawable.n3);
-//                break;
-//        }
 
         return rootView;
     }

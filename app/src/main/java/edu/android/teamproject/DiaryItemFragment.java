@@ -139,7 +139,7 @@ public class DiaryItemFragment extends Fragment implements DiaryItemDao.DiaryIte
         @Override
         public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, final int i) {
             DiaryItemViewHolder holder = (DiaryItemViewHolder) viewHolder;
-            ImagesPagerAdapter pagerAdapter = new ImagesPagerAdapter(getActivity().getSupportFragmentManager(), i);
+            ImagesPagerAdapter pagerAdapter = new ImagesPagerAdapter(getChildFragmentManager(), i);
             holder.viewPager.setId(i+1000);
             holder.viewPager.setAdapter(pagerAdapter);
             holder.text.setText(diaryList.get(i).getDiaryText());
@@ -200,8 +200,9 @@ public class DiaryItemFragment extends Fragment implements DiaryItemDao.DiaryIte
         @Override
         public Fragment getItem(int position) {
             String fileRef = diaryList.get(diaryNumber).getDiaryImages().get(position);
-
-            return ImageFragment.newInstance(fileRef,position + 1);
+            Fragment fragment = ImageFragment.newInstance(fileRef,position + 1);
+            Log.i("aaa", "ImageView = " + String.valueOf(fragment.hashCode()));
+            return fragment;
         }
 
         @Override

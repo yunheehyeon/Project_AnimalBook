@@ -43,16 +43,14 @@ public class DiaryItemDao implements ChildEventListener {
 
     public static DiaryItemDao getDiaryItemInstance(Object object){
         if(diaryItemInstance == null){
-            diaryItemInstance = new DiaryItemDao(object);
+            diaryItemInstance = new DiaryItemDao();
         }
-
+        if(object instanceof DiaryItemCallback){
+            diaryItemInstance.callback = (DiaryItemCallback) object;
+        }
         return diaryItemInstance;
     }
-    private DiaryItemDao(Object object){
-        if(object instanceof DiaryItemCallback){
-            callback = (DiaryItemCallback) object;
-        }
-
+    private DiaryItemDao(){
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
@@ -81,7 +79,7 @@ public class DiaryItemDao implements ChildEventListener {
 
     public void insert(DiaryItem diaryItem) {
 
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy 년 MM 월 dd일");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         Date now = new Date();
         String date = formatter.format(now);
         diaryItem.setDiaryDate(date);

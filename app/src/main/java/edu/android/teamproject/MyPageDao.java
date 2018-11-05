@@ -55,8 +55,9 @@ public class MyPageDao implements ChildEventListener {
         if(myPageInstance == null){
             myPageInstance = new MyPageDao(object);
         }
-
-        myPageInstance.callback = (DataCallback) object;
+        if(object instanceof DataCallback) {
+            myPageInstance.callback = (DataCallback) object;
+        }
         return myPageInstance;
     }
 
