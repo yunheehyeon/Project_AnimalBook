@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -88,6 +89,9 @@ public class ComItemDao implements ChildEventListener{
     }
 
     public void insert(ComItem comItem) {
+        database = FirebaseDatabase.getInstance();
+        reference = database.getReference().child("ComItem");
+        reference.addChildEventListener(this);
 
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         Date now = new Date();
@@ -104,6 +108,14 @@ public class ComItemDao implements ChildEventListener{
         return comItems;
     }
 
+
+    public void viewCountUpdate(ComItem comItem){
+        reference = database.getReference().child("ComItem").child(comItem.getItemId()).child("viewCount");
+        reference.addChildEventListener(this);
+
+        reference.setValue((comItem.getViewCount()+1));
+    }
+
     @Override
     public void onChildAdded( DataSnapshot dataSnapshot,  String s) {
         ComItem comItem = dataSnapshot.getValue(ComItem.class);
@@ -115,7 +127,17 @@ public class ComItemDao implements ChildEventListener{
 
     @Override
     public void onChildChanged( DataSnapshot dataSnapshot,  String s) {
-
+        Log.i("aaa","댓글 업데이트" + dataSnapshot.getKey());
+        Log.i("aaa","내용" + dataSnapshot.toString());
+        ComItem comItem = dataSnapshot.getValue(ComItem.class);
+        String key = dataSnapshot.getKey();
+        comItem.setItemId(key);
+        for(int i = 0; i < comItems.size(); i++){
+            if(comItems.get(i).getItemId().equals(key)){
+                comItems.set(i, comItem);
+            }
+        }
+        callback.dateCallback();
     }
 
     @Override

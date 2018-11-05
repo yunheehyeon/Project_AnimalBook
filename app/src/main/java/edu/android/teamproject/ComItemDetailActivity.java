@@ -58,7 +58,10 @@ public class ComItemDetailActivity extends AppCompatActivity {
         if(position != ITEM_ERROR){
             dao = ComItemDao.getComItemInstance(this);
             comItem = dao.update().get(position);
+            dao.viewCountUpdate(comItem);
         }
+
+
 
         textTitle.setText(comItem.getTitle());
         textUserId.setText("아이디 : " + comItem.getUserEmail());
@@ -98,7 +101,7 @@ public class ComItemDetailActivity extends AppCompatActivity {
             imageView.setPadding(8, 8, 8, 8);
         }
 
-        commentCount = 3;
+        commentCount = comItem.getCommentCount();
 
         for(int i = 0; i < commentCount; i++){
             CommentItem commentItem = new CommentItem(this);
