@@ -18,10 +18,14 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MainActivity extends AppCompatActivity{
+    GoogleMap mMap;
+    SupportMapFragment mapFragment;
+    public static final int REQ_CODE = 1000;
 
     private BottomNavigationView.OnNavigationItemSelectedListener itemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -45,10 +49,11 @@ public class MainActivity extends AppCompatActivity{
                     return true;
                 case R.id.navigation_map:
                     FragmentManager managerGMap = getSupportFragmentManager();
-                    GMapFragment fragmentGMap = new GMapFragment();
-                    if(fragmentGMap!= null){
-                        managerGMap.beginTransaction().replace(R.id.container, fragmentGMap).commit();
+                    GmapFragment gmapFragment = new GmapFragment();
+                    if(gmapFragment!= null){
+                        managerGMap.beginTransaction().replace(R.id.container, gmapFragment).commit();
                     }
+
                     return true;
                 case R.id.navigation_my:
                     FragmentManager managerMyPage = getSupportFragmentManager();
@@ -81,7 +86,6 @@ public class MainActivity extends AppCompatActivity{
         if (diaryFragment != null) {
             diaryManager.beginTransaction().replace(R.id.container, diaryFragment).commit();
         }
-
     }
 
 }

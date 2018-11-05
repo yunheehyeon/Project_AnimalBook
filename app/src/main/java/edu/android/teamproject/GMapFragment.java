@@ -1,33 +1,36 @@
 package edu.android.teamproject;
 
 
+import android.content.Context;
+import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapView;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
+import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.ListView;
+import android.widget.TextView;
 
 
 /**
  * A simple {@link Fragment} subclass.
  */
+public class GmapFragment extends Fragment {
+    Button btn;
+    private ListView listView;
 
-public class GMapFragment extends Fragment {
+//    public class Task extends AsyncTask<String, Void, String> {
+//
+//        @Override
+//        protected String doInBackground(String... strings) {
+//            return null;
+//        }
+//    }
 
-    private GoogleMap googleMap;
-    private MapView mapView;
-
-    public GMapFragment() {
+    public GmapFragment() {
         // Required empty public constructor
     }
 
@@ -35,32 +38,34 @@ public class GMapFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
 
         View view = inflater.inflate(R.layout.fragment_gmap, container, false);
 
-//        MapView mapView = view.findViewById(R.id.map);
-////        mapView.onCreate(savedInstanceState);
-////        mapView.onResume();
-//        mapView.getMapAsync(this);
-//        mapView.onStart();
+        btn = view.findViewById(R.id.btnStartGmapActivity);
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startGmapActivity();
+            }
+        });
+
+        listView = view.findViewById(R.id.listViewHospital);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+            }
+        });
+
+
         return view;
     }
 
-//    @Override
-//    public void onMapReady(GoogleMap googleMap) {
-//       googleMap = googleMap;
-//
-////        LatLng SEOUL = new LatLng(37.56, 126.97);
-////        MarkerOptions markerOptions = new MarkerOptions();
-////        markerOptions.position(SEOUL);
-////        markerOptions.title("서울");
-////        markerOptions.snippet("한국의 수도");
-////        googleMap.addMarker(markerOptions);
-////
-////        googleMap.moveCamera(CameraUpdateFactory.newLatLng(SEOUL));
-////        googleMap.animateCamera(CameraUpdateFactory.zoomTo(10));
-//    }
+    private void startGmapActivity() {
+        Intent intent = new Intent(getActivity(), GmapActivity.class);
+
+        startActivity(intent);
+    }
+
 
 }
-

@@ -43,7 +43,7 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_google_map, container, false);
 
-        MapView mapView = view.findViewById(R.id.map);
+//        MapView mapView = view.findViewById(R.id.map);
         mapView.getMapAsync(this);
 
         return view;
