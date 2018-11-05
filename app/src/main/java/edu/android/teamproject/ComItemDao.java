@@ -12,10 +12,17 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class ComItemDao implements ChildEventListener{
 
+    interface ComItemCallback{
+        void dateCallback();
+    }
+
+    private ComItemCallback callback;
 
     private FirebaseDatabase database;
     private DatabaseReference reference;
@@ -25,13 +32,17 @@ public class ComItemDao implements ChildEventListener{
     private Uri photoUrl;
     private UserInfo profile;
 
+    private List<ComItem> comItems = new ArrayList<>();
+
     private static ComItemDao comItemDaoInstance;
 
     public static ComItemDao getComItemInstance(Object object){
         if(comItemDaoInstance == null){
             comItemDaoInstance = new ComItemDao();
         }
-
+        if(object instanceof ComItemCallback){
+            comItemDaoInstance.callback = (ComItemCallback) object;
+        }
         return comItemDaoInstance;
     }
 
@@ -59,20 +70,28 @@ public class ComItemDao implements ChildEventListener{
 
     public void insert(ComItem comItem) {
 
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy 년 MM 월 HH 일");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         Date now = new Date();
         String date = formatter.format(now);
         comItem.setDate(date);
-
+        comItem.setUserEmail(email.split("@")[0]);
         comItem.setUserId(uid);
         comItem.setViewCount(0);
 
         reference.push().setValue(comItem);
     }
 
+    public List<ComItem> update(){
+        return comItems;
+    }
+
     @Override
     public void onChildAdded( DataSnapshot dataSnapshot,  String s) {
+        ComItem comItem = dataSnapshot.getValue(ComItem.class);
+        comItem.setItemId(dataSnapshot.getKey());
+        comItems.add(comItem);
 
+        callback.dateCallback();
     }
 
     @Override

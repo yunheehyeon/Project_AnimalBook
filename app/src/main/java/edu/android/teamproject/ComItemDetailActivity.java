@@ -10,33 +10,70 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class ComItemDetailActivity extends AppCompatActivity {
 
-    public static final String ITEM_ID = "comItemId";
+    private static final String ITEM_ID = "comItemId";
+    private static final int ITEM_ERROE = -1;
 
-    private Button btncommentAdd;
-
-    public static Intent newIntent(Context context, String comid){
+    public static Intent newIntent(Context context, int comId){
         Intent intent = new Intent(context, ComItemDetailActivity.class);
-        intent.putExtra(ITEM_ID, comid);
+        intent.putExtra(ITEM_ID, comId);
 
         return  intent;
     }
 
+    private ComItemDao dao;
+
+    private Button btncommentAdd;
     private int commentCount;
     private EditText commentEdText;
-
-
+    private TextView textTitle, textUserId, textDate, textCommentCount, textTag, textViewCount;
+    private TextView textView;
+    private ImageView imageView1, imageView2, imageView3;
+    private ComItem comItem;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_com_item);
 
-
+        textTitle = findViewById(R.id.comItemTitle);
+        textUserId = findViewById(R.id.comItemUserId);
+        textDate = findViewById(R.id.comItemDate);
+        textView = findViewById(R.id.comItemTitle);
+        textTag = findViewById(R.id.comItemTag);
+        textCommentCount = findViewById(R.id.itemCommentCount);
         btncommentAdd = findViewById(R.id.btnCommentWrite);
+        imageView1 = findViewById(R.id.comImage1);
+        imageView2 = findViewById(R.id.comImage2);
+        imageView3 = findViewById(R.id.comImage3);
+
+        int position = getIntent().getIntExtra(ITEM_ID, ITEM_ERROE);
+        if(position != ITEM_ERROE){
+            dao = ComItemDao.getComItemInstance(this);
+            comItem = dao.update().get(position);
+        }
+
+        textTitle.setText(comItem.getTitle());
+        textUserId.setText(comItem.getUserId());
+        textDate.setText(comItem.getDate());
+        textView.setText(comItem.getText());
+        textViewCount.setText("조회수 : " + String.valueOf(comItem.getViewCount()));
+        textCommentCount.setText("댓글 : " + String.valueOf(comItem.getCommentCount()));
+        StringBuilder builder = new StringBuilder();
+        builder.append("Tag : ");
+        for(String s : comItem.getTag()) {
+            if(s != null) {
+                builder.append(s);
+                textTag.setText(builder);
+            }
+            builder.append(", ");
+        }
+
+        
 
         commentCount = 3;
 
