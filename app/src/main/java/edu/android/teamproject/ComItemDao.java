@@ -16,6 +16,7 @@ import java.util.Date;
 
 public class ComItemDao implements ChildEventListener{
 
+
     private FirebaseDatabase database;
     private DatabaseReference reference;
 
@@ -24,11 +25,9 @@ public class ComItemDao implements ChildEventListener{
     private Uri photoUrl;
     private UserInfo profile;
 
-
-
     private static ComItemDao comItemDaoInstance;
 
-    public static ComItemDao getComItemInstance(){
+    public static ComItemDao getComItemInstance(Object object){
         if(comItemDaoInstance == null){
             comItemDaoInstance = new ComItemDao();
         }

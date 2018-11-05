@@ -72,7 +72,7 @@ public class ComItemEditActivity extends AppCompatActivity implements View.OnCli
         setTitle("커뮤니티 글쓰기");
         setContentView(R.layout.activity_diary_item_edit);
 
-        dao = ComItemDao.getComItemInstance();
+        dao = ComItemDao.getComItemInstance(this);
 
         editTitle = findViewById(R.id.editTitle);
         editText = findViewById(R.id.editText);

@@ -1,5 +1,6 @@
 package edu.android.teamproject;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -7,6 +8,7 @@ import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -20,12 +22,18 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
-public class MyPageDao {
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import static com.facebook.FacebookSdk.getApplicationContext;
+
+public class MyPageDao implements ChildEventListener {
 
     interface DataCallback{
-        void proFileCallback(MyPageProfile myPageProfile);
-        void proFileCallback(Bitmap bitmap);
+        void proFileCallback();
+        void proFileImageCallback();
     }
 
     private DataCallback callback;
@@ -40,16 +48,20 @@ public class MyPageDao {
     private String name;
     private Uri photoUrl;
 
+    private MyPageProfile myPageProfile;
+    private Bitmap myPageImage;
 
-    public static MyPageDao getMyPageInstance(){
+    public static MyPageDao getMyPageInstance(Object object){
         if(myPageInstance == null){
-            myPageInstance = new MyPageDao();
+            myPageInstance = new MyPageDao(object);
         }
-
+        if(object instanceof DataCallback) {
+            myPageInstance.callback = (DataCallback) object;
+        }
         return myPageInstance;
     }
 
-    private MyPageDao() {
+    private MyPageDao(Object object) {
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
@@ -68,84 +80,98 @@ public class MyPageDao {
 
         }
 
+        database = FirebaseDatabase.getInstance();
+        messageReference = database.getReference().child("MyPage");
+        messageReference.addChildEventListener(this);
+
     }
     public void insert(MyPageProfile myPageProfile){
-        FirebaseTask firebaseTask = new FirebaseTask();
-        firebaseTask.execute(myPageProfile);
+        messageReference.child(uid).setValue(myPageProfile);
     }
 
-    private MyPageProfile myPageProfile;
-
-    public void update(DataCallback dataCallback){
-        callback = dataCallback;
-
-        FirebaseTask firebaseTask = new FirebaseTask();
-        firebaseTask.execute();
+    public MyPageProfile update(){
+        return myPageProfile;
     }
 
-    class FirebaseTask extends AsyncTask<MyPageProfile, MyPageProfile, MyPageProfile> implements ChildEventListener{
+    public Bitmap updateImage(){
+        return myPageImage;
+    }
 
-        @Override
-        protected MyPageProfile doInBackground(MyPageProfile... myPageProfiles) {
-            database = FirebaseDatabase.getInstance();
-            messageReference = database.getReference().child("MyPage");
-            messageReference.addChildEventListener(this);
+    @Override
+    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
-            if(myPageProfiles.length != 0) {
-                messageReference.child(uid).setValue(myPageProfiles[0]);
-            }else {
-
-
-            }
-            return null;
+        if(uid.equals(dataSnapshot.getKey())){
+            myPageProfile = dataSnapshot.getValue(MyPageProfile.class);
+            callback.proFileCallback();
         }
-        @Override
-        protected void onPostExecute(MyPageProfile myPageProfile) {
+    }
 
-        }
+    @Override
+    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
-        @Override
-        public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-            if(uid.equals(dataSnapshot.getKey())){
-                myPageProfile = dataSnapshot.getValue(MyPageProfile.class);
-                callback.proFileCallback(myPageProfile);
-            }
-        }
+    }
 
-        @Override
-        public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-            Log.i("aaa", dataSnapshot.getKey());
-        }
+    @Override
+    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
 
-        @Override
-        public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+    }
 
-        }
+    @Override
+    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
-        @Override
-        public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+    }
 
-        }
+    @Override
+    public void onCancelled(@NonNull DatabaseError databaseError) {
 
-        @Override
-        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-        }
     }
 
     static Bitmap bitmap = null;
+
+    public String photoUpload(Context context, Uri uri){
+        //storage
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+
+        //Unique한 파일명을 만들자.
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMHH_mmss");
+        Date now = new Date();
+        String filename = formatter.format(now) + ".png";
+
+        //storage 주소와 폴더 파일명을 지정해 준다.
+        StorageReference storageRef = storage.getReferenceFromUrl("gs://timproject-14aaa.appspot.com").child("images/" + filename);
+        //올라가거라...
+        storageRef.putFile(uri)
+                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        Toast.makeText(getApplicationContext(), "업로드 완료!", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                //실패시
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(getApplicationContext(), "업로드 실패!", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+        return filename;
+    }
 
     public void photoDownload(final String fileRef){
 
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReferenceFromUrl("gs://timproject-14aaa.appspot.com").child("images/" + fileRef);
+
         //Url을 다운받기
         final long ONE_MEGABYTE = 1024 * 1024;
         storageRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
             @Override
             public void onSuccess(byte[] bytes) {
                 Bitmap bitmap = BitmapFactory.decodeByteArray( bytes, 0, bytes.length );
-                callback.proFileCallback(bitmap);
+                myPageImage = bitmap;
+                Log.i("aaa", "callback:" + callback);
+                callback.proFileImageCallback();
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
