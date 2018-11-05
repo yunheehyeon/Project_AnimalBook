@@ -78,6 +78,8 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback,
 
         mMapView = (MapView) rootView.findViewById(R.id.mapView);
         mMapView.onCreate(savedInstanceState);
+//        MapView mapView = view.findViewById(R.id.map);
+        mapView.getMapAsync(this);
 
 
         try {
@@ -230,71 +232,6 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback,
 
     }
 
-    private void buildGoogleApiClient() {
-        mgoogleApiClient = new GoogleApiClient.Builder(getActivity())
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
-                .build();
-        mgoogleApiClient.connect();
-    }
-
-    private void creatLocationRequest() {
-        mlocationRequest = new LocationRequest();
-        mlocationRequest.setInterval(UPDATE_INTERVAL);
-        mlocationRequest.setFastestInterval(FASTEST_INTERVAL);
-        mlocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        mlocationRequest.setSmallestDisplacement(DISPLACEMENT);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        mMapView.onResume();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        mMapView.onPause();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        mMapView.onDestroy();
-    }
-
-    @Override
-    public void onLowMemory() {
-        super.onLowMemory();
-        mMapView.onLowMemory();
-    }
-
-
-    @Override
-    public void onConnected(@Nullable Bundle bundle) {
-
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
-    }
-
-    @Override
-    public void onLocationChanged(Location location) {
-
-    }
-
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
 
     }
 }
-
