@@ -1,13 +1,17 @@
 package edu.android.teamproject;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.widget.Toast;
 
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
@@ -16,16 +20,25 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+
+import static com.facebook.FacebookSdk.getApplicationContext;
 
 
 public class DiaryItemDao implements ChildEventListener {
 
     interface DiaryItemCallback{
         void itemCallback();
+    }
+    interface EndCallback{
+        void endUpload();
     }
 
     private FirebaseDatabase database;
@@ -38,6 +51,7 @@ public class DiaryItemDao implements ChildEventListener {
 
 
     private DiaryItemCallback callback;
+    private EndCallback endCallback;
 
     private static DiaryItemDao diaryItemInstance;
 
@@ -48,6 +62,10 @@ public class DiaryItemDao implements ChildEventListener {
         if(object instanceof DiaryItemCallback){
             diaryItemInstance.callback = (DiaryItemCallback) object;
         }
+        if(object instanceof EndCallback){
+            diaryItemInstance.endCallback = (EndCallback) object;
+        }
+
         return diaryItemInstance;
     }
     private DiaryItemDao(){
@@ -115,8 +133,50 @@ public class DiaryItemDao implements ChildEventListener {
     public void onCancelled(@NonNull DatabaseError databaseError) {
 
     }
+    public static final String diary = "Diary/";
+    private int minTerm = 0;
+    public List<String> photoUpload(Context context, final List<Uri> uris) {
 
+        final ProgressDialog progressDialog = new ProgressDialog(
+                context);
 
+        progressDialog.setMessage("저장중입니다.");
+        progressDialog.show();
+
+        List<String> filenames = new ArrayList<>();
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+
+        StorageReference storageRef = storage.getReferenceFromUrl("gs://timproject-14aaa.appspot.com");
+
+        for(Uri uri : uris) {
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd_mmss");
+            Date now = new Date();
+            String filename = formatter.format(now)+ minTerm + ".png";
+
+            filenames.add(filename);
+            storageRef.child(diary + filename).putFile(uri)
+                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            if(uris.size() == minTerm) {
+                                progressDialog.dismiss();
+                                endCallback.endUpload();
+                            }
+                        }
+                    })
+                    //실패시
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(getApplicationContext(), "업로드 실패!", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
+            minTerm++;
+        }
+
+        return filenames;
+    }
 
 
 }

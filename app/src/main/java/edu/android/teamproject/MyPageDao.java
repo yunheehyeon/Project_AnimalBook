@@ -1,5 +1,6 @@
 package edu.android.teamproject;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -35,8 +36,13 @@ public class MyPageDao implements ChildEventListener {
         void proFileCallback();
         void proFileImageCallback();
     }
+    interface EndCallback{
+        void endUpload();
+    }
+
 
     private DataCallback callback;
+    private EndCallback endCallback;
 
     private FirebaseDatabase database;
     private DatabaseReference messageReference; // 테이블 주소
@@ -55,8 +61,13 @@ public class MyPageDao implements ChildEventListener {
         if(myPageInstance == null){
             myPageInstance = new MyPageDao(object);
         }
+
         if(object instanceof DataCallback) {
             myPageInstance.callback = (DataCallback) object;
+        }
+
+        if(object instanceof EndCallback){
+            myPageInstance.endCallback = (EndCallback) object;
         }
         return myPageInstance;
     }
@@ -125,26 +136,30 @@ public class MyPageDao implements ChildEventListener {
     public void onCancelled(@NonNull DatabaseError databaseError) {
 
     }
-
-    static Bitmap bitmap = null;
+    private String myPage = "Profile/";
 
     public String photoUpload(Context context, Uri uri){
-        //storage
+        final ProgressDialog progressDialog = new ProgressDialog(
+                context);
+
+        progressDialog.setMessage("저장중입니다.");
+        progressDialog.show();
+
         FirebaseStorage storage = FirebaseStorage.getInstance();
 
-        //Unique한 파일명을 만들자.
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMHH_mmss");
         Date now = new Date();
         String filename = formatter.format(now) + ".png";
 
-        //storage 주소와 폴더 파일명을 지정해 준다.
-        StorageReference storageRef = storage.getReferenceFromUrl("gs://timproject-14aaa.appspot.com").child("images/" + filename);
-        //올라가거라...
+
+        StorageReference storageRef = storage.getReferenceFromUrl("gs://timproject-14aaa.appspot.com").child(myPage + filename);
         storageRef.putFile(uri)
                 .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        progressDialog.dismiss();
                         Toast.makeText(getApplicationContext(), "업로드 완료!", Toast.LENGTH_SHORT).show();
+                        endCallback.endUpload();
                     }
                 })
                 //실패시
@@ -161,7 +176,7 @@ public class MyPageDao implements ChildEventListener {
     public void photoDownload(final String fileRef){
 
         FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference storageRef = storage.getReferenceFromUrl("gs://timproject-14aaa.appspot.com").child("images/" + fileRef);
+        StorageReference storageRef = storage.getReferenceFromUrl("gs://timproject-14aaa.appspot.com").child(myPage + fileRef);
 
         //Url을 다운받기
         final long ONE_MEGABYTE = 1024 * 1024;

@@ -2,6 +2,7 @@ package edu.android.teamproject;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
@@ -14,10 +15,14 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
 public class ComItemDetailActivity extends AppCompatActivity {
 
     private static final String ITEM_ID = "comItemId";
-    private static final int ITEM_ERROE = -1;
+    private static final int ITEM_ERROR = -1;
 
     public static Intent newIntent(Context context, int comId){
         Intent intent = new Intent(context, ComItemDetailActivity.class);
@@ -43,23 +48,21 @@ public class ComItemDetailActivity extends AppCompatActivity {
         textTitle = findViewById(R.id.comItemTitle);
         textUserId = findViewById(R.id.comItemUserId);
         textDate = findViewById(R.id.comItemDate);
-        textView = findViewById(R.id.comItemTitle);
+        textView = findViewById(R.id.comItemText);
         textTag = findViewById(R.id.comItemTag);
         textCommentCount = findViewById(R.id.itemCommentCount);
+        textViewCount = findViewById(R.id.comItemViewCount);
         btncommentAdd = findViewById(R.id.btnCommentWrite);
-        imageView1 = findViewById(R.id.comImage1);
-        imageView2 = findViewById(R.id.comImage2);
-        imageView3 = findViewById(R.id.comImage3);
 
-        int position = getIntent().getIntExtra(ITEM_ID, ITEM_ERROE);
-        if(position != ITEM_ERROE){
+        int position = getIntent().getIntExtra(ITEM_ID, ITEM_ERROR);
+        if(position != ITEM_ERROR){
             dao = ComItemDao.getComItemInstance(this);
             comItem = dao.update().get(position);
         }
 
         textTitle.setText(comItem.getTitle());
-        textUserId.setText(comItem.getUserId());
-        textDate.setText(comItem.getDate());
+        textUserId.setText("아이디 : " + comItem.getUserEmail());
+        textDate.setText("등록일 : " + comItem.getDate());
         textView.setText(comItem.getText());
         textViewCount.setText("조회수 : " + String.valueOf(comItem.getViewCount()));
         textCommentCount.setText("댓글 : " + String.valueOf(comItem.getCommentCount()));
@@ -73,7 +76,27 @@ public class ComItemDetailActivity extends AppCompatActivity {
             builder.append(", ");
         }
 
-        
+        int temp = 0;
+
+        for(String fileName : comItem.getImages()){
+
+            final ImageView imageView = new ImageView(this);
+            FirebaseStorage storage = FirebaseStorage.getInstance();
+            StorageReference storageRef = storage.
+                    getReferenceFromUrl("gs://timproject-14aaa.appspot.com").child(ComItemDao.community + fileName);
+
+            storageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                @Override
+                public void onSuccess(Uri uri) {
+                    GlideApp.with(ComItemDetailActivity.this)
+                            .load(uri)
+                            .into(imageView);
+                }
+            });
+            LinearLayout imageLayout = findViewById(R.id.comImageLayout);
+            imageLayout.addView(imageView);
+            imageView.setPadding(8, 8, 8, 8);
+        }
 
         commentCount = 3;
 

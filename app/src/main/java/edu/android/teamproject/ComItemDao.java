@@ -1,7 +1,13 @@
 package edu.android.teamproject;
 
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.net.Uri;
+import android.support.annotation.NonNull;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
@@ -10,19 +16,28 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static com.facebook.FacebookSdk.getApplicationContext;
+
 public class ComItemDao implements ChildEventListener{
 
     interface ComItemCallback{
         void dateCallback();
     }
+    interface EndCallback{
+        void endUpload();
+    }
 
     private ComItemCallback callback;
+    private EndCallback endCallback;
 
     private FirebaseDatabase database;
     private DatabaseReference reference;
@@ -43,6 +58,10 @@ public class ComItemDao implements ChildEventListener{
         if(object instanceof ComItemCallback){
             comItemDaoInstance.callback = (ComItemCallback) object;
         }
+        if(object instanceof EndCallback){
+            comItemDaoInstance.endCallback = (EndCallback) object;
+        }
+
         return comItemDaoInstance;
     }
 
@@ -112,6 +131,49 @@ public class ComItemDao implements ChildEventListener{
     @Override
     public void onCancelled( DatabaseError databaseError) {
 
+    }
+
+    public static final String community = "Community/";
+    private int minTerm = 0;
+    public List<String> photoUpload(Context context, final List<Uri> uris) {
+
+        final ProgressDialog progressDialog = new ProgressDialog(
+                context);
+
+        progressDialog.setMessage("저장중입니다.");
+        progressDialog.show();
+
+        List<String> filenames = new ArrayList<>();
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReferenceFromUrl("gs://timproject-14aaa.appspot.com");
+        for(Uri uri : uris) {
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd_mmss");
+            Date now = new Date();
+            String filename = formatter.format(now)+ minTerm + ".png";
+
+            filenames.add(filename);
+            storageRef.child(community + filename).putFile(uri)
+                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            if(uris.size() == minTerm) {
+                                progressDialog.dismiss();
+                                endCallback.endUpload();
+                            }
+                        }
+                    })
+                    //실패시
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(getApplicationContext(), "업로드 실패!", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
+            minTerm++;
+        }
+
+        return filenames;
     }
 
 }

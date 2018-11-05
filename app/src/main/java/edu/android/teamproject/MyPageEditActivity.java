@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class MyPageEditActivity extends AppCompatActivity {
+public class MyPageEditActivity extends AppCompatActivity implements MyPageDao.EndCallback {
 
     private static final int PIC_FROM_CAMERA = 0;
     private static final int PICK_FROM_ALBUM = 1;
@@ -222,8 +222,7 @@ public class MyPageEditActivity extends AppCompatActivity {
     }
 
     public void profileUpdate(View view) {
-
-        String photoUri = PhotoFirebaseStorageUtil.PhotoUpload(this, uploadPhoto);
+        String photoUri = dao.photoUpload(this, uploadPhoto);
         List<MyPageProfile.ProfileItem> profileItems = new ArrayList<>();
 
         for(ProfileItemLayout p : profileItemLayouts) {
@@ -236,6 +235,11 @@ public class MyPageEditActivity extends AppCompatActivity {
         MyPageProfile myPageProfile = new MyPageProfile(photoUri, profileItems);
         dao.insert(myPageProfile);
 
+    }
+
+    @Override
+    public void endUpload() {
+        finish();
     }
 
 

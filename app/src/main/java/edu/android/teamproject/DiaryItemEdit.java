@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class  DiaryItemEdit extends AppCompatActivity implements View.OnClickListener {
+public class  DiaryItemEdit extends AppCompatActivity implements View.OnClickListener, DiaryItemDao.EndCallback {
 
     private static final int PIC_FROM_CAMERA = 0;
     private static final int PICK_FROM_ALBUM = 1;
@@ -135,13 +135,16 @@ public class  DiaryItemEdit extends AppCompatActivity implements View.OnClickLis
         for(int i = 0; i < photoItemLayouts.size(); i++) {
             temp.add(photoItems.get(photoItemLayouts.get(i).getId()));
         }
-        //photoUris.add(PhotoFirebaseStorageUtil.PhotoUpload(this, temp));
-        diaryItem.setDiaryImages(PhotoFirebaseStorageUtil.PhotoUpload(this, temp));
+        diaryItem.setDiaryImages(dao.photoUpload(this, temp));
         diaryItem.setDiaryTag(tagTexts);
 
         dao.insert(diaryItem);
     }
 
+    @Override
+    public void endUpload() {
+        finish();
+    }
 
     private void addTagItem() {
         if(tagNum < MAX_TAG_ITEM) {
@@ -317,6 +320,8 @@ public class  DiaryItemEdit extends AppCompatActivity implements View.OnClickLis
             });
         }
     }
+
+
 
 
     class TagItem extends LinearLayout {
