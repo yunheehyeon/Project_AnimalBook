@@ -74,4 +74,16 @@ public class DiaryItem {
     public void setDiaryId(String diaryId) {
         this.diaryId = diaryId;
     }
+
+    @Override
+    public String toString() {
+        return "DiaryItem{" +
+                "diaryTitle='" + diaryTitle + '\'' +
+                ", diaryImages=" + diaryImages +
+                ", diaryText='" + diaryText + '\'' +
+                ", diaryTag=" + diaryTag +
+                ", diaryDate='" + diaryDate + '\'' +
+                ", diaryId='" + diaryId + '\'' +
+                '}';
+    }
 }

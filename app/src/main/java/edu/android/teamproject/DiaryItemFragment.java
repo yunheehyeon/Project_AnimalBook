@@ -2,8 +2,7 @@ package edu.android.teamproject;
 
 
 import android.content.Intent;
-import android.content.Context;
-import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -13,14 +12,17 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -28,32 +30,24 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import java.util.ArrayList;
-
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class DiaryItemFragment extends Fragment {
+public class DiaryItemFragment extends Fragment implements DiaryItemDao.DiaryItemCallback {
 
-    private ViewPager viewPager;
-    private ImageView imageView;
-    private TextView text, textDate, textTag;
-    private Button btnFavorites, btnShare, btnUpdate, btnDelete ;
     private FloatingActionButton btnInsert;
-    private ArrayList<DiaryItem> diaryList;
+    private ArrayList<DiaryItem> diaryList = new ArrayList<>();
+    private RecyclerView recyclerView;
+    private DiaryItemAdapter adapter;
 
-
-
-    HashMap<Integer, Integer> mViewPagerState = new HashMap<>();
+    private static HashMap<Integer, Integer> mViewPagerState = new HashMap<>();
 
     private DiaryItemDao dao;
-
 
     public DiaryItemFragment() {
         // Required empty public constructor
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -65,7 +59,7 @@ public class DiaryItemFragment extends Fragment {
         btnInsert.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startDiaryItemEdit();
+                startDiaryItemEdit(-1);
             }
         });
 
@@ -81,22 +75,32 @@ public class DiaryItemFragment extends Fragment {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String getTime = simpleDateFormat.format(date);
 
-        List<String> tag = new ArrayList<>();
 
+        dao = DiaryItemDao.getDiaryItemInstance(this);
+        diaryList = dao.upDate();
         View view = getView();
-
-        RecyclerView recyclerView = view.findViewById(R.id.diaryRecycleView);
+        recyclerView = view.findViewById(R.id.diaryRecycleView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        DiaryItemAdapter adapter = new DiaryItemAdapter();
+        adapter = new DiaryItemAdapter();
         recyclerView.setAdapter(adapter);
         recyclerView.setHasFixedSize(true);
+    }
 
-
+    @Override
+    public void itemCallback() {
+        diaryList = dao.upDate();
+        Log.i("aaa", diaryList.toString());
+        adapter.notifyDataSetChanged();
     }
 
     class DiaryItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         class DiaryItemViewHolder extends RecyclerView.ViewHolder {
+
+            private ViewPager viewPager;
+            private TextView text, textDate, textTag;
+            private Button btnFavorites, btnShare, btnUpdate, btnDelete ;
+
 
             public DiaryItemViewHolder(@NonNull View itemview) {
                 super(itemview);
@@ -104,18 +108,11 @@ public class DiaryItemFragment extends Fragment {
                 text = itemview.findViewById(R.id.comItemTag);
                 textDate = itemview.findViewById(R.id.textDate);
                 textTag = itemview.findViewById(R.id.textTag);
+
                 btnFavorites = itemview.findViewById(R.id.btnFavorites);
                 btnUpdate = itemview.findViewById(R.id.btnUpdate);
                 btnShare = itemview.findViewById(R.id.btnShare);
                 btnDelete = itemview.findViewById(R.id.btnDelete);
-
-
-                btnUpdate.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        startDiaryItemEdit();
-                    }
-                });
 
 //                btnDelete.setOnClickListener(new View.OnClickListener() {
 //                    @Override
@@ -125,13 +122,6 @@ public class DiaryItemFragment extends Fragment {
 //                        notifyItemRangeChanged(getAdapterPosition(), diaryList.size());
 //                    }
 //                });
-
-                btnShare.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-
-                    }
-                });
             }
         }
 
@@ -149,51 +139,79 @@ public class DiaryItemFragment extends Fragment {
         @Override
         public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, final int i) {
             DiaryItemViewHolder holder = (DiaryItemViewHolder) viewHolder;
-            ImagesPagerAdapter pagerAdapter = new ImagesPagerAdapter(getActivity().getSupportFragmentManager());
-            viewPager.setId(i+1000);
-            viewPager.setAdapter(pagerAdapter);
+            ImagesPagerAdapter pagerAdapter = new ImagesPagerAdapter(getChildFragmentManager(), i);
+            holder.viewPager.setId(i+1000);
+            holder.viewPager.setAdapter(pagerAdapter);
+            holder.text.setText(diaryList.get(i).getDiaryText());
+            holder.textDate.setText(diaryList.get(i).getDiaryDate());
+            if(diaryList.get(i).getDiaryTag() != null) {
+                holder.textTag.setText(diaryList.get(i).getDiaryTag().toString());
+            }
+
+            holder.btnUpdate.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startDiaryItemEdit(i);
+                }
+            });
+
+            holder.btnShare.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                }
+            });
 
             if (mViewPagerState.containsKey(i)) {
-                viewPager.setCurrentItem(mViewPagerState.get(i));
+                holder.viewPager.setCurrentItem(mViewPagerState.get(i));
             }
 
         }
 
         @Override
         public int getItemCount() {
-            return 3;
+            return diaryList.size();
         }
 
         @Override
-        public void onViewRecycled(RecyclerView.ViewHolder holder) {
-            mViewPagerState.put(holder.getAdapterPosition(), viewPager.getCurrentItem());
+        public void onViewRecycled(RecyclerView.ViewHolder viewHolder) {
+            DiaryItemViewHolder holder = (DiaryItemViewHolder) viewHolder;
+            mViewPagerState.put(holder.getAdapterPosition(), holder.viewPager.getCurrentItem());
             super.onViewRecycled(holder);
         }
 
     }
 
-    private void startDiaryItemEdit() {
-        Intent intent = DiaryItemEdit.newIntent(getActivity(), "1");
+    private void startDiaryItemEdit(int i) {
+        Intent intent = DiaryItemEdit.newIntent(getActivity(), i);
         startActivity(intent);
     }
 
 
     public class ImagesPagerAdapter extends FragmentPagerAdapter {
 
-        public ImagesPagerAdapter(FragmentManager fm) {
+        private int diaryNumber;
+
+        public ImagesPagerAdapter(FragmentManager fm, int diaryNumber) {
             super(fm);
+            this.diaryNumber = diaryNumber;
         }
 
         @Override
         public Fragment getItem(int position) {
-            return ImageFragment.newInstance(position + 1);
+            String fileRef = diaryList.get(diaryNumber).getDiaryImages().get(position);
+            Fragment fragment = ImageFragment.newInstance(fileRef,position + 1);
+            Log.i("aaa", "ImageView = " + String.valueOf(fragment.hashCode()));
+            return fragment;
         }
 
         @Override
         public int getCount() {
-            return 3;
+            return diaryList.get(diaryNumber).getDiaryImages().size();
         }
     }
+
+
 
 
 }

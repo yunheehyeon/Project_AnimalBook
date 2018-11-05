@@ -5,7 +5,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
-import android.provider.ContactsContract;
 import android.provider.MediaStore;
 
 import android.support.v4.content.FileProvider;
@@ -26,10 +25,10 @@ import com.theartofdev.edmodo.cropper.CropImage;
 
 import java.io.File;
 import java.io.IOException;
-import java.security.PrivateKey;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -40,6 +39,7 @@ public class  DiaryItemEdit extends AppCompatActivity implements View.OnClickLis
 
     private static final int MAX_TAG_ITEM = 6;
     private static final int MAX_PHOTO = 3;
+    private static final int DIARY_ADD = -1;
 
     private int id_view;
     private String imageFilePath;
@@ -56,15 +56,15 @@ public class  DiaryItemEdit extends AppCompatActivity implements View.OnClickLis
 
     private DiaryItemDao dao;
 
-    public static final String DIARY_ID = "diaryId";
+    public static final String DIARY_POSITION = "diaryPosition";
 
     private EditText editTag, editText, editTitle;
     private Button btnInsert, btnPlusTag, btnConfirm, btnCancel;
 
 
-    public static Intent newIntent(Context context, String diaryid) {
+    public static Intent newIntent(Context context, int diaryPosition) {
         Intent intent = new Intent(context, DiaryItemEdit.class);
-        intent.putExtra(DIARY_ID, diaryid);
+        intent.putExtra(DIARY_POSITION, diaryPosition);
 
         return  intent;
     }
@@ -75,7 +75,7 @@ public class  DiaryItemEdit extends AppCompatActivity implements View.OnClickLis
         setTitle("다이어리 글쓰기");
         setContentView(R.layout.activity_diary_item_edit);
 
-        dao = DiaryItemDao.getDiaryItemInstance();
+        dao = DiaryItemDao.getDiaryItemInstance(this);
 
         editTitle = findViewById(R.id.editTitle);
         editText = findViewById(R.id.editText);
@@ -89,8 +89,7 @@ public class  DiaryItemEdit extends AppCompatActivity implements View.OnClickLis
         btnConfirm = findViewById(R.id.btnConfirm);
         btnCancel = findViewById(R.id.btnCancel);
 
-        //TedPermission 라이브러리 -> 카메라 권한 획득
-
+        //TedPermission 라이브러리 -> 카메라 권한 획득 추가
 
         btnPlusTag.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -113,6 +112,18 @@ public class  DiaryItemEdit extends AppCompatActivity implements View.OnClickLis
             }
         });
 
+
+        int diaryPosition = getIntent().getIntExtra(DIARY_POSITION, DIARY_ADD);
+        if(diaryPosition != DIARY_ADD){
+            setDiaryItem(diaryPosition);
+        }
+
+    }
+
+    private void setDiaryItem(int diaryPosition) {
+        List<DiaryItem> diaryItems = dao.upDate();
+        DiaryItem diaryItem = diaryItems.get(diaryPosition);
+
     }
 
     private void diaryItemUpdate() {
@@ -120,11 +131,12 @@ public class  DiaryItemEdit extends AppCompatActivity implements View.OnClickLis
         diaryItem.setDiaryTitle(editTitle.getText().toString());
         diaryItem.setDiaryText(editText.getText().toString());
         Log.i("aaa", photoItems.toString());
-        for(int i = 0; i < photoItemLayouts.size(); i ++) {
-            Uri temp = photoItems.get(photoItemLayouts.get(i).getId());
-            photoUris.add(PhotoFirebaseStorageUtil.PhotoUpload(this, temp));
+        List<Uri> temp = new ArrayList<>();
+        for(int i = 0; i < photoItemLayouts.size(); i++) {
+            temp.add(photoItems.get(photoItemLayouts.get(i).getId()));
         }
-        diaryItem.setDiaryImages(photoUris);
+        //photoUris.add(PhotoFirebaseStorageUtil.PhotoUpload(this, temp));
+        diaryItem.setDiaryImages(PhotoFirebaseStorageUtil.PhotoUpload(this, temp));
         diaryItem.setDiaryTag(tagTexts);
 
         dao.insert(diaryItem);
@@ -297,7 +309,7 @@ public class  DiaryItemEdit extends AppCompatActivity implements View.OnClickLis
                 @Override
                 public void onClick(View v) {
                     LinearLayout photoLayout = findViewById(R.id.imageItemLayout);
-                    photoItems.remove(p.toString());
+                    photoItems.remove(p.getId());
                     photoLayout.removeView(p);
                     photoItemLayouts.remove(p);
                     photoNum --;

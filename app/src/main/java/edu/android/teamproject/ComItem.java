@@ -5,34 +5,33 @@ import java.util.List;
 
 public class ComItem {
 
-    private String itemId;
     private String title;
-    private String userId;
-    private Date date;
-    private int viewCount;
-    private List<String> tag;
     private String text;
+    private List<String> tag;
     private List<String> images;
     private String commentTableId;
+    private String date;
+    private int viewCount;
+    private String itemId;
+    private String userId;
+    private boolean image;
+    private int commentCount;
 
-    public ComItem(String itemId, String title, String userId, Date date, int viewCount, List<String> tag, String text, List<String> images, String commentTableId) {
-        this.itemId = itemId;
+    public ComItem() {
+    }
+
+    public ComItem(String title, String text, List<String> tag, List<String> images, String commentTableId, String date, int viewCount, String itemId, String userId, boolean image, int commentCount) {
         this.title = title;
-        this.userId = userId;
-        this.date = date;
-        this.viewCount = viewCount;
-        this.tag = tag;
         this.text = text;
+        this.tag = tag;
         this.images = images;
         this.commentTableId = commentTableId;
-    }
-
-    public String getItemId() {
-        return itemId;
-    }
-
-    public void setItemId(String itemId) {
+        this.date = date;
+        this.viewCount = viewCount;
         this.itemId = itemId;
+        this.userId = userId;
+        this.image = image;
+        this.commentCount = commentCount;
     }
 
     public String getTitle() {
@@ -43,28 +42,12 @@ public class ComItem {
         this.title = title;
     }
 
-    public String getUserId() {
-        return userId;
+    public String getText() {
+        return text;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
-    public Date getDate() {
-        return date;
-    }
-
-    public void setDate(Date date) {
-        this.date = date;
-    }
-
-    public int getViewCount() {
-        return viewCount;
-    }
-
-    public void setViewCount(int viewCount) {
-        this.viewCount = viewCount;
+    public void setText(String text) {
+        this.text = text;
     }
 
     public List<String> getTag() {
@@ -73,14 +56,6 @@ public class ComItem {
 
     public void setTag(List<String> tag) {
         this.tag = tag;
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
     }
 
     public List<String> getImages() {
@@ -99,4 +74,51 @@ public class ComItem {
         this.commentTableId = commentTableId;
     }
 
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public int getViewCount() {
+        return viewCount;
+    }
+
+    public void setViewCount(int viewCount) {
+        this.viewCount = viewCount;
+    }
+
+    public String getItemId() {
+        return itemId;
+    }
+
+    public void setItemId(String itemId) {
+        this.itemId = itemId;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public boolean isImage() {
+        return image;
+    }
+
+    public void setImage(boolean image) {
+        this.image = image;
+    }
+
+    public int getCommentCount() {
+        return commentCount;
+    }
+
+    public void setCommentCount(int commentCount) {
+        this.commentCount = commentCount;
+    }
 }

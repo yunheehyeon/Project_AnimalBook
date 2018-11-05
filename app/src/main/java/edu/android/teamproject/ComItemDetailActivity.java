@@ -13,14 +13,14 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-public class ComItemActivity extends AppCompatActivity {
+public class ComItemDetailActivity extends AppCompatActivity {
 
     public static final String ITEM_ID = "comItemId";
 
     private Button btncommentAdd;
 
     public static Intent newIntent(Context context, String comid){
-        Intent intent = new Intent(context, ComItemActivity.class);
+        Intent intent = new Intent(context, ComItemDetailActivity.class);
         intent.putExtra(ITEM_ID, comid);
 
         return  intent;
@@ -42,18 +42,18 @@ public class ComItemActivity extends AppCompatActivity {
 
         for(int i = 0; i < commentCount; i++){
             CommentItem commentItem = new CommentItem(this);
-            LinearLayout comLayout = (LinearLayout) findViewById(R.id.comItemLayout);
+            LinearLayout comLayout = findViewById(R.id.comItemLayout);
             comLayout.addView(commentItem);
         }
 
         for(int i = 0; i < commentCount; i++){
             CommentMasterItem commentMasterItem = new CommentMasterItem(this);
-            LinearLayout comLayout = (LinearLayout) findViewById(R.id.comItemLayout);
+            LinearLayout comLayout = findViewById(R.id.comItemLayout);
             comLayout.addView(commentMasterItem);
         }
 
         final CommentAddMenu commentAddMenu = new CommentAddMenu(this);
-        LinearLayout comLayout = (LinearLayout) findViewById(R.id.comItemLayout);
+        LinearLayout comLayout = findViewById(R.id.comItemLayout);
         comLayout.addView(commentAddMenu);
         commentEdText = commentAddMenu.findViewById(R.id.commentEdText);
 

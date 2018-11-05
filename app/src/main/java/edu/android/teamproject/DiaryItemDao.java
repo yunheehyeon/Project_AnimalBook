@@ -1,6 +1,11 @@
 package edu.android.teamproject;
 
+import android.content.Context;
 import android.net.Uri;
+import android.os.AsyncTask;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.util.Log;
 
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -13,31 +18,40 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 
 public class DiaryItemDao implements ChildEventListener {
 
+    interface DiaryItemCallback{
+        void itemCallback();
+    }
+
     private FirebaseDatabase database;
     private DatabaseReference reference;
-
+    private ArrayList<DiaryItem> diaryList = new ArrayList<>();
     private FirebaseAuth mAuth;
     private String providerId,uid,name,email;
     private Uri photoUrl;
     private UserInfo profile;
 
 
+    private DiaryItemCallback callback;
 
     private static DiaryItemDao diaryItemInstance;
 
-    public static DiaryItemDao getDiaryItemInstance(){
+    public static DiaryItemDao getDiaryItemInstance(Object object){
         if(diaryItemInstance == null){
             diaryItemInstance = new DiaryItemDao();
         }
-
+        if(object instanceof DiaryItemCallback){
+            diaryItemInstance.callback = (DiaryItemCallback) object;
+        }
         return diaryItemInstance;
     }
     private DiaryItemDao(){
+
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
             for (UserInfo profile : user.getProviderData()) {
@@ -52,44 +66,57 @@ public class DiaryItemDao implements ChildEventListener {
                 email =  profile.getEmail();
                 photoUrl = profile.getPhotoUrl();
             }
-
         }
 
         database = FirebaseDatabase.getInstance();
-        reference = database.getReference().child("DiaryItem");
+        reference = database.getReference().child("DiaryItem").child(uid);
         reference.addChildEventListener(this);
+
     }
+    public ArrayList upDate(){
+        return diaryList;
+    }
+
     public void insert(DiaryItem diaryItem) {
 
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy 년 MM 월 HH 일");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         Date now = new Date();
         String date = formatter.format(now);
         diaryItem.setDiaryDate(date);
 
-        reference.child(uid).push().setValue(diaryItem);
-    }
-    @Override
-    public void onChildAdded( DataSnapshot dataSnapshot,  String s) {
-
+        reference.push().setValue(diaryItem);
     }
 
     @Override
-    public void onChildChanged( DataSnapshot dataSnapshot,  String s) {
-
+    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+        Log.i("aaa", dataSnapshot.getKey());
+        DiaryItem diaryItem = dataSnapshot.getValue(DiaryItem.class);
+        diaryItem.setDiaryId(dataSnapshot.getKey());
+        diaryList.add(diaryItem);
+        callback.itemCallback();
     }
 
     @Override
-    public void onChildRemoved( DataSnapshot dataSnapshot) {
-
-    }
-
-    @Override
-    public void onChildMoved( DataSnapshot dataSnapshot,  String s) {
+    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
     }
 
     @Override
-    public void onCancelled( DatabaseError databaseError) {
+    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
 
     }
+
+    @Override
+    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+    }
+
+    @Override
+    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+    }
+
+
+
+
 }

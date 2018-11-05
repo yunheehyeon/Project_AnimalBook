@@ -1,16 +1,6 @@
 package edu.android.teamproject;
 
-import android.content.Context;
-import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.AsyncTask;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -21,39 +11,31 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 
-import static edu.android.teamproject.ComItemListFragment.*;
+public class ComItemDao implements ChildEventListener{
 
-public class ComItemDao {
-
-    interface ComDateCallback {
-        void comItemCallback(ComItemEdit comItemEdit);
-        void comItemCallback(Bitmap bitmap);
-    }
-
-    private ComDateCallback callback;
-
-    private List<ComItem> comItems;
 
     private FirebaseDatabase database;
     private DatabaseReference reference;
 
-    private static ComItemDao comItemInstance;
-
+    private FirebaseAuth mAuth;
     private String providerId,uid,name,email;
     private Uri photoUrl;
+    private UserInfo profile;
 
-    public static ComItemDao getComItemInstance() {
-        if (comItemInstance == null) {
-            comItemInstance = new ComItemDao();
+    private static ComItemDao comItemDaoInstance;
+
+    public static ComItemDao getComItemInstance(Object object){
+        if(comItemDaoInstance == null){
+            comItemDaoInstance = new ComItemDao();
         }
-        return comItemInstance;
+
+        return comItemDaoInstance;
     }
 
-    private ComItemDao() {
-
+    private ComItemDao(){
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
             for (UserInfo profile : user.getProviderData()) {
@@ -70,62 +52,47 @@ public class ComItemDao {
             }
 
         }
+        database = FirebaseDatabase.getInstance();
+        reference = database.getReference().child("ComItem");
+        reference.addChildEventListener(this);
+    }
+
+    public void insert(ComItem comItem) {
+
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy 년 MM 월 HH 일");
+        Date now = new Date();
+        String date = formatter.format(now);
+        comItem.setDate(date);
+
+        comItem.setUserId(uid);
+        comItem.setViewCount(0);
+
+        reference.push().setValue(comItem);
+    }
+
+    @Override
+    public void onChildAdded( DataSnapshot dataSnapshot,  String s) {
 
     }
 
-    public void insert(ComItemEdit comItem) {
-        FirebaseTask firebaseTask = new FirebaseTask();
-        firebaseTask.execute(comItem);
+    @Override
+    public void onChildChanged( DataSnapshot dataSnapshot,  String s) {
+
     }
 
-    private ComItemEdit comItemEdit;
-    private Context context;
+    @Override
+    public void onChildRemoved( DataSnapshot dataSnapshot) {
 
-    class FirebaseTask extends AsyncTask<ComItemEdit, ComItemEdit, ComItemEdit> implements ChildEventListener {
-
-        @Override
-        protected ComItemEdit doInBackground(ComItemEdit... comItemEdits) {
-            database = FirebaseDatabase.getInstance();
-            reference = database.getReference().child("ComItem");
-            reference.addChildEventListener(this);
-
-            if (comItemEdits.length != 0) {
-                reference.child(uid).setValue(comItemEdits[0]);
-            } else {
-
-            }
-
-            return null;
-        }
-
-        @Override
-        public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-            Log.i("aaa", dataSnapshot.getKey());
-
-            if (uid.equals(dataSnapshot.getKey())) {
-                comItemEdit = dataSnapshot.getValue(ComItemEdit.class);
-                callback.comItemCallback(comItemEdit);
-            }
-        }
-
-        @Override
-        public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-        }
-
-        @Override
-        public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-        }
-
-        @Override
-        public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-        }
-
-        @Override
-        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-        }
     }
+
+    @Override
+    public void onChildMoved( DataSnapshot dataSnapshot,  String s) {
+
+    }
+
+    @Override
+    public void onCancelled( DatabaseError databaseError) {
+
+    }
+
 }

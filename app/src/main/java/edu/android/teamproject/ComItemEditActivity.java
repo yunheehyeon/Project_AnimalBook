@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.constraint.ConstraintLayout;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -17,7 +16,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,35 +26,42 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
-public class ComItemEditActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private static final int MAX_PHOTO = 3;
+public class ComItemEditActivity extends AppCompatActivity implements View.OnClickListener{
+
     private static final int PIC_FROM_CAMERA = 0;
     private static final int PICK_FROM_ALBUM = 1;
-    private static final int MAX_TAG_ITEM = 6;
 
-    private EditText editTag, editText;
-    private Button btnInsert, btnPlusTag, btnCofirm, btnCancel;
-    private String imageFilePath;
+    private static final int MAX_TAG_ITEM = 6;
+    private static final int MAX_PHOTO = 3;
+
     private int id_view;
+    private String imageFilePath;
     private Uri photoUri;
     private int photoNum = 0;
+
     private int tagNum = 0;
-    private Uri uploadPhoto;
-
-    private List<ComItemLayout> comItemLayouts = new ArrayList<>();
-
     private ArrayList<TagItem> tagItems = new ArrayList<>();
+    private ArrayList<PhotoItemLayout> photoItemLayouts = new ArrayList<>();
+    private Map<Integer, Uri> photoItems = new TreeMap<>();
 
-    public static final String COM_ID= "comId";
+    private ArrayList<String> photoUris = new ArrayList<>();
+    private ArrayList<String> tagTexts = new ArrayList<>();
 
     private ComItemDao dao;
 
-    public static Intent newIntent(Context context, String comid) {
+    public static final String DIARY_ID = "diaryId";
+
+    private EditText editTag, editText, editTitle;
+    private Button btnInsert, btnPlusTag, btnConfirm, btnCancel;
+
+
+    public static Intent newIntent(Context context, String diaryid) {
         Intent intent = new Intent(context, ComItemEditActivity.class);
-        intent.putExtra(COM_ID, comid);
+        intent.putExtra(DIARY_ID, diaryid);
 
         return  intent;
     }
@@ -67,41 +72,72 @@ public class ComItemEditActivity extends AppCompatActivity implements View.OnCli
         setTitle("커뮤니티 글쓰기");
         setContentView(R.layout.activity_diary_item_edit);
 
-        Intent intent = getIntent();
+        dao = ComItemDao.getComItemInstance(this);
+
+        editTitle = findViewById(R.id.editTitle);
+        editText = findViewById(R.id.editText);
 
         btnInsert = findViewById(R.id.btnInsert);
         btnInsert.setOnClickListener(this);
 
         btnPlusTag = findViewById(R.id.btnPlusTag);
+        editTag = findViewById(R.id.editTag);
+
+        btnConfirm = findViewById(R.id.btnConfirm);
+        btnCancel = findViewById(R.id.btnCancel);
+
+        //TedPermission 라이브러리 -> 카메라 권한 획득 추가
+
+
         btnPlusTag.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addTag();
+                addTagItem();
             }
         });
 
-        btnCofirm = findViewById(R.id.btnConfirm);
-        btnCofirm.setOnClickListener(new View.OnClickListener() {
+        btnConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                updateComItem();
+                comItemUpdate();
+            }
+        });
+
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
             }
         });
 
     }
 
-    private void addTag() {
+    private void comItemUpdate() {
 
+        ComItem comItem = new ComItem();
+        comItem.setTitle(editTitle.getText().toString());
+        comItem.setText(editText.getText().toString());
+        for(int i = 0; i < photoItemLayouts.size(); i++) {
+            Uri temp = photoItems.get(photoItemLayouts.get(i).getId());
+            photoUris.add(PhotoFirebaseStorageUtil.PhotoUpload(this, temp));
+        }
+        comItem.setImages(photoUris);
+        comItem.setTag(tagTexts);
+        dao.insert(comItem);
+    }
+
+
+    private void addTagItem() {
         if(tagNum < MAX_TAG_ITEM) {
             TagItem tagItem = new TagItem(this);
             tagItem.setId(tagNum+100);
             tagItems.add(tagItem);
             TextView textTag = tagItem.findViewById(R.id.textTag);
             textTag.setText(editTag.getText().toString());
+            tagTexts.add(editTag.getText().toString());
 
             LinearLayout tagLayout = findViewById(R.id.tagItemLayout);
             tagLayout.addView(tagItem);
-
             editTag.setText("");
             tagNum++;
         }else {
@@ -114,12 +150,15 @@ public class ComItemEditActivity extends AppCompatActivity implements View.OnCli
                 @Override
                 public void onClick(View v) {
                     LinearLayout tagLayout = findViewById(R.id.tagItemLayout);
+                    TextView textView = findViewById(R.id.textTag);
+                    tagTexts.remove(textView.getText().toString());
                     tagLayout.removeView(t);
                     tagItems.remove(t);
                     tagNum--;
                 }
             });
         }
+
     }
 
     @Override
@@ -157,6 +196,7 @@ public class ComItemEditActivity extends AppCompatActivity implements View.OnCli
         }else {
             Toast.makeText(this, "사진 최대 3장", Toast.LENGTH_SHORT).show();
         }
+
     }
 
     private void doTakePhotoAction() {
@@ -233,47 +273,32 @@ public class ComItemEditActivity extends AppCompatActivity implements View.OnCli
         }
     }
 
-    private ArrayList<PhotoItem> photoItems = new ArrayList<>();
     private void addImage(Uri resultUri) {
-        PhotoItem photoItem = new PhotoItem(this);
-        photoItem.setId(photoNum+1000);
-        photoItems.add(photoItem);
+        PhotoItemLayout photoItemLayout = new PhotoItemLayout(this);
+        photoItemLayout.setId(photoNum+1000);
+        photoItemLayouts.add(photoItemLayout);
         LinearLayout tagLayout = findViewById(R.id.imageItemLayout);
-        tagLayout.addView(photoItem);
+        tagLayout.addView(photoItemLayout);
 
-        ImageView photo = photoItem.findViewById(R.id.photo);
+        ImageView photo = photoItemLayout.findViewById(R.id.photo);
         photo.setImageURI(resultUri);
 
+        photoItems.put(photoItemLayout.getId(), resultUri);
         photoNum++;
 
-        for(final PhotoItem p : photoItems){
+        for(final PhotoItemLayout p : photoItemLayouts){
             Button btnDeletePhoto = p.findViewById(R.id.btnDeletePhoto);
             btnDeletePhoto.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    LinearLayout tagLayout = findViewById(R.id.imageItemLayout);
-                    tagLayout.removeView(p);
-                    tagItems.remove(p);
+                    LinearLayout photoLayout = findViewById(R.id.imageItemLayout);
+                    photoItems.remove(p.toString());
+                    photoLayout.removeView(p);
+                    photoItemLayouts.remove(p);
                     photoNum --;
                 }
             });
         }
-    }
-
-    public void updateComItem() {
-//        String Uri = PhotoFirebaseStorageUtil.PhotoUpload(this, uploadPhoto);
-//        List<ComItemEdit.Comitems> comitems = new ArrayList<>();
-//
-//        for (ComItemLayout c: comItemLayouts) {
-//            EditText editTitle = c.findViewById(R.id.editTitle);
-//            EditText editTag = c.findViewById(R.id.editTag);
-//
-//            ComItemEdit.Comitems comitems1 = new ComItemEdit.Comitems(textView.getText().toString(), editTag.getText().toString());
-//            comitems.add(comitems1);
-//        }
-//
-//        ComItemEdit comItemEdit = new ComItemEdit(Uri, comitems);
-//        dao.insert(comItemEdit);
     }
 
     class TagItem extends LinearLayout {
@@ -285,21 +310,13 @@ public class ComItemEditActivity extends AppCompatActivity implements View.OnCli
         }
     }
 
-    class PhotoItem extends LinearLayout {
+    class PhotoItemLayout extends LinearLayout {
 
-        public PhotoItem(Context context) {
+        public PhotoItemLayout (Context context) {
             super(context);
             LayoutInflater inflater = getLayoutInflater();
-            inflater.inflate(R.layout.activity_diary_item_edit, this, true);
+            inflater.inflate(R.layout.photo_item, this, true);
         }
     }
 
-    class ComItemLayout extends ScrollView {
-
-        public ComItemLayout(Context context) {
-            super(context);
-            LayoutInflater inflater = getLayoutInflater();
-            inflater.inflate(R.layout.activity_diary_item_edit, this, true);
-        }
-    }
 }
