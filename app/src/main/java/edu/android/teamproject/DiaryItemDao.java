@@ -152,7 +152,7 @@ public class DiaryItemDao implements ChildEventListener {
             SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd_mmss");
             Date now = new Date();
             String filename = formatter.format(now)+ minTerm + ".png";
-
+            minTerm++;
             filenames.add(filename);
             storageRef.child(diary + filename).putFile(uri)
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -172,7 +172,6 @@ public class DiaryItemDao implements ChildEventListener {
                         }
                     });
 
-            minTerm++;
         }
 
         return filenames;

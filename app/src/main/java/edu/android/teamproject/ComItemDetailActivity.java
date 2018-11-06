@@ -40,7 +40,6 @@ public class ComItemDetailActivity extends AppCompatActivity implements CommentD
     private EditText commentEdText;
     private TextView textTitle, textUserId, textDate, textCommentCount, textTag, textViewCount;
     private TextView textView;
-    private ImageView imageView1, imageView2, imageView3;
     private ComItem comItem;
 
     private CommentDown commentDown;
@@ -62,9 +61,10 @@ public class ComItemDetailActivity extends AppCompatActivity implements CommentD
 
         int position = getIntent().getIntExtra(ITEM_ID, ITEM_ERROR);
         if(position != ITEM_ERROR){
-            dao.viewCountUpdate(comItem);
+
             dao = ComItemDao.getComItemInstance(this);
             comItem = dao.update().get(position);
+            dao.viewCountUpdate(comItem);
             commentDown = new CommentDown(comItem.getItemId(), this);
         }
 
@@ -96,9 +96,11 @@ public class ComItemDetailActivity extends AppCompatActivity implements CommentD
             storageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                 @Override
                 public void onSuccess(Uri uri) {
-                    GlideApp.with(ComItemDetailActivity.this)
-                            .load(uri)
-                            .into(imageView);
+                    if(imageView != null && ComItemDetailActivity.this != null) {
+                        GlideApp.with(ComItemDetailActivity.this)
+                                .load(uri)
+                                .into(imageView);
+                    }
                 }
             });
             LinearLayout imageLayout = findViewById(R.id.comImageLayout);
@@ -150,6 +152,9 @@ public class ComItemDetailActivity extends AppCompatActivity implements CommentD
 
         List<CommentItem> commentItemList = commentDown.update();
         commentCount = commentItemList.size();
+        comItem.setCommentCount(commentCount);
+        dao.commentCountUpdate(comItem);
+        textCommentCount.setText("댓글 : " + String.valueOf(commentCount));
 
         for(int i = 0; i < commentCount; i++){
             if(commentItemList.get(i).getCommentUserId().equals(commentDown.userEmail())){
@@ -157,8 +162,8 @@ public class ComItemDetailActivity extends AppCompatActivity implements CommentD
                 TextView textUserEmail = commentMasterItem.findViewById(R.id.commentUserIdM);
                 TextView textDate = commentMasterItem.findViewById(R.id.commentDateM);
                 TextView textView = commentMasterItem.findViewById(R.id.commentTextM);
-                textUserEmail.setText(commentItemList.get(i).getCommentUserId());
-                textDate.setText(commentItemList.get(i).getCommentDate());
+                textUserEmail.setText("작성자 : " + commentItemList.get(i).getCommentUserId());
+                textDate.setText("날짜 : " + commentItemList.get(i).getCommentDate());
                 textView.setText(commentItemList.get(i).getCommentText());
                 comLayout.addView(commentMasterItem);
             }else {

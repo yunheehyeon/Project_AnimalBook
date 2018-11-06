@@ -118,9 +118,9 @@ public class ComItemListFragment extends Fragment implements ComItemDao.ComItemC
             ComItemListViewHolder holder = (ComItemListViewHolder) viewHolder;
 
             holder.textTitle.setText(comItems.get(i).getTitle());
-            holder.textUserId.setText(comItems.get(i).getUserEmail());
+            holder.textUserId.setText("작성자 : " + comItems.get(i).getUserEmail());
             holder.textViewCount.setText("조회수 : " + String.valueOf(comItems.get(i).getViewCount()));
-            holder.textDate.setText(comItems.get(i).getDate());
+            holder.textDate.setText("등록일 : " + comItems.get(i).getDate());
             holder.textCommentCount.setText("댓글 : " + String.valueOf(comItems.get(i).getCommentCount()));
             if(comItems.get(i).getItemId() != null){
                 holder.imageView.setImageResource(R.drawable.isimage);

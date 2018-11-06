@@ -120,7 +120,7 @@ public class ComItemDao implements ChildEventListener{
         reference = database.getReference().child("ComItem").child(comItem.getItemId()).child("commentCount");
         reference.addChildEventListener(this);
 
-        reference.setValue((comItem.getCommentCount()+1));
+        reference.setValue(comItem.getCommentCount());
     }
 
     @Override
@@ -177,7 +177,7 @@ public class ComItemDao implements ChildEventListener{
             SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd_mmss");
             Date now = new Date();
             String filename = formatter.format(now)+ minTerm + ".png";
-
+            minTerm++;
             filenames.add(filename);
             storageRef.child(community + filename).putFile(uri)
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -197,7 +197,7 @@ public class ComItemDao implements ChildEventListener{
                         }
                     });
 
-            minTerm++;
+
         }
 
         return filenames;

@@ -143,9 +143,18 @@ public class DiaryItemFragment extends Fragment implements DiaryItemDao.DiaryIte
             holder.viewPager.setId(i+1000);
             holder.viewPager.setAdapter(pagerAdapter);
             holder.text.setText(diaryList.get(i).getDiaryText());
-            holder.textDate.setText(diaryList.get(i).getDiaryDate());
+            holder.textDate.setText("등록일 : " + diaryList.get(i).getDiaryDate());
+
             if(diaryList.get(i).getDiaryTag() != null) {
-                holder.textTag.setText(diaryList.get(i).getDiaryTag().toString());
+                StringBuilder builder = new StringBuilder();
+                builder.append("Tag : ");
+                for(String s : diaryList.get(i).getDiaryTag()) {
+                    if(s != null) {
+                        builder.append(s);
+                        holder.textTag.setText(builder);
+                    }
+                    builder.append(", ");
+                }
             }
 
             holder.btnUpdate.setOnClickListener(new View.OnClickListener() {
