@@ -62,6 +62,7 @@ public class ComItemDetailActivity extends AppCompatActivity implements CommentD
 
         int position = getIntent().getIntExtra(ITEM_ID, ITEM_ERROR);
         if(position != ITEM_ERROR){
+            dao.viewCountUpdate(comItem);
             dao = ComItemDao.getComItemInstance(this);
             comItem = dao.update().get(position);
             commentDown = new CommentDown(comItem.getItemId(), this);
@@ -115,6 +116,7 @@ public class ComItemDetailActivity extends AppCompatActivity implements CommentD
             @Override
             public void onClick(View v) {
                 commentUpdate();
+                commentEdText.setText("");
             }
         });
 
@@ -143,13 +145,15 @@ public class ComItemDetailActivity extends AppCompatActivity implements CommentD
 
     @Override
     public void CommentCallback() {
+        LinearLayout comLayout = findViewById(R.id.commentItemLayout);
+        comLayout.removeAllViews();
+
         List<CommentItem> commentItemList = commentDown.update();
         commentCount = commentItemList.size();
 
         for(int i = 0; i < commentCount; i++){
             if(commentItemList.get(i).getCommentUserId().equals(commentDown.userEmail())){
                 CommentMasterItem commentMasterItem = new CommentMasterItem(this);
-                LinearLayout comLayout = findViewById(R.id.commentItemLayout);
                 TextView textUserEmail = commentMasterItem.findViewById(R.id.commentUserIdM);
                 TextView textDate = commentMasterItem.findViewById(R.id.commentDateM);
                 TextView textView = commentMasterItem.findViewById(R.id.commentTextM);
@@ -159,8 +163,7 @@ public class ComItemDetailActivity extends AppCompatActivity implements CommentD
                 comLayout.addView(commentMasterItem);
             }else {
                 CommentItemLayout commentItem = new CommentItemLayout(this);
-                LinearLayout comLayout = findViewById(R.id.comItemLayout);
-                TextView textUserEmail = commentItem.findViewById(R.id.commentItemLayout);
+                TextView textUserEmail = commentItem.findViewById(R.id.commentUserId);
                 TextView textDate = commentItem.findViewById(R.id.commentDate);
                 TextView textView = commentItem.findViewById(R.id.commentText);
                 textUserEmail.setText(commentItemList.get(i).getCommentUserId());
@@ -201,7 +204,6 @@ public class ComItemDetailActivity extends AppCompatActivity implements CommentD
 
     @Override
     protected void onDestroy() {
-        dao.viewCountUpdate(comItem);
         super.onDestroy();
     }
 }
