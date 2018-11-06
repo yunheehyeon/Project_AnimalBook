@@ -64,7 +64,7 @@ public class ComItemDetailActivity extends AppCompatActivity implements CommentD
         if(position != ITEM_ERROR){
             dao = ComItemDao.getComItemInstance(this);
             comItem = dao.update().get(position);
-
+            commentDown = new CommentDown(comItem.getItemId(), this);
         }
 
         textTitle.setText(comItem.getTitle());
@@ -106,7 +106,7 @@ public class ComItemDetailActivity extends AppCompatActivity implements CommentD
         }
 
         final CommentAddMenu commentAddMenu = new CommentAddMenu(this);
-        LinearLayout comLayout = findViewById(R.id.comItemLayout);
+        LinearLayout comLayout = findViewById(R.id.commentMenuLayout);
         comLayout.addView(commentAddMenu);
 
         commentEdText = commentAddMenu.findViewById(R.id.commentEdText);
@@ -136,7 +136,9 @@ public class ComItemDetailActivity extends AppCompatActivity implements CommentD
     }
 
     private void commentUpdate() {
-
+        CommentItem commentItem = new CommentItem();
+        commentItem.setCommentText(commentEdText.getText().toString());
+        commentDown.insert(commentItem);
     }
 
     @Override
@@ -147,14 +149,23 @@ public class ComItemDetailActivity extends AppCompatActivity implements CommentD
         for(int i = 0; i < commentCount; i++){
             if(commentItemList.get(i).getCommentUserId().equals(commentDown.userEmail())){
                 CommentMasterItem commentMasterItem = new CommentMasterItem(this);
-                LinearLayout comLayout = findViewById(R.id.comItemLayout);
-                //TextView textUserEmail = comLayout.findViewById(R.id.)
-
-
+                LinearLayout comLayout = findViewById(R.id.commentItemLayout);
+                TextView textUserEmail = commentMasterItem.findViewById(R.id.commentUserIdM);
+                TextView textDate = commentMasterItem.findViewById(R.id.commentDateM);
+                TextView textView = commentMasterItem.findViewById(R.id.commentTextM);
+                textUserEmail.setText(commentItemList.get(i).getCommentUserId());
+                textDate.setText(commentItemList.get(i).getCommentDate());
+                textView.setText(commentItemList.get(i).getCommentText());
                 comLayout.addView(commentMasterItem);
             }else {
                 CommentItemLayout commentItem = new CommentItemLayout(this);
                 LinearLayout comLayout = findViewById(R.id.comItemLayout);
+                TextView textUserEmail = commentItem.findViewById(R.id.commentItemLayout);
+                TextView textDate = commentItem.findViewById(R.id.commentDate);
+                TextView textView = commentItem.findViewById(R.id.commentText);
+                textUserEmail.setText(commentItemList.get(i).getCommentUserId());
+                textDate.setText(commentItemList.get(i).getCommentDate());
+                textView.setText(commentItemList.get(i).getCommentText());
                 comLayout.addView(commentItem);
             }
         }
