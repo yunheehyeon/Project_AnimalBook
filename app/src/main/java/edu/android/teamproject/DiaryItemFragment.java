@@ -89,7 +89,6 @@ public class DiaryItemFragment extends Fragment implements DiaryItemDao.DiaryIte
     @Override
     public void itemCallback() {
         diaryList = dao.upDate();
-        Log.i("aaa", diaryList.toString());
         adapter.notifyDataSetChanged();
     }
 

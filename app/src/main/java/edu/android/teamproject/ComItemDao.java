@@ -49,6 +49,7 @@ public class ComItemDao implements ChildEventListener{
     private UserInfo profile;
 
     private List<ComItem> comItems = new ArrayList<>();
+    private List<ComItem> myComItems = new ArrayList<>();
 
     private static ComItemDao comItemDaoInstance;
 
@@ -89,7 +90,7 @@ public class ComItemDao implements ChildEventListener{
     }
 
     public void insert(ComItem comItem) {
-        database = FirebaseDatabase.getInstance();
+        comItems = new ArrayList<>();
         reference = database.getReference().child("ComItem");
         reference.addChildEventListener(this);
 
@@ -106,6 +107,10 @@ public class ComItemDao implements ChildEventListener{
 
     public List<ComItem> update(){
         return comItems;
+    }
+
+    public List<ComItem> myComItemUpdate(){
+        return myComItems;
     }
 
 
@@ -128,12 +133,16 @@ public class ComItemDao implements ChildEventListener{
         ComItem comItem = dataSnapshot.getValue(ComItem.class);
         comItem.setItemId(dataSnapshot.getKey());
         comItems.add(comItem);
+        if(comItem.getUserId().equals(uid)){
+            myComItems.add(comItem);
+        }
 
         callback.dateCallback();
     }
 
     @Override
     public void onChildChanged( DataSnapshot dataSnapshot,  String s) {
+        Log.i("aaa", "chan");
         ComItem comItem = dataSnapshot.getValue(ComItem.class);
         String key = dataSnapshot.getKey();
         comItem.setItemId(key);
@@ -141,6 +150,7 @@ public class ComItemDao implements ChildEventListener{
             if(comItems.get(i).getItemId().equals(key)){
                 comItems.set(i, comItem);
             }
+
         }
         callback.dateCallback();
     }

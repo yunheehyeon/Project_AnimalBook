@@ -22,14 +22,18 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
 
  * A simple {@link Fragment} subclass.
  */
-public class MyPageFragment extends Fragment implements MyPageDao.DataCallback {
+public class MyPageFragment extends Fragment implements MyPageDao.DataCallback, ComItemDao.ComItemCallback {
 
 
     private MyPageDao dao;
+    private ComItemDao comItemDao;
 
     public static final String KEY = "msg";
 
@@ -41,9 +45,10 @@ public class MyPageFragment extends Fragment implements MyPageDao.DataCallback {
     myPosting myPosting;
     myDiaryBM myDiaryBM;
     LinearLayout lLPostingView, lLDiaryBMView;
-    private int count;
+
     boolean b1,b2,b3 = false;
-    //private View view;
+
+    private List<ComItem> comItems = new ArrayList<>();
 
     @Override
     public void onAttach(Context context) {
@@ -100,6 +105,7 @@ public class MyPageFragment extends Fragment implements MyPageDao.DataCallback {
         if(dao.update() != null) {
             showMyProfile(dao.update());
         }
+        comItemDao = ComItemDao.getComItemInstance(this);
     }
 
     class myPosting extends CardView {
@@ -110,26 +116,56 @@ public class MyPageFragment extends Fragment implements MyPageDao.DataCallback {
         }
     }
     private void onClickMyPosting() {
+        lLPostingView = getView().findViewById(R.id.lLPostingView);
+
         if (b1 == false) {
             btnMyPosting.setText("-");
             b1 = true;
-            for (int i = 0; i < 5; i++) {
-                myPosting= new myPosting(getActivity());
-                lLPostingView = getView().findViewById(R.id.lLPostingView);
+            comItems = comItemDao.myComItemUpdate();
+
+            for (int i = 0; i < comItems.size(); i++) {
+                myPosting = new myPosting(getActivity());
+                TextView textTitle = myPosting.findViewById(R.id.comItemTitle);
+                TextView textUserId = myPosting.findViewById(R.id.textUserId);
+                TextView textDate = myPosting.findViewById(R.id.textDate);
+                TextView textViewCount = myPosting.findViewById(R.id.textViewCount);
+                TextView textCommentCount = myPosting.findViewById(R.id.textCommentCount);
+                TextView textTag = myPosting.findViewById(R.id.textTag);
+                ImageView imageView = myPosting.findViewById(R.id.isImage);
+
+                textTitle.setText(comItems.get(i).getTitle());
+                textUserId.setText("작성자 : " + comItems.get(i).getUserEmail());
+                textViewCount.setText("조회수 : " + String.valueOf(comItems.get(i).getViewCount()));
+                textDate.setText("등록일 : " + comItems.get(i).getDate());
+                textCommentCount.setText("댓글 : " + String.valueOf(comItems.get(i).getCommentCount()));
+                if(comItems.get(i).getItemId() != null){
+                    imageView.setImageResource(R.drawable.isimage);
+                }
+                StringBuilder builder = new StringBuilder();
+                builder.append("Tag : ");
+                for(String s : comItems.get(i).getTag()) {
+                    if(s != null) {
+                        builder.append(s);
+                        textTag.setText(builder);
+                    }
+                    builder.append(", ");
+                }
+
+                final int temp = i;
+                myPosting.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = ComItemDetailActivity.newIntent(getActivity(), comItems.get(temp).getItemId());
+                        startActivity(intent);
+                    }
+                });
+
                 lLPostingView.addView(myPosting);
             }
         } else {
             b1 = false;
             lLPostingView.removeAllViews();
             btnMyPosting.setText("+");
-        }
-        if (b1 == false) {
-            lLPostingView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                }
-            });
-
         }
     }
     class myDiaryBM extends CardView {
@@ -171,6 +207,11 @@ public class MyPageFragment extends Fragment implements MyPageDao.DataCallback {
             myProfileImage.setImageBitmap(dao.updateImage());
         } else {
         }
+    }
+
+    @Override
+    public void dateCallback() {
+        comItems = comItemDao.myComItemUpdate();
     }
 
     private void showMyProfile(MyPageProfile myPageProfile) {

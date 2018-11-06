@@ -137,7 +137,7 @@ public class ComItemListFragment extends Fragment implements ComItemDao.ComItemC
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    startComItemActivity(i);
+                    startComItemActivity(comItems.get(i).getItemId());
                 }
             });
 
@@ -150,8 +150,8 @@ public class ComItemListFragment extends Fragment implements ComItemDao.ComItemC
 
     }
 
-    private void startComItemActivity(int i){
-        Intent intent = ComItemDetailActivity.newIntent(getActivity(), i);
+    private void startComItemActivity(String comId){
+        Intent intent = ComItemDetailActivity.newIntent(getActivity(), comId);
         startActivity(intent);
     }
 

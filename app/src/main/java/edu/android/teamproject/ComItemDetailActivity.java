@@ -26,7 +26,7 @@ public class ComItemDetailActivity extends AppCompatActivity implements CommentD
     private static final String ITEM_ID = "comItemId";
     private static final int ITEM_ERROR = -1;
 
-    public static Intent newIntent(Context context, int comId){
+    public static Intent newIntent(Context context, String comId){
         Intent intent = new Intent(context, ComItemDetailActivity.class);
         intent.putExtra(ITEM_ID, comId);
 
@@ -59,14 +59,19 @@ public class ComItemDetailActivity extends AppCompatActivity implements CommentD
         textViewCount = findViewById(R.id.comItemViewCount);
         btncommentAdd = findViewById(R.id.btnCommentWrite);
 
-        int position = getIntent().getIntExtra(ITEM_ID, ITEM_ERROR);
-        if(position != ITEM_ERROR){
-
-            dao = ComItemDao.getComItemInstance(this);
-            comItem = dao.update().get(position);
-            dao.viewCountUpdate(comItem);
-            commentDown = new CommentDown(comItem.getItemId(), this);
+        String comId = getIntent().getStringExtra(ITEM_ID);
+        dao = ComItemDao.getComItemInstance(this);
+        for(ComItem c : dao.update()){
+            if(c.getItemId().equals(comId)){
+                comItem = c;
+            }
         }
+        if(comItem == null){
+            finish();
+        }
+        dao.viewCountUpdate(comItem);
+        commentDown = new CommentDown(comItem.getItemId(), this);
+
 
         textTitle.setText(comItem.getTitle());
         textUserId.setText("아이디 : " + comItem.getUserEmail());
