@@ -14,6 +14,7 @@ public class ComItem {
     private int viewCount;
     private String itemId;
     private String userId;
+    private String userEmail;
     private boolean image;
     private int commentCount;
 
@@ -32,6 +33,14 @@ public class ComItem {
         this.userId = userId;
         this.image = image;
         this.commentCount = commentCount;
+    }
+
+    public String getUserEmail() {
+        return userEmail;
+    }
+
+    public void setUserEmail(String userEmail) {
+        this.userEmail = userEmail;
     }
 
     public String getTitle() {

@@ -12,7 +12,7 @@
 
 
         <TextView
-            android:id="@+id/commentUserId"
+            android:id="@+id/commentUserIdM"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
@@ -21,10 +21,10 @@
             android:textSize="10dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/commentText"/>
+            app:layout_constraintBottom_toTopOf="@id/commentTextM"/>
 
         <TextView
-            android:id="@+id/commentDate"
+            android:id="@+id/commentDateM"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
@@ -33,14 +33,14 @@
             android:layout_marginBottom="8dp"
             android:text="등록일"
             android:textSize="10dp"
-            app:layout_constraintBottom_toTopOf="@id/commentText"
-            app:layout_constraintEnd_toStartOf="@id/btnCommentDelete"
-            app:layout_constraintStart_toEndOf="@id/commentUserId"
+            app:layout_constraintBottom_toTopOf="@id/commentTextM"
+            app:layout_constraintEnd_toStartOf="@id/btnCommentDeleteM"
+            app:layout_constraintStart_toEndOf="@id/commentUserIdM"
             app:layout_constraintTop_toTopOf="parent" />
 
 
         <Button
-            android:id="@+id/btnCommentDelete"
+            android:id="@+id/btnCommentDeleteM"
             android:layout_width="40dp"
             android:layout_height="20dp"
             android:layout_marginTop="8dp"
@@ -49,12 +49,12 @@
             android:background="@drawable/bordel"
             android:text="X"
             android:textSize="9sp"
-            app:layout_constraintBottom_toTopOf="@id/commentText"
-            app:layout_constraintEnd_toStartOf="@id/btnCommentUpdate"
+            app:layout_constraintBottom_toTopOf="@id/commentTextM"
+            app:layout_constraintEnd_toStartOf="@id/btnCommentUpdateM"
             app:layout_constraintTop_toTopOf="parent" />
 
         <Button
-            android:id="@+id/btnCommentUpdate"
+            android:id="@+id/btnCommentUpdateM"
             android:layout_width="40dp"
             android:layout_height="20dp"
             android:layout_marginTop="8dp"
@@ -63,13 +63,13 @@
             android:background="@drawable/bordel"
             android:text="수정"
             android:textSize="9sp"
-            app:layout_constraintBottom_toTopOf="@id/commentText"
+            app:layout_constraintBottom_toTopOf="@id/commentTextM"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
 
         <TextView
-            android:id="@+id/commentText"
+            android:id="@+id/commentTextM"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
@@ -81,7 +81,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/commentUserId" />
+            app:layout_constraintTop_toBottomOf="@id/commentUserIdM" />
     </android.support.constraint.ConstraintLayout>
 
 

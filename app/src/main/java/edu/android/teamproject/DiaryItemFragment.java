@@ -201,7 +201,6 @@ public class DiaryItemFragment extends Fragment implements DiaryItemDao.DiaryIte
         public Fragment getItem(int position) {
             String fileRef = diaryList.get(diaryNumber).getDiaryImages().get(position);
             Fragment fragment = ImageFragment.newInstance(fileRef,position + 1);
-            Log.i("aaa", "ImageView = " + String.valueOf(fragment.hashCode()));
             return fragment;
         }
 

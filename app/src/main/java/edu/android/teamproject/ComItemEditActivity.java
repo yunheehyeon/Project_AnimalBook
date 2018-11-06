@@ -26,11 +26,12 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
 
-public class ComItemEditActivity extends AppCompatActivity implements View.OnClickListener{
+public class ComItemEditActivity extends AppCompatActivity implements View.OnClickListener, ComItemDao.EndCallback {
 
     private static final int PIC_FROM_CAMERA = 0;
     private static final int PICK_FROM_ALBUM = 1;
@@ -59,9 +60,9 @@ public class ComItemEditActivity extends AppCompatActivity implements View.OnCli
     private Button btnInsert, btnPlusTag, btnConfirm, btnCancel;
 
 
-    public static Intent newIntent(Context context, String diaryid) {
+    public static Intent newIntent(Context context, String diaryId) {
         Intent intent = new Intent(context, ComItemEditActivity.class);
-        intent.putExtra(DIARY_ID, diaryid);
+        intent.putExtra(DIARY_ID, diaryId);
 
         return  intent;
     }
@@ -113,16 +114,17 @@ public class ComItemEditActivity extends AppCompatActivity implements View.OnCli
     }
 
     private void comItemUpdate() {
-
         ComItem comItem = new ComItem();
         comItem.setTitle(editTitle.getText().toString());
         comItem.setText(editText.getText().toString());
+        List<Uri> temp = new ArrayList<>();
         for(int i = 0; i < photoItemLayouts.size(); i++) {
-            Uri temp = photoItems.get(photoItemLayouts.get(i).getId());
-            photoUris.add(PhotoFirebaseStorageUtil.PhotoUpload(this, temp));
+            temp.add(photoItems.get(photoItemLayouts.get(i).getId()));
         }
-        comItem.setImages(photoUris);
+
+        comItem.setImages(dao.photoUpload(this, temp));
         comItem.setTag(tagTexts);
+
         dao.insert(comItem);
     }
 
@@ -299,6 +301,11 @@ public class ComItemEditActivity extends AppCompatActivity implements View.OnCli
                 }
             });
         }
+    }
+
+    @Override
+    public void endUpload() {
+        finish();
     }
 
     class TagItem extends LinearLayout {

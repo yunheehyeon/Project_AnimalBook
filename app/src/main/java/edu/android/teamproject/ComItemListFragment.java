@@ -23,11 +23,14 @@ import java.util.List;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class ComItemListFragment extends Fragment {
+public class ComItemListFragment extends Fragment implements ComItemDao.ComItemCallback {
 
     private ComItemDao dao;
+    private List<ComItem> comItems = new ArrayList<>();
 
     public static final String TAG = "comitemfragment";
+    private ComItemListAdapter adapter;
+
 
     public ComItemListFragment() {
         // Required empty public constructor
@@ -36,7 +39,6 @@ public class ComItemListFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_com_item_list, container, false);
 
         Button btnInsert = view.findViewById(R.id.btnInsert);
@@ -55,30 +57,26 @@ public class ComItemListFragment extends Fragment {
         startActivity(intent);
     }
 
-    long now = System.currentTimeMillis();
-    Date date = new Date(now);
-    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-    String getTime = sdf.format(date);
-    List<String> tag = new ArrayList<>();
-    
-
-
     @Override
     public void onStart() {
         super.onStart();
-
-//        dao = ComItemDao.getComItemInstance();
-//        tag.add("새해");
-//        dao.insert(new ComItem("아이디", "연습", "anay", date, 1, tag, "연습", tag, "연습"));
 
         View view = getView();
 
         RecyclerView recyclerView = view.findViewById(R.id.comRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        ComItemListAdapter adapter = new ComItemListAdapter();
+        adapter = new ComItemListAdapter();
         recyclerView.setAdapter(adapter);
         recyclerView.setHasFixedSize(true);
 
+        dao = ComItemDao.getComItemInstance(this);
+        dateCallback();
+    }
+
+    @Override
+    public void dateCallback() {
+        comItems = dao.update();
+        adapter.notifyDataSetChanged();
     }
 
     class ComItemListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
@@ -87,20 +85,21 @@ public class ComItemListFragment extends Fragment {
 
             private TextView textTitle;
             private TextView textUserId;
-            private TextView textData;
+            private TextView textDate;
             private TextView textCommentCount;
             private TextView textTag;
             private TextView textViewCount;
             private ImageView imageView;
+
             public ComItemListViewHolder(@NonNull View itemView) {
                 super(itemView);
                 textTitle = itemView.findViewById(R.id.comItemTitle);
                 textUserId = itemView.findViewById(R.id.textUserId);
-                textData = itemView.findViewById(R.id.textDate);
+                textDate = itemView.findViewById(R.id.textDate);
                 textViewCount = itemView.findViewById(R.id.textViewCount);
                 textCommentCount = itemView.findViewById(R.id.textCommentCount);
                 textTag = itemView.findViewById(R.id.textTag);
-                imageView = itemView.findViewById(R.id.imageView);
+                imageView = itemView.findViewById(R.id.isImage);
             }
         }
 
@@ -118,8 +117,23 @@ public class ComItemListFragment extends Fragment {
         public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, final int i) {
             ComItemListViewHolder holder = (ComItemListViewHolder) viewHolder;
 
-
-
+            holder.textTitle.setText(comItems.get(i).getTitle());
+            holder.textUserId.setText(comItems.get(i).getUserEmail());
+            holder.textViewCount.setText("조회수 : " + String.valueOf(comItems.get(i).getViewCount()));
+            holder.textDate.setText(comItems.get(i).getDate());
+            holder.textCommentCount.setText("댓글 : " + String.valueOf(comItems.get(i).getCommentCount()));
+            if(comItems.get(i).getItemId() != null){
+                holder.imageView.setImageResource(R.drawable.isimage);
+            }
+            StringBuilder builder = new StringBuilder();
+            builder.append("Tag : ");
+            for(String s : comItems.get(i).getTag()) {
+                if(s != null) {
+                    builder.append(s);
+                    holder.textTag.setText(builder);
+                }
+                builder.append(", ");
+            }
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -131,13 +145,13 @@ public class ComItemListFragment extends Fragment {
 
         @Override
         public int getItemCount() {
-            return 15;
+            return comItems.size();
         }
 
     }
 
     private void startComItemActivity(int i){
-        Intent intent = ComItemDetailActivity.newIntent(getActivity(), "1");
+        Intent intent = ComItemDetailActivity.newIntent(getActivity(), i);
         startActivity(intent);
     }
 

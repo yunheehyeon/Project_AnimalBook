@@ -44,7 +44,7 @@ public class ImageFragment extends Fragment {
 
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.
-                getReferenceFromUrl("gs://timproject-14aaa.appspot.com").child("diary/" + getArguments().getString(DIARY_NUMBER));
+                getReferenceFromUrl("gs://timproject-14aaa.appspot.com").child(DiaryItemDao.diary + getArguments().getString(DIARY_NUMBER));
 
         storageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
@@ -58,6 +58,9 @@ public class ImageFragment extends Fragment {
         return rootView;
     }
 
-
-
+    @Override
+    public void onDestroy() {
+        // GlideApp 터지는거 처리
+        super.onDestroy();
+    }
 }
