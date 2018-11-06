@@ -21,8 +21,7 @@
             android:layout_marginEnd="8dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:background="@drawable/bordel">
+            app:layout_constraintTop_toTopOf="parent">
 
         </android.support.v4.view.ViewPager>
 
@@ -65,18 +64,16 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/comItemTag" />
 
-        <Button
+        <ImageView
             android:id="@+id/btnFavorites"
-            android:layout_width="60dp"
+            android:layout_width="20dp"
             android:layout_height="30dp"
             android:layout_margin="8dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
-            android:background="@color/buttonBackground1"
-            android:text="즐겨찾기"
             android:textSize="15sp"
-            android:textStyle="bold"
+            android:background="@drawable/book_mark_off"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/btnShare"
             app:layout_constraintTop_toBottomOf="@+id/textTag" />

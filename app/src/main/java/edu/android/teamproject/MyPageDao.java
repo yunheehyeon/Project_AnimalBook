@@ -70,6 +70,7 @@ public class MyPageDao implements ChildEventListener {
         if(object instanceof EndCallback){
             myPageInstance.endCallback = (EndCallback) object;
         }
+
         return myPageInstance;
     }
 

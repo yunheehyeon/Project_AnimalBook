@@ -43,7 +43,7 @@ public class DiaryItemDao implements ChildEventListener {
 
     private FirebaseDatabase database;
     private DatabaseReference reference;
-    private ArrayList<DiaryItem> diaryList = new ArrayList<>();
+
     private FirebaseAuth mAuth;
     private String providerId,uid,name,email;
     private Uri photoUrl;
@@ -52,6 +52,9 @@ public class DiaryItemDao implements ChildEventListener {
 
     private DiaryItemCallback callback;
     private EndCallback endCallback;
+
+    private ArrayList<DiaryItem> diaryList = new ArrayList<>();
+    private List<DiaryItem> myDiaryList = new ArrayList<>();
 
     private static DiaryItemDao diaryItemInstance;
 
@@ -97,6 +100,10 @@ public class DiaryItemDao implements ChildEventListener {
 
     public void insert(DiaryItem diaryItem) {
 
+        diaryList = new ArrayList<>();
+        reference = database.getReference().child("DiaryItem").child(uid);
+        reference.addChildEventListener(this);
+
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         Date now = new Date();
         String date = formatter.format(now);
@@ -105,23 +112,74 @@ public class DiaryItemDao implements ChildEventListener {
         reference.push().setValue(diaryItem);
     }
 
+    public void delete(DiaryItem diaryItem){
+        reference.child(diaryItem.getDiaryId()).removeValue();
+    }
+
+    public void updateBookmark(DiaryItem diaryItem){
+        Log.i("aaa", diaryItem.getDiaryId());
+        reference = database.getReference().child("DiaryItem").child(uid).child(diaryItem.getDiaryId()).child("bookMark");
+        reference.addChildEventListener(this);
+
+        reference.setValue(diaryItem.isBookMark());
+    }
+
+    public List<DiaryItem> updateMyDiaryList(){
+        return myDiaryList;
+    }
+
     @Override
     public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
         Log.i("aaa", dataSnapshot.getKey());
         DiaryItem diaryItem = dataSnapshot.getValue(DiaryItem.class);
         diaryItem.setDiaryId(dataSnapshot.getKey());
         diaryList.add(diaryItem);
+
+        if(diaryItem.isBookMark()){
+            myDiaryList.add(diaryItem);
+        }
+
         callback.itemCallback();
     }
 
     @Override
     public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
+        DiaryItem diaryItem = dataSnapshot.getValue(DiaryItem.class);
+        diaryItem.setDiaryId(dataSnapshot.getKey());
+
+        for(int i = 0; i < diaryList.size(); i++){
+            if(dataSnapshot.getKey().equals(diaryList.get(i).getDiaryId())){
+                diaryList.set(i, diaryItem);
+            }
+        }
+        if(diaryItem.isBookMark()){
+            myDiaryList.add(diaryItem);
+        }else {
+            for (int i = 0; i < myDiaryList.size(); i++) {
+                if (myDiaryList.get(i).getDiaryId().equals(dataSnapshot.getKey())) {
+                    myDiaryList.remove(i);
+                }
+            }
+        }
+
+        callback.itemCallback();
     }
 
     @Override
     public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+        for(int i = 0; i < diaryList.size(); i++){
+            if(dataSnapshot.getKey().equals(diaryList.get(i).getDiaryId())){
+                diaryList.remove(i);
+            }
+        }
 
+        for(int i = 0; i < myDiaryList.size(); i++){
+            if(myDiaryList.get(i).getDiaryId().equals(dataSnapshot.getKey())){
+                myDiaryList.remove(i);
+            }
+        }
+        callback.itemCallback();
     }
 
     @Override

@@ -20,6 +20,7 @@ public class MainActivity extends AppCompatActivity{
     GoogleMap mMap;
     SupportMapFragment mapFragment;
     public static final int REQ_CODE = 1000;
+
     private DiaryItemFragment diaryFragment;
     private ComItemListFragment comItemListFragment;
     private GmapFragment gmapFragment;
@@ -92,4 +93,29 @@ public class MainActivity extends AppCompatActivity{
 
     }
 
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+
+        switch (navigation.getSelectedItemId()) {
+            case R.id.navigation_home:
+                diaryFragment = new DiaryItemFragment();
+                fragmentManager.beginTransaction().replace(R.id.container, diaryFragment).commit();
+                break;
+            case R.id.navigation_com:
+                comItemListFragment = new ComItemListFragment();
+                fragmentManager.beginTransaction().replace(R.id.container, comItemListFragment).commit();
+                break;
+            case R.id.navigation_map:
+                gmapFragment = new GmapFragment();
+                fragmentManager.beginTransaction().replace(R.id.container, gmapFragment).commit();
+                break;
+            case R.id.navigation_my:
+                fragmentMyPage = new MyPageFragment();
+                fragmentManager.beginTransaction().replace(R.id.container, fragmentMyPage).commit();
+                break;
+        }
+
+
+    }
 }

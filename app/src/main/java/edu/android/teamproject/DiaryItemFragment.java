@@ -1,8 +1,8 @@
 package edu.android.teamproject;
 
 
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -10,25 +10,21 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
+import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 
 
 /**
@@ -98,8 +94,8 @@ public class DiaryItemFragment extends Fragment implements DiaryItemDao.DiaryIte
 
             private ViewPager viewPager;
             private TextView text, textDate, textTag;
-            private Button btnFavorites, btnShare, btnUpdate, btnDelete ;
-
+            private Button btnShare, btnUpdate, btnDelete ;
+            private ImageView btnFavorites;
 
             public DiaryItemViewHolder(@NonNull View itemview) {
                 super(itemview);
@@ -113,14 +109,6 @@ public class DiaryItemFragment extends Fragment implements DiaryItemDao.DiaryIte
                 btnShare = itemview.findViewById(R.id.btnShare);
                 btnDelete = itemview.findViewById(R.id.btnDelete);
 
-//                btnDelete.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View v) {
-//                        diaryList.remove(getAdapterPosition());
-//                        notifyItemRemoved(getAdapterPosition());
-//                        notifyItemRangeChanged(getAdapterPosition(), diaryList.size());
-//                    }
-//                });
             }
         }
 
@@ -155,6 +143,24 @@ public class DiaryItemFragment extends Fragment implements DiaryItemDao.DiaryIte
                     builder.append(", ");
                 }
             }
+            if(diaryList.get(i).isBookMark()) {
+                holder.btnFavorites.setBackgroundResource(R.drawable.book_mark_on);
+            }else {
+                holder.btnFavorites.setBackgroundResource(R.drawable.book_mark_off);
+            }
+            holder.btnFavorites.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(diaryList.get(i).isBookMark()){
+                        diaryList.get(i).setBookMark(false);
+                        Toast.makeText(getActivity(), "북마크 해제", Toast.LENGTH_SHORT).show();
+                    }else {
+                        diaryList.get(i).setBookMark(true);
+                        Toast.makeText(getActivity(), "북마크 설정", Toast.LENGTH_SHORT).show();
+                    }
+                    dao.updateBookmark(diaryList.get(i));
+                }
+            });
 
             holder.btnUpdate.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -167,6 +173,30 @@ public class DiaryItemFragment extends Fragment implements DiaryItemDao.DiaryIte
                 @Override
                 public void onClick(View v) {
 
+                }
+            });
+
+            holder.btnDelete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setTitle("삭제 확인");
+                    builder.setMessage("삭제할까요?");
+                    builder.setPositiveButton("예", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dao.delete(diaryList.get(i));
+                        }
+                    });
+
+                    builder.setNegativeButton("아니오", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+                        }
+                    });
+                    AlertDialog dlg =  builder.create();
+                    dlg.show();
                 }
             });
 

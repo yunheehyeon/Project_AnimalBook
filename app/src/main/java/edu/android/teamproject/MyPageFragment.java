@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
 import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -29,11 +30,13 @@ import java.util.List;
 
  * A simple {@link Fragment} subclass.
  */
-public class MyPageFragment extends Fragment implements MyPageDao.DataCallback, ComItemDao.ComItemCallback {
+public class MyPageFragment extends Fragment
+        implements MyPageDao.DataCallback, ComItemDao.ComItemCallback, DiaryItemDao.DiaryItemCallback {
 
 
     private MyPageDao dao;
     private ComItemDao comItemDao;
+    private DiaryItemDao diaryItemDao;
 
     public static final String KEY = "msg";
 
@@ -49,6 +52,7 @@ public class MyPageFragment extends Fragment implements MyPageDao.DataCallback, 
     boolean b1,b2,b3 = false;
 
     private List<ComItem> comItems = new ArrayList<>();
+    private List<DiaryItem> diaryItems = new ArrayList<>();
 
     @Override
     public void onAttach(Context context) {
@@ -106,15 +110,10 @@ public class MyPageFragment extends Fragment implements MyPageDao.DataCallback, 
             showMyProfile(dao.update());
         }
         comItemDao = ComItemDao.getComItemInstance(this);
+        diaryItemDao = DiaryItemDao.getDiaryItemInstance(this);
+
     }
 
-    class myPosting extends CardView {
-        public myPosting(Context context) {
-            super(context);
-            LayoutInflater inflater = getLayoutInflater();
-            inflater.inflate(R.layout.comlist_item, this, true);
-        }
-    }
     private void onClickMyPosting() {
         lLPostingView = getView().findViewById(R.id.lLPostingView);
 
@@ -168,20 +167,51 @@ public class MyPageFragment extends Fragment implements MyPageDao.DataCallback, 
             btnMyPosting.setText("+");
         }
     }
-    class myDiaryBM extends CardView {
-        public myDiaryBM(Context context) {
-            super(context);
-            LayoutInflater inflater1 = getLayoutInflater();
-            inflater1.inflate(R.layout.diary_item, this, true);
-        }
-    }
+
     private void onClickDiaryBM() {
+
+        lLDiaryBMView = getView().findViewById(R.id.lLDiaryBMView);
         if (b2 == false) {
             btnDiaryBM.setText("-");
             b2 = true;
-            for (int i = 0; i < 5; i++) {
+
+            diaryItems = diaryItemDao.updateMyDiaryList();
+
+            Log.i("aaa", "여기 >> " + diaryItems.size());
+
+            for (int i = 0; i < diaryItems.size(); i++) {
                 myDiaryBM = new myDiaryBM(getActivity());
-                lLDiaryBMView = getView().findViewById(R.id.lLDiaryBMView);
+                ViewPager viewPager = myDiaryBM.findViewById(R.id.imageContainer);
+                TextView text = myDiaryBM.findViewById(R.id.comItemTag);
+                TextView textDate = myDiaryBM.findViewById(R.id.textDate);
+                TextView textTag = myDiaryBM.findViewById(R.id.textTag);
+
+                ImageView btnFavorites = myDiaryBM.findViewById(R.id.btnFavorites);
+                Button btnUpdate = myDiaryBM.findViewById(R.id.btnUpdate);
+                Button btnShare = myDiaryBM.findViewById(R.id.btnShare);
+                Button btnDelete = myDiaryBM.findViewById(R.id.btnDelete);
+
+                text.setText(diaryItems.get(i).getDiaryText());
+                textDate.setText("등록일 : " + diaryItems.get(i).getDiaryDate());
+
+                if(diaryItems.get(i).getDiaryTag() != null) {
+                    StringBuilder builder = new StringBuilder();
+                    builder.append("Tag : ");
+                    for(String s : diaryItems.get(i).getDiaryTag()) {
+                        if(s != null) {
+                            builder.append(s);
+                            textTag.setText(builder);
+                        }
+                        builder.append(", ");
+                    }
+                }
+                if(diaryItems.get(i).isBookMark()) {
+                    btnFavorites.setBackgroundResource(R.drawable.book_mark_on);
+                }else {
+                    btnFavorites.setBackgroundResource(R.drawable.book_mark_off);
+                }
+
+
                 lLDiaryBMView.addView(myDiaryBM);
             }
         } else {
@@ -190,6 +220,8 @@ public class MyPageFragment extends Fragment implements MyPageDao.DataCallback, 
             btnDiaryBM.setText("+");
         }
     }
+
+
     private void onClickHospitalBM() {
 
     }
@@ -212,6 +244,11 @@ public class MyPageFragment extends Fragment implements MyPageDao.DataCallback, 
     @Override
     public void dateCallback() {
         comItems = comItemDao.myComItemUpdate();
+    }
+
+    @Override
+    public void itemCallback() {
+            diaryItems = diaryItemDao.updateMyDiaryList();
     }
 
     private void showMyProfile(MyPageProfile myPageProfile) {
@@ -238,6 +275,19 @@ public class MyPageFragment extends Fragment implements MyPageDao.DataCallback, 
             inflater.inflate(R.layout.myprofile_item, this, true);
         }
     }
-
+    class myDiaryBM extends CardView {
+        public myDiaryBM(Context context) {
+            super(context);
+            LayoutInflater inflater1 = getLayoutInflater();
+            inflater1.inflate(R.layout.diary_item, this, true);
+        }
+    }
+    class myPosting extends CardView {
+        public myPosting(Context context) {
+            super(context);
+            LayoutInflater inflater = getLayoutInflater();
+            inflater.inflate(R.layout.comlist_item, this, true);
+        }
+    }
 }
 
