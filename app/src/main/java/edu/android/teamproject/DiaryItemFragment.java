@@ -149,7 +149,7 @@ public class DiaryItemFragment extends Fragment implements DiaryItemDao.DiaryIte
 
             private ViewPager viewPager;
             private TextView text, textDate, textTag, textTitle;
-            private Button btnShare, btnUpdate, btnDelete;
+            private Button btnShare;
             private ImageView btnFavorites;
 
             public DiaryItemViewHolder(@NonNull View itemview) {
@@ -161,9 +161,7 @@ public class DiaryItemFragment extends Fragment implements DiaryItemDao.DiaryIte
                 textTag = itemview.findViewById(R.id.textTag);
 
                 btnFavorites = itemview.findViewById(R.id.btnFavorites);
-                btnUpdate = itemview.findViewById(R.id.btnUpdate);
                 btnShare = itemview.findViewById(R.id.btnShare);
-                btnDelete = itemview.findViewById(R.id.btnDelete);
 
             }
         }
@@ -222,12 +220,6 @@ public class DiaryItemFragment extends Fragment implements DiaryItemDao.DiaryIte
                 }
             });
 
-            holder.btnUpdate.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    startDiaryItemEdit(diaryList.get(i).getDiaryId());
-                }
-            });
 
             holder.btnShare.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -236,9 +228,9 @@ public class DiaryItemFragment extends Fragment implements DiaryItemDao.DiaryIte
                 }
             });
 
-            holder.btnDelete.setOnClickListener(new View.OnClickListener() {
+            holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
-                public void onClick(View v) {
+                public boolean onLongClick(View v) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                     builder.setTitle("삭제 확인");
                     builder.setMessage("삭제할까요?");
@@ -257,6 +249,7 @@ public class DiaryItemFragment extends Fragment implements DiaryItemDao.DiaryIte
                     });
                     AlertDialog dlg = builder.create();
                     dlg.show();
+                    return false;
                 }
             });
 
