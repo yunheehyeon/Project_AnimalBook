@@ -53,7 +53,7 @@ public class ComItemDao implements ChildEventListener{
     private List<ComItem> comItems = new ArrayList<>();
     private List<ComItem> myComItems = new ArrayList<>();
     private Map<String, ComItem> comItemMap  = new TreeMap<>();
-
+    private Map<String, ComItem> myComItemMap  = new TreeMap<>();
     private static ComItemDao comItemDaoInstance;
 
     public static ComItemDao getComItemInstance(Object object){
@@ -114,6 +114,7 @@ public class ComItemDao implements ChildEventListener{
     }
 
     public List<ComItem> myComItemUpdate(){
+        myComItems = new ArrayList<ComItem>(myComItemMap.values());
         return myComItems;
     }
 
@@ -132,6 +133,12 @@ public class ComItemDao implements ChildEventListener{
         reference.setValue(comItem.getCommentCount());
     }
 
+    public void delete(ComItem comItem){
+        reference = database.getReference().child("ComItem");
+        reference.addChildEventListener(this);
+        reference.child(comItem.getItemId()).removeValue();
+    }
+
     @Override
     public void onChildAdded( DataSnapshot dataSnapshot,  String s) {
         ComItem comItem = dataSnapshot.getValue(ComItem.class);
@@ -139,7 +146,7 @@ public class ComItemDao implements ChildEventListener{
         comItemMap.put(dataSnapshot.getKey(), comItem);
 
         if(comItem.getUserId().equals(uid)){
-            myComItems.add(comItem);
+            myComItemMap.put(dataSnapshot.getKey(), comItem);
         }
 
         callback.dateCallback();
@@ -151,18 +158,22 @@ public class ComItemDao implements ChildEventListener{
         ComItem comItem = dataSnapshot.getValue(ComItem.class);
         String key = dataSnapshot.getKey();
         comItem.setItemId(key);
-        for(int i = 0; i < comItems.size(); i++){
-            if(comItems.get(i).getItemId().equals(key)){
-                comItems.set(i, comItem);
-            }
+        comItemMap.put(dataSnapshot.getKey(), comItem);
 
-        }
         callback.dateCallback();
     }
 
     @Override
     public void onChildRemoved( DataSnapshot dataSnapshot) {
+        ComItem comItem = dataSnapshot.getValue(ComItem.class);
+        String key = dataSnapshot.getKey();
+        comItem.setItemId(key);
+        comItemMap.remove(dataSnapshot.getKey());
 
+        myComItemMap.remove(dataSnapshot.getKey());
+
+
+        callback.dateCallback();
     }
 
     @Override
@@ -211,7 +222,6 @@ public class ComItemDao implements ChildEventListener{
                             Toast.makeText(getApplicationContext(), "업로드 실패!", Toast.LENGTH_SHORT).show();
                         }
                     });
-
 
         }
 

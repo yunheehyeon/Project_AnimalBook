@@ -281,7 +281,6 @@ public class DiaryItemFragment extends Fragment implements DiaryItemDao.DiaryIte
     public void showDiaryItemOfDiaryId(String diaryId){
         for(int i = 0; i < diaryList.size(); i++){
             if(diaryList.get(i).getDiaryId().equals(diaryId) ){
-                Log.i("aaa", "position"+ i);
                 recyclerView.scrollToPosition(i);
             }
         }

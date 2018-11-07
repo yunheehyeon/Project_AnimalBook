@@ -128,7 +128,22 @@
                 android:textSize="9sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/btnBookmark"
-                app:layout_constraintTop_toBottomOf="@+id/comItemTag" />
+                app:layout_constraintTop_toBottomOf="@+id/comItemTag"
+                app:layout_constraintVertical_bias="0.0" />
+
+            <Button
+                android:id="@+id/btnComItemDelete"
+                android:layout_width="40dp"
+                android:layout_height="20dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/bordel"
+                android:text="글 삭제"
+                android:textSize="9sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:enabled="false"
+                android:visibility="invisible"/>
 
             <Button
                 android:id="@+id/btnBookmark"
@@ -154,8 +169,7 @@
                 android:layout_marginBottom="8dp"
                 android:text="Tag: 뭐시기 저시기"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintEnd_toStartOf="@+id/btnComItemDelete"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.0" />

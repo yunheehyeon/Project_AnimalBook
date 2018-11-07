@@ -84,7 +84,9 @@ public class CommentDown implements ChildEventListener {
         return commentItemList;
     }
 
-
+    public void delete(CommentItem commentItem){
+        reference.child(commentItem.getCommentItemId()).removeValue();
+    }
 
     @Override
     public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
@@ -102,7 +104,12 @@ public class CommentDown implements ChildEventListener {
 
     @Override
     public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
+        for(int i = 0; i < commentItemList.size(); i++){
+            if(commentItemList.get(i).getCommentItemId().equals(dataSnapshot.getKey())){
+                commentItemList.remove(commentItemList.get(i));
+            }
+        }
+        callback.CommentCallback();
     }
 
     @Override

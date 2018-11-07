@@ -57,6 +57,7 @@ public class DiaryItemDao implements ChildEventListener {
 
     private ArrayList<DiaryItem> diaryList = new ArrayList<>();
     private List<DiaryItem> myDiaryList = new ArrayList<>();
+    private Map<String, DiaryItem> diaryMap = new TreeMap<>();
     private Map<String, DiaryItem> myDiaryMap = new TreeMap<>();
 
     private static DiaryItemDao diaryItemInstance;
@@ -98,7 +99,7 @@ public class DiaryItemDao implements ChildEventListener {
 
     }
     public ArrayList upDate(){
-        diaryList = new ArrayList<DiaryItem>(myDiaryMap.values());
+        diaryList = new ArrayList<DiaryItem>(diaryMap.values());
         return diaryList;
     }
 
@@ -116,7 +117,8 @@ public class DiaryItemDao implements ChildEventListener {
     }
 
     public void delete(DiaryItem diaryItem){
-
+        reference.child("DiaryItem").child(uid);
+        reference.addChildEventListener(this);
         reference.child(diaryItem.getDiaryId()).removeValue();
     }
 
@@ -129,6 +131,7 @@ public class DiaryItemDao implements ChildEventListener {
     }
 
     public List<DiaryItem> updateMyDiaryList(){
+        myDiaryList = new ArrayList<DiaryItem>(myDiaryMap.values());
         return myDiaryList;
     }
 
@@ -137,10 +140,10 @@ public class DiaryItemDao implements ChildEventListener {
         Log.i("aaa", "aaa" + dataSnapshot.getKey());
         DiaryItem diaryItem = dataSnapshot.getValue(DiaryItem.class);
         diaryItem.setDiaryId(dataSnapshot.getKey());
-        myDiaryMap.put(dataSnapshot.getKey(), diaryItem);
+        diaryMap.put(dataSnapshot.getKey(), diaryItem);
 
         if(diaryItem.isBookMark()){
-            myDiaryList.add(diaryItem);
+            myDiaryMap.put(dataSnapshot.getKey(), diaryItem);
         }
 
         callback.itemCallback();
@@ -151,16 +154,12 @@ public class DiaryItemDao implements ChildEventListener {
 
         DiaryItem diaryItem = dataSnapshot.getValue(DiaryItem.class);
         diaryItem.setDiaryId(dataSnapshot.getKey());
-        diaryList.add(diaryItem);
+        diaryMap.put(dataSnapshot.getKey(), diaryItem);
 
         if(diaryItem.isBookMark()){
-            myDiaryList.add(diaryItem);
+            myDiaryMap.put(dataSnapshot.getKey(), diaryItem);
         }else {
-            for (int i = 0; i < myDiaryList.size(); i++) {
-                if (myDiaryList.get(i).getDiaryId().equals(dataSnapshot.getKey())) {
-                    myDiaryList.remove(i);
-                }
-            }
+            myDiaryMap.remove(dataSnapshot.getKey());
         }
 
         callback.itemCallback();
@@ -168,17 +167,13 @@ public class DiaryItemDao implements ChildEventListener {
 
     @Override
     public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-        for(int i = 0; i < diaryList.size(); i++){
-            if(dataSnapshot.getKey().equals(diaryList.get(i).getDiaryId())){
-                diaryList.remove(i);
-            }
-        }
+        DiaryItem diaryItem = dataSnapshot.getValue(DiaryItem.class);
+        diaryItem.setDiaryId(dataSnapshot.getKey());
 
-        for(int i = 0; i < myDiaryList.size(); i++){
-            if(myDiaryList.get(i).getDiaryId().equals(dataSnapshot.getKey())){
-                myDiaryList.remove(i);
-            }
-        }
+        diaryMap.remove(dataSnapshot.getKey());
+
+        myDiaryMap.remove(dataSnapshot.getKey());
+
         callback.itemCallback();
     }
 

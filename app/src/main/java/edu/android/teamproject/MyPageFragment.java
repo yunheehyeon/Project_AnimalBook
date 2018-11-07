@@ -151,12 +151,14 @@ public class MyPageFragment extends Fragment
                 }
                 StringBuilder builder = new StringBuilder();
                 builder.append("Tag : ");
-                for(String s : comItems.get(i).getTag()) {
-                    if(s != null) {
-                        builder.append(s);
-                        textTag.setText(builder);
+                if(comItems.get(i).getTag() != null){
+                    for(String s : comItems.get(i).getTag()) {
+                        if(s != null) {
+                            builder.append(s);
+                            textTag.setText(builder);
+                        }
+                        builder.append(", ");
                     }
-                    builder.append(", ");
                 }
 
                 final int temp = i;
