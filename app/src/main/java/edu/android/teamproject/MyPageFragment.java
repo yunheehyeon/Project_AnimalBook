@@ -33,6 +33,11 @@ import java.util.List;
 public class MyPageFragment extends Fragment
         implements MyPageDao.DataCallback, ComItemDao.ComItemCallback, DiaryItemDao.DiaryItemCallback {
 
+    interface MyPageCallback{
+        void BookMarkDataCallback(String diaryId);
+    }
+
+    private MyPageCallback myPageCallback;
 
     private MyPageDao dao;
     private ComItemDao comItemDao;
@@ -45,6 +50,7 @@ public class MyPageFragment extends Fragment
     public MyPageFragment() {
         // Required empty public constructor
     }
+
     myPosting myPosting;
     myDiaryBM myDiaryBM;
     LinearLayout lLPostingView, lLDiaryBMView;
@@ -56,6 +62,9 @@ public class MyPageFragment extends Fragment
 
     @Override
     public void onAttach(Context context) {
+        if(context instanceof MyPageCallback){
+            myPageCallback = (MyPageCallback) context;
+        }
         super.onAttach(context);
     }
 
@@ -177,21 +186,13 @@ public class MyPageFragment extends Fragment
 
             diaryItems = diaryItemDao.updateMyDiaryList();
 
-            Log.i("aaa", "여기 >> " + diaryItems.size());
-
             for (int i = 0; i < diaryItems.size(); i++) {
                 myDiaryBM = new myDiaryBM(getActivity());
-                ViewPager viewPager = myDiaryBM.findViewById(R.id.imageContainer);
-                TextView text = myDiaryBM.findViewById(R.id.comItemTag);
-                TextView textDate = myDiaryBM.findViewById(R.id.textDate);
-                TextView textTag = myDiaryBM.findViewById(R.id.textTag);
+                TextView textTitle = myDiaryBM.findViewById(R.id.diaryBmTitle);
+                TextView textDate = myDiaryBM.findViewById(R.id.diaryBmDate);
+                TextView textTag = myDiaryBM.findViewById(R.id.diaryBmTag);
 
-                ImageView btnFavorites = myDiaryBM.findViewById(R.id.btnFavorites);
-                Button btnUpdate = myDiaryBM.findViewById(R.id.btnUpdate);
-                Button btnShare = myDiaryBM.findViewById(R.id.btnShare);
-                Button btnDelete = myDiaryBM.findViewById(R.id.btnDelete);
-
-                text.setText(diaryItems.get(i).getDiaryText());
+                textTitle.setText("제목 : " + diaryItems.get(i).getDiaryTitle());
                 textDate.setText("등록일 : " + diaryItems.get(i).getDiaryDate());
 
                 if(diaryItems.get(i).getDiaryTag() != null) {
@@ -205,12 +206,13 @@ public class MyPageFragment extends Fragment
                         builder.append(", ");
                     }
                 }
-                if(diaryItems.get(i).isBookMark()) {
-                    btnFavorites.setBackgroundResource(R.drawable.book_mark_on);
-                }else {
-                    btnFavorites.setBackgroundResource(R.drawable.book_mark_off);
-                }
-
+                final int temp = i;
+                myDiaryBM.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        myPageCallback.BookMarkDataCallback(diaryItems.get(temp).getDiaryId());
+                    }
+                });
 
                 lLDiaryBMView.addView(myDiaryBM);
             }
@@ -279,7 +281,7 @@ public class MyPageFragment extends Fragment
         public myDiaryBM(Context context) {
             super(context);
             LayoutInflater inflater1 = getLayoutInflater();
-            inflater1.inflate(R.layout.diary_item, this, true);
+            inflater1.inflate(R.layout.mypage_diary_item, this, true);
         }
     }
     class myPosting extends CardView {

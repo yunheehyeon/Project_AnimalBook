@@ -127,12 +127,14 @@ public class ComItemListFragment extends Fragment implements ComItemDao.ComItemC
             }
             StringBuilder builder = new StringBuilder();
             builder.append("Tag : ");
-            for(String s : comItems.get(i).getTag()) {
-                if(s != null) {
-                    builder.append(s);
-                    holder.textTag.setText(builder);
+            if(comItems.get(i).getTag() != null) {
+                for (String s : comItems.get(i).getTag()) {
+                    if (s != null) {
+                        builder.append(s);
+                        holder.textTag.setText(builder);
+                    }
+                    builder.append(", ");
                 }
-                builder.append(", ");
             }
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

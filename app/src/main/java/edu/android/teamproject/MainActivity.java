@@ -18,7 +18,8 @@ import android.widget.Toast;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity implements MyPageFragment.MyPageCallback {
+
     GoogleMap mMap;
     SupportMapFragment mapFragment;
     public static final int REQ_CODE = 1000;
@@ -99,22 +100,24 @@ public class MainActivity extends AppCompatActivity{
     protected void onRestart() {
         super.onRestart();
 
+        fragmentManager = getSupportFragmentManager();
+
         switch (navigation.getSelectedItemId()) {
             case R.id.navigation_home:
                 diaryFragment = new DiaryItemFragment();
-                fragmentManager.beginTransaction().replace(R.id.container, diaryFragment).commit();
+                fragmentManager.beginTransaction().replace(R.id.container, diaryFragment).commitAllowingStateLoss();
                 break;
             case R.id.navigation_com:
                 comItemListFragment = new ComItemListFragment();
-                fragmentManager.beginTransaction().replace(R.id.container, comItemListFragment).commit();
+                fragmentManager.beginTransaction().replace(R.id.container, comItemListFragment).commitAllowingStateLoss();
                 break;
             case R.id.navigation_map:
                 gmapFragment = new GmapFragment();
-                fragmentManager.beginTransaction().replace(R.id.container, gmapFragment).commit();
+                fragmentManager.beginTransaction().replace(R.id.container, gmapFragment).commitAllowingStateLoss();
                 break;
             case R.id.navigation_my:
                 fragmentMyPage = new MyPageFragment();
-                fragmentManager.beginTransaction().replace(R.id.container, fragmentMyPage).commit();
+                fragmentManager.beginTransaction().replace(R.id.container, fragmentMyPage).commitAllowingStateLoss();
                 break;
         }
 
@@ -126,5 +129,18 @@ public class MainActivity extends AppCompatActivity{
         inflater.inflate(R.menu.profile, menu);
 
         return true;
+    }
+
+    public static String DIARY_ID = "diaryid";
+
+    @Override
+    public void BookMarkDataCallback(String diaryId) {
+        diaryFragment = new DiaryItemFragment();
+        fragmentManager.beginTransaction().replace(R.id.container, diaryFragment).commitAllowingStateLoss();
+        navigation.getMenu().getItem(0).setChecked(true);
+
+        Bundle args = new Bundle();
+        args.putString(DIARY_ID, diaryId);
+        diaryFragment.setArguments(args);
     }
 }

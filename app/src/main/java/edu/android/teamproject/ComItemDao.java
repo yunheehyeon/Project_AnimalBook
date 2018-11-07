@@ -25,6 +25,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import static com.facebook.FacebookSdk.getApplicationContext;
 
@@ -50,6 +52,7 @@ public class ComItemDao implements ChildEventListener{
 
     private List<ComItem> comItems = new ArrayList<>();
     private List<ComItem> myComItems = new ArrayList<>();
+    private Map<String, ComItem> comItemMap  = new TreeMap<>();
 
     private static ComItemDao comItemDaoInstance;
 
@@ -106,6 +109,7 @@ public class ComItemDao implements ChildEventListener{
     }
 
     public List<ComItem> update(){
+        comItems = new ArrayList<ComItem>(comItemMap.values());
         return comItems;
     }
 
@@ -132,7 +136,8 @@ public class ComItemDao implements ChildEventListener{
     public void onChildAdded( DataSnapshot dataSnapshot,  String s) {
         ComItem comItem = dataSnapshot.getValue(ComItem.class);
         comItem.setItemId(dataSnapshot.getKey());
-        comItems.add(comItem);
+        comItemMap.put(dataSnapshot.getKey(), comItem);
+
         if(comItem.getUserId().equals(uid)){
             myComItems.add(comItem);
         }

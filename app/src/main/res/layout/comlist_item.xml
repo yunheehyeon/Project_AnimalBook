@@ -82,7 +82,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
         android:layout_marginBottom="8dp"
-        android:text="Tag : 강아지 고양이"
+        android:text="Tag : 없음"
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

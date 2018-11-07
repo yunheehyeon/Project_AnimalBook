@@ -80,6 +80,9 @@
                 android:textColor="@color/colorPrimaryDark"/>
 
             <EditText
+                android:inputType="textMultiLine"
+                android:minLines="5"
+                android:maxLines="10"
                 android:id="@+id/editText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -88,8 +91,7 @@
                 android:layout_marginBottom="8dp"
                 android:background="@drawable/bordel"
                 android:ems="10"
-                android:hint="내용"
-                android:inputType="text"
+                android:gravity="left|top"
                 android:textSize="24sp"
           />
 
@@ -130,6 +132,7 @@
                         android:layout_weight="6"
                         android:background="@drawable/ic_line"
                         android:hint="태그"
+                        android:maxLength="10"
                         android:inputType="text"
                         android:textSize="15sp"
                         app:layout_constraintBottom_toBottomOf="parent"

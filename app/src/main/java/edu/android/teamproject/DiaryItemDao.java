@@ -28,6 +28,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import static com.facebook.FacebookSdk.getApplicationContext;
 
@@ -55,6 +57,7 @@ public class DiaryItemDao implements ChildEventListener {
 
     private ArrayList<DiaryItem> diaryList = new ArrayList<>();
     private List<DiaryItem> myDiaryList = new ArrayList<>();
+    private Map<String, DiaryItem> myDiaryMap = new TreeMap<>();
 
     private static DiaryItemDao diaryItemInstance;
 
@@ -95,11 +98,11 @@ public class DiaryItemDao implements ChildEventListener {
 
     }
     public ArrayList upDate(){
+        diaryList = new ArrayList<DiaryItem>(myDiaryMap.values());
         return diaryList;
     }
 
     public void insert(DiaryItem diaryItem) {
-
         diaryList = new ArrayList<>();
         reference = database.getReference().child("DiaryItem").child(uid);
         reference.addChildEventListener(this);
@@ -113,6 +116,7 @@ public class DiaryItemDao implements ChildEventListener {
     }
 
     public void delete(DiaryItem diaryItem){
+
         reference.child(diaryItem.getDiaryId()).removeValue();
     }
 
@@ -130,10 +134,10 @@ public class DiaryItemDao implements ChildEventListener {
 
     @Override
     public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-        Log.i("aaa", dataSnapshot.getKey());
+        Log.i("aaa", "aaa" + dataSnapshot.getKey());
         DiaryItem diaryItem = dataSnapshot.getValue(DiaryItem.class);
         diaryItem.setDiaryId(dataSnapshot.getKey());
-        diaryList.add(diaryItem);
+        myDiaryMap.put(dataSnapshot.getKey(), diaryItem);
 
         if(diaryItem.isBookMark()){
             myDiaryList.add(diaryItem);
@@ -147,12 +151,8 @@ public class DiaryItemDao implements ChildEventListener {
 
         DiaryItem diaryItem = dataSnapshot.getValue(DiaryItem.class);
         diaryItem.setDiaryId(dataSnapshot.getKey());
+        diaryList.add(diaryItem);
 
-        for(int i = 0; i < diaryList.size(); i++){
-            if(dataSnapshot.getKey().equals(diaryList.get(i).getDiaryId())){
-                diaryList.set(i, diaryItem);
-            }
-        }
         if(diaryItem.isBookMark()){
             myDiaryList.add(diaryItem);
         }else {
