@@ -1,18 +1,23 @@
 package edu.android.teamproject;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
@@ -129,6 +134,28 @@ public class MainActivity extends AppCompatActivity implements MyPageFragment.My
         inflater.inflate(R.menu.profile, menu);
 
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.action_profile:
+                showMyPage();
+                break;
+        }
+
+        return true;
+    }
+
+    @SuppressLint("ResourceType")
+    private void showMyPage() {
+        Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.fragment_my_page);
+        dialog.setTitle("My Profile");
+
+        dialog.show();
+
     }
 
     public static String DIARY_ID = "diaryid";
