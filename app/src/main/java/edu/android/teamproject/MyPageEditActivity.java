@@ -70,6 +70,13 @@ public class MyPageEditActivity extends AppCompatActivity implements MyPageDao.E
             }
         });
 
+        if(dao.update() != null) {
+            setMyProfile(dao.update());
+        }
+    }
+
+    private void setMyProfile(MyPageProfile myProfile) {
+
     }
 
     private static final int MAX_PROFILE_ITEM = 6;

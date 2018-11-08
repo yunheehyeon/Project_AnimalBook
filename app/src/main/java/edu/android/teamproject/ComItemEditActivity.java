@@ -87,9 +87,6 @@ public class ComItemEditActivity extends AppCompatActivity implements View.OnCli
         btnConfirm = findViewById(R.id.btnConfirm);
         btnCancel = findViewById(R.id.btnCancel);
 
-        //TedPermission 라이브러리 -> 카메라 권한 획득 추가
-
-
         btnPlusTag.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

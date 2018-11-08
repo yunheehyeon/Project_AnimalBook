@@ -13,7 +13,6 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,12 +22,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 
 
 /**
@@ -39,8 +34,7 @@ public class DiaryItemFragment extends Fragment implements DiaryItemDao.DiaryIte
 
     private Animation fab_open, fab_close;
     private Boolean isFabOpen = false;
-    private FloatingActionButton fabInsert;
-    private FloatingActionButton fabToTop, fab;
+    private FloatingActionButton fabToTop, fab, fabInsert;
 
 
     private ArrayList<DiaryItem> diaryList = new ArrayList<>();
@@ -78,12 +72,6 @@ public class DiaryItemFragment extends Fragment implements DiaryItemDao.DiaryIte
     @Override
     public void onStart() {
         super.onStart();
-
-        long now = System.currentTimeMillis();
-        Date date = new Date(now);
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        String getTime = simpleDateFormat.format(date);
-
 
         dao = DiaryItemDao.getDiaryItemInstance(this);
         diaryList = dao.upDate();
@@ -186,7 +174,7 @@ public class DiaryItemFragment extends Fragment implements DiaryItemDao.DiaryIte
                 holder.viewPager.setId(i + 1000);
                 holder.viewPager.setAdapter(pagerAdapter);
             }
-            holder.textTitle.setText("제목 : " + diaryList.get(i).getDiaryTitle());
+            holder.textTitle.setText(diaryList.get(i).getDiaryTitle());
             holder.text.setText(diaryList.get(i).getDiaryText());
             holder.textDate.setText("등록일 : " + diaryList.get(i).getDiaryDate());
 
