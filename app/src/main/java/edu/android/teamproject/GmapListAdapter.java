@@ -14,6 +14,15 @@ public class GmapListAdapter extends BaseAdapter {
 
     public ArrayList<GmapListItem> listViewItemList = new ArrayList<GmapListItem>();
 
+    public GmapListAdapter(ArrayList<GmapListItem> itemList){
+        if (itemList == null){
+            listViewItemList = new ArrayList<GmapListItem>();
+        }else {
+            listViewItemList = itemList;
+        }
+    }
+
+
     @Override
     public int getCount() {
         return listViewItemList.size();
