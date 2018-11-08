@@ -54,6 +54,7 @@ public class ComItemDao implements ChildEventListener{
     private List<ComItem> myComItems = new ArrayList<>();
     private Map<String, ComItem> comItemMap  = new TreeMap<>();
     private Map<String, ComItem> myComItemMap  = new TreeMap<>();
+
     private static ComItemDao comItemDaoInstance;
 
     public static ComItemDao getComItemInstance(Object object){
@@ -74,13 +75,10 @@ public class ComItemDao implements ChildEventListener{
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
             for (UserInfo profile : user.getProviderData()) {
-                // Id of the provider (ex: google.com)
                 providerId = profile.getProviderId();
 
-                // UID specific to the provider
                 uid = profile.getUid();
 
-                // Name, email address, and profile photo Url
                 name = profile.getDisplayName();
                 email =  profile.getEmail();
                 photoUrl = profile.getPhotoUrl();
@@ -155,7 +153,6 @@ public class ComItemDao implements ChildEventListener{
 
     @Override
     public void onChildChanged( DataSnapshot dataSnapshot,  String s) {
-        Log.i("aaa", "chan");
         ComItem comItem = dataSnapshot.getValue(ComItem.class);
         String key = dataSnapshot.getKey();
         comItem.setItemId(key);
@@ -170,9 +167,7 @@ public class ComItemDao implements ChildEventListener{
         String key = dataSnapshot.getKey();
         comItem.setItemId(key);
         comItemMap.remove(dataSnapshot.getKey());
-
         myComItemMap.remove(dataSnapshot.getKey());
-
 
         callback.dateCallback();
     }
@@ -201,6 +196,7 @@ public class ComItemDao implements ChildEventListener{
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReferenceFromUrl("gs://timproject-14aaa.appspot.com");
         for(Uri uri : uris) {
+
             SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd_mmss");
             Date now = new Date();
             String filename = formatter.format(now)+ minTerm + ".png";

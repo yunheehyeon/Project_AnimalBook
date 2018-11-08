@@ -26,7 +26,6 @@ import java.util.List;
 public class ComItemDetailActivity extends AppCompatActivity implements CommentDown.DataCallback {
 
     private static final String ITEM_ID = "comItemId";
-    private static final int ITEM_ERROR = -1;
 
     public static Intent newIntent(Context context, String comId){
         Intent intent = new Intent(context, ComItemDetailActivity.class);
@@ -122,9 +121,6 @@ public class ComItemDetailActivity extends AppCompatActivity implements CommentD
                 }
             });
         }
-
-
-        int temp = 0;
 
         for(String fileName : comItem.getImages()){
 

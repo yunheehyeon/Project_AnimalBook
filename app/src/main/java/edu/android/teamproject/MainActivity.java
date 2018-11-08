@@ -5,6 +5,8 @@ import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
@@ -16,6 +18,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -61,6 +64,21 @@ public class MainActivity extends AppCompatActivity implements MyPageFragment.My
 
     private BottomNavigationView navigation;
 
+    int[][] states = new int[][] {
+            new int[] { android.R.attr.state_enabled}, // enabled
+            new int[] {-android.R.attr.state_enabled}, // disabled
+            new int[] {-android.R.attr.state_checked}, // unchecked
+            new int[] { android.R.attr.state_pressed}  // pressed
+    };
+
+    int[] colors = new int[] {
+            Color.WHITE,
+            Color.GRAY,
+            Color.GRAY,
+            Color.WHITE,
+    };
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,6 +88,7 @@ public class MainActivity extends AppCompatActivity implements MyPageFragment.My
 
         navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(itemSelectedListener);
+        //navigation.setItemIconTintList(new ColorStateList( states, colors));
 
         fragmentManager = getSupportFragmentManager();
 

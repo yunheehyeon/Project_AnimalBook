@@ -83,13 +83,7 @@ public class MyPageFragment extends Fragment
 
         btnProfileChange = getView().findViewById(R.id.btnProfileChange);
 
-        btnProfileChange.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), MyPageEditActivity.class);
-                startActivity(intent);
-            }
-        });
+
         btnMyPosting = getView().findViewById(R.id.btnMyPosting);
         btnMyPosting.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -118,6 +112,15 @@ public class MyPageFragment extends Fragment
         if(dao.update() != null) {
             showMyProfile(dao.update());
         }
+
+        btnProfileChange.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), MyPageEditActivity.class);
+                startActivity(intent);
+            }
+        });
+
         comItemDao = ComItemDao.getComItemInstance(this);
         diaryItemDao = DiaryItemDao.getDiaryItemInstance(this);
 

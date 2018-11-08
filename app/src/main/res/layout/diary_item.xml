@@ -22,9 +22,12 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:textSize="20sp"/>
+            android:textSize="25sp"
+            android:textColor="@color/colorPrimaryDark"
+            android:background="@drawable/ic_line"/>
 
         <android.support.v4.view.ViewPager
+            android:scaleType="fitXY"
             android:id="@+id/imageContainer"
             android:layout_width="0dp"
             android:layout_height="200dp"
@@ -45,33 +48,36 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:text="내용 없음"
+            android:textColor="@color/colorPrimaryDark"
             android:textSize="20sp"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textDate" />
+            app:layout_constraintTop_toBottomOf="@+id/btnFavorites" />
 
         <TextView
             android:id="@+id/textDate"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
             android:text="등록 날짜"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imageContainer" />
+            android:textSize="10sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textTag" />
 
         <TextView
             android:id="@+id/textTag"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="24dp"
             android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
             android:text="Tag : 없음"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textDiary" />
 
@@ -80,13 +86,11 @@
             android:layout_width="20dp"
             android:layout_height="30dp"
             android:layout_margin="8dp"
-            android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
             android:background="@drawable/book_mark_off"
             android:textSize="15sp"
-            app:layout_constraintBottom_toTopOf="@+id/textDiary"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/btnShare"
             app:layout_constraintTop_toBottomOf="@+id/imageContainer" />
 
         <Button
@@ -96,12 +100,13 @@
             android:layout_margin="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
             android:background="@drawable/share_button"
             android:textSize="15sp"
             android:textStyle="bold"
-            app:layout_constraintBottom_toTopOf="@+id/textDiary"
-            app:layout_constraintStart_toEndOf="@+id/btnFavorites"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.95"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/imageContainer" />
 
     </android.support.constraint.ConstraintLayout>
