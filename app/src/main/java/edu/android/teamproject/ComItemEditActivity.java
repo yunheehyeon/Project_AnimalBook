@@ -287,7 +287,7 @@ public class ComItemEditActivity extends AppCompatActivity implements View.OnCli
         photo.getLayoutParams().height = 600;
         photo.requestLayout();
         photo.setImageURI(resultUri);
-        
+
         photoItems.put(photoItemLayout.getId(), resultUri);
         photoNum++;
 

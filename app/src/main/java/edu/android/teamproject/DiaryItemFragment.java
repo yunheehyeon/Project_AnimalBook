@@ -94,7 +94,7 @@ public class DiaryItemFragment extends Fragment implements DiaryItemDao.DiaryIte
         recyclerView.setAdapter(adapter);
         recyclerView.setHasFixedSize(true);
 
-        if(getArguments() != null) {
+        if (getArguments() != null) {
             String diaryId = getArguments().getString(MainActivity.DIARY_ID);
             if (diaryId != null) {
                 showDiaryItemOfDiaryId(diaryId);
@@ -180,8 +180,8 @@ public class DiaryItemFragment extends Fragment implements DiaryItemDao.DiaryIte
         @Override
         public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, final int i) {
             DiaryItemViewHolder holder = (DiaryItemViewHolder) viewHolder;
-            if(diaryList.get(i).getDiaryImages() == null){
-            }else {
+            if (diaryList.get(i).getDiaryImages() == null) {
+            } else {
                 ImagesPagerAdapter pagerAdapter = new ImagesPagerAdapter(getChildFragmentManager(), i);
                 holder.viewPager.setId(i + 1000);
                 holder.viewPager.setAdapter(pagerAdapter);
@@ -224,8 +224,10 @@ public class DiaryItemFragment extends Fragment implements DiaryItemDao.DiaryIte
             holder.btnShare.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
+                    shareToCommunity(diaryList.get(i));
                 }
+
+
             });
 
             holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
@@ -257,6 +259,35 @@ public class DiaryItemFragment extends Fragment implements DiaryItemDao.DiaryIte
                 holder.viewPager.setCurrentItem(mViewPagerState.get(i));
             }
 
+
+        }
+
+        private void shareToCommunity(final DiaryItem diaryItem) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle("공유 확인");
+            builder.setMessage("커뮤니티로 공유할까요?");
+            builder.setPositiveButton("예", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    ComItem comItem = new ComItem();
+                    comItem.setTitle(diaryItem.getDiaryTitle());
+                    comItem.setImages(diaryItem.getDiaryImages());
+                    comItem.setText(diaryItem.getDiaryText());
+                    comItem.setTag(diaryItem.getDiaryTag());
+                    ComItemDao comItemDao = ComItemDao.getComItemInstance(DiaryItemFragment.class);
+                    comItemDao.insert(comItem);
+                    Toast.makeText(getActivity(), "공유 완료", Toast.LENGTH_SHORT).show();
+                }
+            });
+
+            builder.setNegativeButton("아니오", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+
+                }
+            });
+            AlertDialog dlg = builder.create();
+            dlg.show();
         }
 
         @Override
@@ -278,9 +309,9 @@ public class DiaryItemFragment extends Fragment implements DiaryItemDao.DiaryIte
         startActivity(intent);
     }
 
-    public void showDiaryItemOfDiaryId(String diaryId){
-        for(int i = 0; i < diaryList.size(); i++){
-            if(diaryList.get(i).getDiaryId().equals(diaryId) ){
+    public void showDiaryItemOfDiaryId(String diaryId) {
+        for (int i = 0; i < diaryList.size(); i++) {
+            if (diaryList.get(i).getDiaryId().equals(diaryId)) {
                 recyclerView.scrollToPosition(i);
             }
         }

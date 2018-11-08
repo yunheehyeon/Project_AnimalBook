@@ -186,7 +186,7 @@ public class DiaryItemDao implements ChildEventListener {
     public void onCancelled(@NonNull DatabaseError databaseError) {
 
     }
-    public static final String diary = "Diary/";
+    public static final String diary = "images/";
     private int minTerm = 0;
     public List<String> photoUpload(Context context, final List<Uri> uris) {
 

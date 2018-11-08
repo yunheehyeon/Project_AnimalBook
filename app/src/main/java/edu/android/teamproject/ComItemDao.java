@@ -148,8 +148,9 @@ public class ComItemDao implements ChildEventListener{
         if(comItem.getUserId().equals(uid)){
             myComItemMap.put(dataSnapshot.getKey(), comItem);
         }
-
-        callback.dateCallback();
+        if(callback != null) {
+            callback.dateCallback();
+        }
     }
 
     @Override
@@ -186,7 +187,7 @@ public class ComItemDao implements ChildEventListener{
 
     }
 
-    public static final String community = "Community/";
+    public static final String community = "images/";
     private int minTerm = 0;
     public List<String> photoUpload(Context context, final List<Uri> uris) {
 
