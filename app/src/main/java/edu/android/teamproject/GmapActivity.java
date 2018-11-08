@@ -31,7 +31,9 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
 
+
 public class GmapActivity extends AppCompatActivity implements OnMapReadyCallback {
+
 
     private GoogleMap mMap;
     private EditText mSearchEdit;
@@ -154,7 +156,7 @@ public class GmapActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     /**
      * Manipulates the map once available.
-     * <p>
+     *
      * This callback is triggered when the map is ready to be used.
      * This is where we can add markers or lines, add listeners or move the camera. In this case,
      * we just add a marker near Sydney, Australia.

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/textViewHName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        tools:text="이름" />
+
+    <TextView
+        android:id="@+id/textViewHAddress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        android:textSize="20sp"
+        tools:text="주소" />
+
+    <TextView
+        android:id="@+id/textViewHNumber"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        android:textSize="20sp"
+        tools:text="번호" />
+</LinearLayout>
