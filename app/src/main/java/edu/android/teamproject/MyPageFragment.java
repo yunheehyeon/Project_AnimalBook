@@ -263,6 +263,7 @@ public class MyPageFragment extends Fragment
         LinearLayout layout = getView().findViewById(R.id.myProfileLayout);
         layout.removeAllViews();
         for(MyPageProfile.ProfileItem p : myPageProfile.getProfileItems()){
+
             MyProfileItemLayout myProfileItemLayout = new MyProfileItemLayout(getActivity());
             TextView myProfileItem = myProfileItemLayout.findViewById(R.id.myProfileItem);
             TextView myProfileText = myProfileItemLayout.findViewById(R.id.myProfileText);
@@ -270,8 +271,8 @@ public class MyPageFragment extends Fragment
             myProfileText.setText(p.getProfileItemText());
             layout.addView(myProfileItemLayout);
 
-            dao.photoDownload(myPageProfile.getPhotoUri());
         }
+        dao.photoDownload(myPageProfile.getPhotoUri());
     }
 
     class MyProfileItemLayout extends LinearLayout {

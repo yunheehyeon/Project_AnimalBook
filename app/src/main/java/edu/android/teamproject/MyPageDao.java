@@ -120,7 +120,10 @@ public class MyPageDao implements ChildEventListener {
 
     @Override
     public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
+        if(uid.equals(dataSnapshot.getKey())){
+            myPageProfile = dataSnapshot.getValue(MyPageProfile.class);
+            callback.proFileCallback();
+        }
     }
 
     @Override
@@ -145,6 +148,7 @@ public class MyPageDao implements ChildEventListener {
 
         progressDialog.setMessage("저장중입니다.");
         progressDialog.show();
+        progressDialog.setCancelable(false);
 
         FirebaseStorage storage = FirebaseStorage.getInstance();
 

@@ -31,7 +31,7 @@ import android.widget.Toast;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 
-public class MainActivity extends AppCompatActivity implements MyPageFragment.MyPageCallback {
+public class MainActivity extends AppCompatActivity implements MyPageFragment.MyPageCallback, MyPageDao.DataCallback {
 
     GoogleMap mMap;
     SupportMapFragment mapFragment;
@@ -53,16 +53,16 @@ public class MainActivity extends AppCompatActivity implements MyPageFragment.My
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.navigation_home:
-                        fragmentManager.beginTransaction().replace(R.id.container, diaryFragment).commit();
+                    setDiaryFragment();
                     return true;
                 case R.id.navigation_com:
-                        fragmentManager.beginTransaction().replace(R.id.container, comItemListFragment).commit();
+                    setComItemListFragment();
                     return true;
                 case R.id.navigation_map:
-                        fragmentManager.beginTransaction().replace(R.id.container, gmapFragment).commit();
+                    setGmapFragment();
                     return true;
                 case R.id.navigation_my:
-                        fragmentManager.beginTransaction().replace(R.id.container, fragmentMyPage).commit();
+                    setFragmentMyPage();
                     return true;
             }
             return false;
@@ -93,6 +93,8 @@ public class MainActivity extends AppCompatActivity implements MyPageFragment.My
         setContentView(R.layout.activity_main);
 
         Intent intent = getIntent();
+        dao = MyPageDao.getMyPageInstance(this);
+
 
         navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(itemSelectedListener);
@@ -100,16 +102,12 @@ public class MainActivity extends AppCompatActivity implements MyPageFragment.My
 
         fragmentManager = getSupportFragmentManager();
 
-        diaryFragment = new DiaryItemFragment();
 
-        if (diaryFragment != null) {
-            fragmentManager.beginTransaction().replace(R.id.container, diaryFragment).commit();
+
+        if (diaryFragment == null) {
+            diaryFragment = new DiaryItemFragment();
         }
-
-        comItemListFragment = new ComItemListFragment();
-        gmapFragment = new GmapFragment();
-        fragmentMyPage = new MyPageFragment();
-
+        fragmentManager.beginTransaction().replace(R.id.container, diaryFragment).commit();
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) !=
                 PackageManager.PERMISSION_GRANTED) {
@@ -138,23 +136,40 @@ public class MainActivity extends AppCompatActivity implements MyPageFragment.My
 
         switch (navigation.getSelectedItemId()) {
             case R.id.navigation_home:
-                diaryFragment = new DiaryItemFragment();
-                fragmentManager.beginTransaction().replace(R.id.container, diaryFragment).commitAllowingStateLoss();
+                setDiaryFragment();
                 break;
             case R.id.navigation_com:
-                comItemListFragment = new ComItemListFragment();
-                fragmentManager.beginTransaction().replace(R.id.container, comItemListFragment).commitAllowingStateLoss();
+                setComItemListFragment();
                 break;
             case R.id.navigation_map:
-                gmapFragment = new GmapFragment();
-                fragmentManager.beginTransaction().replace(R.id.container, gmapFragment).commitAllowingStateLoss();
+                setGmapFragment();
                 break;
             case R.id.navigation_my:
-                fragmentMyPage = new MyPageFragment();
-                fragmentManager.beginTransaction().replace(R.id.container, fragmentMyPage).commitAllowingStateLoss();
+                setFragmentMyPage();
                 break;
         }
+    }
 
+    private void setDiaryFragment(){
+        diaryFragment = new DiaryItemFragment();
+        fragmentManager.beginTransaction().replace(R.id.container, diaryFragment).commitAllowingStateLoss();
+    }
+    private void setComItemListFragment(){
+        comItemListFragment = new ComItemListFragment();
+        fragmentManager.beginTransaction().replace(R.id.container, comItemListFragment).commitAllowingStateLoss();
+
+    }
+    private void setGmapFragment(){
+        gmapFragment = new GmapFragment();
+        fragmentManager.beginTransaction().replace(R.id.container, gmapFragment).commitAllowingStateLoss();
+
+
+    }
+    private void setFragmentMyPage(){
+        if(fragmentMyPage == null) {
+            fragmentMyPage = new MyPageFragment();
+        }
+        fragmentManager.beginTransaction().replace(R.id.container, fragmentMyPage).commitAllowingStateLoss();
 
     }
 
@@ -169,14 +184,27 @@ public class MainActivity extends AppCompatActivity implements MyPageFragment.My
 
         switch (item.getItemId()) {
             case R.id.action_profile:
-
                 Context context = getApplicationContext();
                 LayoutInflater inflater = (LayoutInflater) context.getSystemService(LAYOUT_INFLATER_SERVICE);
 
-                View view = inflater.inflate(R.layout.myprofile_item, (ViewGroup) findViewById(R.id.myProfile));
+                View view = inflater.inflate(R.layout.simple_profile, (ViewGroup)findViewById(R.id.simpleProfileLayout));
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                LinearLayout layout = view.findViewById(R.id.simpleProfileLayout);
 
-                builder.setTitle("My Profile");
+                myPageProfile = dao.update();
+
+                layout.removeAllViews();
+
+                for(MyPageProfile.ProfileItem p : myPageProfile.getProfileItems()){
+                    MyProfileItemLayout myProfileItemLayout = new MyProfileItemLayout(this);
+                    TextView myProfileItem = myProfileItemLayout.findViewById(R.id.myProfileItem);
+                    TextView myProfileText = myProfileItemLayout.findViewById(R.id.myProfileText);
+                    myProfileItem.setText(p.getProfileItemName());
+                    myProfileText.setText(p.getProfileItemText());
+
+                    layout.addView(myProfileItemLayout);
+                }
+
                 builder.setView(view);
 
                 AlertDialog ad = builder.create();
@@ -199,22 +227,14 @@ public class MainActivity extends AppCompatActivity implements MyPageFragment.My
         diaryFragment.setArguments(args);
     }
 
-    private void showMyProfile(MyPageProfile myPageProfile) {
+    @Override
+    public void proFileCallback() {
+        myPageProfile = dao.update();
+    }
 
-        LinearLayout layout = findViewById(R.id.myProfile);
-        layout.removeAllViews();
+    @Override
+    public void proFileImageCallback() {
 
-        for(MyPageProfile.ProfileItem p : myPageProfile.getProfileItems()){
-
-            MyProfileItemLayout myProfileItemLayout = new MyProfileItemLayout(this);
-
-            TextView myProfileItem = myProfileItemLayout.findViewById(R.id.myProfileItem);
-            TextView myProfileText = myProfileItemLayout.findViewById(R.id.myProfileText);
-            myProfileItem.setText(p.getProfileItemName());
-            myProfileText.setText(p.getProfileItemText());
-
-            layout.addView(myProfileItemLayout);
-        }
     }
 
     class MyProfileItemLayout extends LinearLayout {

@@ -50,20 +50,6 @@
             android:text="X"
             android:textSize="9sp"
             app:layout_constraintBottom_toTopOf="@id/commentTextM"
-            app:layout_constraintEnd_toStartOf="@id/btnCommentUpdateM"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <Button
-            android:id="@+id/btnCommentUpdateM"
-            android:layout_width="40dp"
-            android:layout_height="20dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
-            android:background="@drawable/bordel"
-            android:text="수정"
-            android:textSize="9sp"
-            app:layout_constraintBottom_toTopOf="@id/commentTextM"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 

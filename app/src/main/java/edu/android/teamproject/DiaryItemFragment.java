@@ -13,6 +13,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +24,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 
 
 /**
@@ -73,14 +77,16 @@ public class DiaryItemFragment extends Fragment implements DiaryItemDao.DiaryIte
     public void onStart() {
         super.onStart();
 
-        dao = DiaryItemDao.getDiaryItemInstance(this);
-        diaryList = dao.upDate();
+
         View view = getView();
         recyclerView = view.findViewById(R.id.diaryRecycleView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         adapter = new DiaryItemAdapter();
         recyclerView.setAdapter(adapter);
         recyclerView.setHasFixedSize(true);
+
+        dao = DiaryItemDao.getDiaryItemInstance(this);
+        itemCallback();
 
         if (getArguments() != null) {
             String diaryId = getArguments().getString(MainActivity.DIARY_ID);
@@ -93,7 +99,31 @@ public class DiaryItemFragment extends Fragment implements DiaryItemDao.DiaryIte
     @Override
     public void itemCallback() {
         diaryList = dao.upDate();
+
+        Collections.sort(diaryList, new Comparator<DiaryItem>() {
+            @Override
+            public int compare(DiaryItem o1, DiaryItem o2) {
+                String str1 = stringParsing(o1.getDiaryDate());
+                String str2 = stringParsing(o2.getDiaryDate());
+                return str2.compareTo(str1);
+            }
+        });
+
         adapter.notifyDataSetChanged();
+    }
+
+    private String stringParsing(String string){
+        String[] strs = string.split("/");
+        StringBuilder builder = new StringBuilder();
+        for(String s : strs){
+            builder.append(s);
+        }
+        strs = builder.toString().split(":");
+        builder = new StringBuilder();
+        for(String s : strs){
+            builder.append(s);
+        }
+        return builder.toString();
     }
 
     @Override

@@ -7,15 +7,20 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -31,6 +36,7 @@ public class ComItemListFragment extends Fragment implements ComItemDao.ComItemC
     public static final String TAG = "comitemfragment";
     private ComItemListAdapter adapter;
 
+    private Spinner spinner;
 
     public ComItemListFragment() {
         // Required empty public constructor
@@ -69,15 +75,69 @@ public class ComItemListFragment extends Fragment implements ComItemDao.ComItemC
         recyclerView.setAdapter(adapter);
         recyclerView.setHasFixedSize(true);
 
+        spinner = view.findViewById(R.id.spinner);
+
         dao = ComItemDao.getComItemInstance(this);
         dateCallback();
+
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if(position == 0){
+                    dateCallback();
+                }
+                if(position == 1){
+                    comItems = dao.update();
+                    Collections.sort(comItems, new Comparator<ComItem>() {
+                        @Override
+                        public int compare(ComItem o1, ComItem o2) {
+                            String str1 = stringParsing(String.valueOf(o1.getViewCount()));
+                            String str2 = stringParsing(String.valueOf(o2.getViewCount()));
+                            return str2.compareTo(str1);
+                        }
+                    });
+
+                    adapter.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
     }
 
     @Override
     public void dateCallback() {
         comItems = dao.update();
+        Collections.sort(comItems, new Comparator<ComItem>() {
+            @Override
+            public int compare(ComItem o1, ComItem o2) {
+                String str1 = stringParsing(o1.getDate());
+                String str2 = stringParsing(o2.getDate());
+                return str2.compareTo(str1);
+            }
+        });
+
         adapter.notifyDataSetChanged();
     }
+
+    private String stringParsing(String string){
+        String[] strs = string.split("/");
+        StringBuilder builder = new StringBuilder();
+        for(String s : strs){
+            builder.append(s);
+        }
+        strs = builder.toString().split(":");
+        builder = new StringBuilder();
+        for(String s : strs){
+            builder.append(s);
+        }
+        return builder.toString();
+    }
+
 
     class ComItemListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
 

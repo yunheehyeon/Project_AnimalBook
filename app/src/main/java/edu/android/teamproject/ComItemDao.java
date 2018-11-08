@@ -95,7 +95,7 @@ public class ComItemDao implements ChildEventListener{
         reference = database.getReference().child("ComItem");
         reference.addChildEventListener(this);
 
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd/HH:mm");
         Date now = new Date();
         String date = formatter.format(now);
         comItem.setDate(date);

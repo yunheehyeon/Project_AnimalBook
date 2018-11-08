@@ -108,7 +108,7 @@ public class DiaryItemDao implements ChildEventListener {
         reference = database.getReference().child("DiaryItem").child(uid);
         reference.addChildEventListener(this);
 
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd/HH:mm");
         Date now = new Date();
         String date = formatter.format(now);
         diaryItem.setDiaryDate(date);
@@ -187,12 +187,12 @@ public class DiaryItemDao implements ChildEventListener {
 
     }
     public static final String diary = "images/";
-    private int minTerm = 0;
+
     public List<String> photoUpload(Context context, final List<Uri> uris) {
 
         final ProgressDialog progressDialog = new ProgressDialog(
                 context);
-
+        int minTerm = 0;
         progressDialog.setCancelable(false);
         progressDialog.setMessage("저장중입니다.");
         progressDialog.show();
@@ -208,11 +208,13 @@ public class DiaryItemDao implements ChildEventListener {
             String filename = formatter.format(now)+ minTerm + ".png";
             minTerm++;
             filenames.add(filename);
+            final int finalMinTerm = minTerm;
             storageRef.child(diary + filename).putFile(uri)
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            if(uris.size() == minTerm) {
+                            Log.i("aaa", uris.size() + " : " + finalMinTerm);
+                            if(uris.size() == finalMinTerm) {
                                 progressDialog.dismiss();
                                 endCallback.endUpload();
                             }
