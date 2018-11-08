@@ -2,6 +2,7 @@ package edu.android.teamproject;
 
 import android.Manifest;
 import android.app.FragmentManager;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Geocoder;
 import android.location.Location;
@@ -9,6 +10,9 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -30,7 +34,12 @@ import com.google.android.gms.tasks.Task;
 public class GmapActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
+    private EditText mSearchEdit;
+    private Button btn_Search;
+    String info;
+
     Geocoder coder;
+
 
     private static final String TAG = "edu.android.and39";
     private static final int REQ_FINE_LOCATION = 100;
@@ -42,17 +51,22 @@ public class GmapActivity extends AppCompatActivity implements OnMapReadyCallbac
     // 주기적 위치 정보를 처리하는 콜백
     private LocationCallback locationCallback;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gmap);
+
+        mSearchEdit = findViewById(R.id.mSearchEdit);
+        btn_Search = findViewById(R.id.btn_Search);
+
 
         locationClient = LocationServices.getFusedLocationProviderClient(this);
         createLocationRequest();
 
         checkLocationPermission();
 
-        SupportMapFragment fragment = (SupportMapFragment)getSupportFragmentManager()
+        SupportMapFragment fragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         fragment.getMapAsync(this);
 
@@ -140,7 +154,7 @@ public class GmapActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     /**
      * Manipulates the map once available.
-     *
+     * <p>
      * This callback is triggered when the map is ready to be used.
      * This is where we can add markers or lines, add listeners or move the camera. In this case,
      * we just add a marker near Sydney, Australia.
@@ -151,8 +165,15 @@ public class GmapActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        
+
+        LatLng itwill = new LatLng(37.4995367, 127.0293303);
+        mMap.addMarker(new MarkerOptions().position(itwill).title("itwill"));
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(17));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(itwill));
+
+
     }
+
 
     private void updateGoogleMap(LatLng latLng) {
         if (mMap == null) {
@@ -161,11 +182,7 @@ public class GmapActivity extends AppCompatActivity implements OnMapReadyCallbac
             return;
         }
 
-        LatLng latLng1 = new LatLng(37.56, 126.97);
-        mMap.addMarker(new MarkerOptions().position(latLng1));
-        mMap.setMinZoomPreference(15);
-        mMap.setMaxZoomPreference(20);
-        mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng1));
+
     }
 
     @Override

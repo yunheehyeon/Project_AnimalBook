@@ -1,12 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<fragment xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:name="com.google.android.gms.maps.SupportMapFragment"
-    android:id="@+id/map"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".GmapActivity">
+    android:layout_height="match_parent"    >
 
 
-</fragment>
+    <fragment
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="55dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/linearLayout"
+        app:layout_constraintVertical_bias="0.48000002"
+        tools:context=".GmapActivity" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="5dp"
+        android:orientation="horizontal">
+
+
+        <EditText
+            android:id="@+id/mSearchEdit"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="@android:string/search_go"
+            android:inputType="textPersonName" />
+
+        <Button
+            android:id="@+id/btn_Search"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@android:string/search_go" />
+
+
+    </LinearLayout>
+
+
+</android.support.constraint.ConstraintLayout>

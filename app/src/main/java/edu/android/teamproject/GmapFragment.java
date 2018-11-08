@@ -1,45 +1,78 @@
 package edu.android.teamproject;
 
 
-import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
+
+
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
+
+
+import android.util.Log;
 import android.view.LayoutInflater;
+
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
+
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.squareup.okhttp.Call;
+import com.squareup.okhttp.Callback;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
+
+
+import java.io.IOException;
+import java.util.List;
 
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class GmapFragment extends Fragment {
-    Button btn;
-    private ListView listView;
 
-//    public class Task extends AsyncTask<String, Void, String> {
-//
-//        @Override
-//        protected String doInBackground(String... strings) {
-//            return null;
-//        }
-//    }
+    private static final String TAG = "edu.android.teamproject";
+
+    private Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            gmapListAdapter.notifyDataSetChanged();
+        }
+    };
+
+    Button btn, btn_http;
+    private ListView listView;
+    private TextView tv;
+    private Request request;
+    private List<GmapListItem> hos_list;
+    String name, addr, lsind_Type, tel,mapx,mapy;
+
 
     public GmapFragment() {
         // Required empty public constructor
     }
 
+    private GmapListAdapter gmapListAdapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_gmap, container, false);
+
+        listView = (ListView) view.findViewById(R.id.list1);
+        gmapListAdapter = new GmapListAdapter();
+        listView.setAdapter(gmapListAdapter);
 
         btn = view.findViewById(R.id.btnStartGmapActivity);
         btn.setOnClickListener(new View.OnClickListener() {
@@ -49,11 +82,16 @@ public class GmapFragment extends Fragment {
             }
         });
 
-        listView = view.findViewById(R.id.listViewHospital);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        btn_http = view.findViewById(R.id.btn_http);
 
+        btn_http.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    run();
+                } catch (Exception e) {
+                    Toast.makeText(getActivity(), "Error", Toast.LENGTH_LONG).show();
+                }
             }
         });
 
@@ -65,6 +103,76 @@ public class GmapFragment extends Fragment {
         Intent intent = new Intent(getActivity(), GmapActivity.class);
 
         startActivity(intent);
+    }
+
+    private final OkHttpClient client = new OkHttpClient();
+
+    public void run() throws Exception {
+        request = new Request.Builder()
+                .url("http://openapi.seoul.go.kr:8088/554a7a6b426b6a773731616b426a52/json/vtrHospitalInfo/1/1000/")
+                .get()
+                .addHeader("cache-control", "no-cache")
+                .addHeader("postman-token", "6e96ef76-aa93-c287-0959-a2dc6d9035e2")
+                .build();
+        Log.i(TAG, "requset=" + request);
+
+        Call call = client.newCall(request);
+        Log.i(TAG, "newCall=" + call);
+
+
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Request request, IOException e) {
+                Log.i(TAG, "failed: " + e.getMessage());
+            }
+
+            @Override
+            public void onResponse(Response response) throws IOException {
+                Log.i(TAG, "ok:" + response.body().string());
+
+                response = client.newCall(request).execute();
+                Log.i(TAG, "response=" + response);
+
+                if (!response.isSuccessful()) {
+                    Log.i(TAG, "failed");
+
+                }
+
+
+                String jsonString = response.body().string();
+                JsonParser jsonParser = new JsonParser();
+
+                try {
+                    JsonObject jsonObject = (JsonObject) jsonParser.parse(jsonString);
+                    JsonObject hos_Info = jsonObject.getAsJsonObject("vtrHospitalInfo");
+
+                    JsonArray row = hos_Info.getAsJsonArray("row");
+                    Log.i(TAG, "row size = " + row.size());
+                    for (int i = 0; i < row.size(); i++) {
+                        JsonObject rowInfo = (JsonObject) row.get(i);
+                        Log.i(TAG, rowInfo.toString());
+
+                        name = (String) rowInfo.get("NM").toString();
+                        addr = (String) rowInfo.get("ADDR").toString();
+                        lsind_Type = (String) rowInfo.get("LSIND_TYPE").toString();
+                        tel = (String) rowInfo.get("TEL").toString();
+                        mapx = (String) rowInfo.get("XCODE").toString();
+                        mapy = (String) rowInfo.get("YCODE").toString();
+
+                        gmapListAdapter.addItem(name, addr, lsind_Type, tel);
+                    }
+
+                    handler.sendEmptyMessage(0);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+
+            }
+        });
+
+
     }
 
 
