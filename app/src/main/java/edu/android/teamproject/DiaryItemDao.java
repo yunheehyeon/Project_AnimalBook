@@ -193,6 +193,7 @@ public class DiaryItemDao implements ChildEventListener {
         final ProgressDialog progressDialog = new ProgressDialog(
                 context);
 
+        progressDialog.setCancelable(false);
         progressDialog.setMessage("저장중입니다.");
         progressDialog.show();
 
