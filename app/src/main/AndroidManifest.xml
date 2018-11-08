@@ -33,8 +33,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".GmapActivity"/>
+        <activity android:name=".GmapActivity" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
@@ -90,7 +89,8 @@
             android:theme="@style/Base.Theme.AppCompat" />
         <!-- optional (needed if default theme has no action bar) -->
 
-        <activity android:name=".GmapActivity"></activity>
+        <activity android:name=".GmapActivity" />
+
     </application>
 
 </manifest>

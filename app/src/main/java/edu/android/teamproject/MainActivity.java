@@ -3,8 +3,12 @@ package edu.android.teamproject;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
@@ -13,11 +17,15 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
@@ -34,6 +42,8 @@ public class MainActivity extends AppCompatActivity implements MyPageFragment.My
     private GmapFragment gmapFragment;
     private MyPageFragment fragmentMyPage;
     private FragmentManager fragmentManager;
+
+    private MyPageDao dao;
 
     private BottomNavigationView.OnNavigationItemSelectedListener itemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -61,6 +71,21 @@ public class MainActivity extends AppCompatActivity implements MyPageFragment.My
 
     private BottomNavigationView navigation;
 
+    int[][] states = new int[][] {
+            new int[] { android.R.attr.state_enabled}, // enabled
+            new int[] {-android.R.attr.state_enabled}, // disabled
+            new int[] {-android.R.attr.state_checked}, // unchecked
+            new int[] { android.R.attr.state_pressed}  // pressed
+    };
+
+    int[] colors = new int[] {
+            Color.WHITE,
+            Color.GRAY,
+            Color.GRAY,
+            Color.WHITE,
+    };
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,6 +95,7 @@ public class MainActivity extends AppCompatActivity implements MyPageFragment.My
 
         navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(itemSelectedListener);
+        //navigation.setItemIconTintList(new ColorStateList( states, colors));
 
         fragmentManager = getSupportFragmentManager();
 
@@ -130,8 +156,7 @@ public class MainActivity extends AppCompatActivity implements MyPageFragment.My
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.profile, menu);
+        getMenuInflater().inflate(R.menu.profile, menu);
 
         return true;
     }
@@ -141,21 +166,32 @@ public class MainActivity extends AppCompatActivity implements MyPageFragment.My
 
         switch (item.getItemId()) {
             case R.id.action_profile:
-                showMyPage();
-                break;
+                Context context = getApplicationContext();
+                LayoutInflater inflater = (LayoutInflater) context.getSystemService(LAYOUT_INFLATER_SERVICE);
+
+                View view = inflater.inflate(R.layout.myprofile_item, (ViewGroup) findViewById(R.id.myProfile));
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+                builder.setTitle("My Profile");
+                builder.setView(view);
+
+                builder.setNegativeButton("닫기", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+
+                AlertDialog ad = builder.create();
+                ad.show();
         }
 
-        return true;
+        return super.onOptionsItemSelected(item);
     }
 
-    @SuppressLint("ResourceType")
-    private void showMyPage() {
-        Dialog dialog = new Dialog(this);
-        dialog.setContentView(R.layout.fragment_my_page);
-        dialog.setTitle("My Profile");
-
-        dialog.show();
-
+    @Override
+    public void onOptionsMenuClosed(Menu menu) {
+        super.onOptionsMenuClosed(menu);
     }
 
     public static String DIARY_ID = "diaryid";
@@ -170,4 +206,5 @@ public class MainActivity extends AppCompatActivity implements MyPageFragment.My
         args.putString(DIARY_ID, diaryId);
         diaryFragment.setArguments(args);
     }
+
 }
