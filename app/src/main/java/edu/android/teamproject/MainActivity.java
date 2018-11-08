@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity implements MyPageFragment.My
     private GmapFragment gmapFragment;
     private MyPageFragment fragmentMyPage;
     private FragmentManager fragmentManager;
+    private MyPageProfile myPageProfile;
 
     private MyPageDao dao;
 
@@ -100,9 +101,11 @@ public class MainActivity extends AppCompatActivity implements MyPageFragment.My
         fragmentManager = getSupportFragmentManager();
 
         diaryFragment = new DiaryItemFragment();
+
         if (diaryFragment != null) {
             fragmentManager.beginTransaction().replace(R.id.container, diaryFragment).commit();
         }
+
         comItemListFragment = new ComItemListFragment();
         gmapFragment = new GmapFragment();
         fragmentMyPage = new MyPageFragment();
@@ -166,6 +169,7 @@ public class MainActivity extends AppCompatActivity implements MyPageFragment.My
 
         switch (item.getItemId()) {
             case R.id.action_profile:
+
                 Context context = getApplicationContext();
                 LayoutInflater inflater = (LayoutInflater) context.getSystemService(LAYOUT_INFLATER_SERVICE);
 
@@ -175,23 +179,11 @@ public class MainActivity extends AppCompatActivity implements MyPageFragment.My
                 builder.setTitle("My Profile");
                 builder.setView(view);
 
-                builder.setNegativeButton("닫기", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                    }
-                });
-
                 AlertDialog ad = builder.create();
                 ad.show();
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onOptionsMenuClosed(Menu menu) {
-        super.onOptionsMenuClosed(menu);
     }
 
     public static String DIARY_ID = "diaryid";
@@ -205,6 +197,33 @@ public class MainActivity extends AppCompatActivity implements MyPageFragment.My
         Bundle args = new Bundle();
         args.putString(DIARY_ID, diaryId);
         diaryFragment.setArguments(args);
+    }
+
+    private void showMyProfile(MyPageProfile myPageProfile) {
+
+        LinearLayout layout = findViewById(R.id.myProfile);
+        layout.removeAllViews();
+
+        for(MyPageProfile.ProfileItem p : myPageProfile.getProfileItems()){
+
+            MyProfileItemLayout myProfileItemLayout = new MyProfileItemLayout(this);
+
+            TextView myProfileItem = myProfileItemLayout.findViewById(R.id.myProfileItem);
+            TextView myProfileText = myProfileItemLayout.findViewById(R.id.myProfileText);
+            myProfileItem.setText(p.getProfileItemName());
+            myProfileText.setText(p.getProfileItemText());
+
+            layout.addView(myProfileItemLayout);
+        }
+    }
+
+    class MyProfileItemLayout extends LinearLayout {
+
+        public MyProfileItemLayout(Context context) {
+            super(context);
+            LayoutInflater inflater = getLayoutInflater();
+            inflater.inflate(R.layout.myprofile_item, this, true);
+        }
     }
 
 }
