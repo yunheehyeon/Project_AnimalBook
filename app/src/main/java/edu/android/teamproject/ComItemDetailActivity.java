@@ -1,8 +1,10 @@
 package edu.android.teamproject;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
@@ -26,7 +28,7 @@ public class ComItemDetailActivity extends AppCompatActivity implements CommentD
     private static final String ITEM_ID = "comItemId";
     private static final int ITEM_ERROR = -1;
 
-    public static Intent newIntent(Context context, int comId){
+    public static Intent newIntent(Context context, String comId){
         Intent intent = new Intent(context, ComItemDetailActivity.class);
         intent.putExtra(ITEM_ID, comId);
 
@@ -35,12 +37,11 @@ public class ComItemDetailActivity extends AppCompatActivity implements CommentD
 
     private ComItemDao dao;
 
-    private Button btncommentAdd;
+    private Button btncommentAdd, btnComItemDelete;
     private int commentCount;
     private EditText commentEdText;
     private TextView textTitle, textUserId, textDate, textCommentCount, textTag, textViewCount;
     private TextView textView;
-    private ImageView imageView1, imageView2, imageView3;
     private ComItem comItem;
 
     private CommentDown commentDown;
@@ -59,29 +60,69 @@ public class ComItemDetailActivity extends AppCompatActivity implements CommentD
         textCommentCount = findViewById(R.id.itemCommentCount);
         textViewCount = findViewById(R.id.comItemViewCount);
         btncommentAdd = findViewById(R.id.btnCommentWrite);
+        btnComItemDelete = findViewById(R.id.btnComItemDelete);
 
-        int position = getIntent().getIntExtra(ITEM_ID, ITEM_ERROR);
-        if(position != ITEM_ERROR){
-            dao = ComItemDao.getComItemInstance(this);
-            comItem = dao.update().get(position);
-            commentDown = new CommentDown(comItem.getItemId(), this);
+        String comId = getIntent().getStringExtra(ITEM_ID);
+        dao = ComItemDao.getComItemInstance(this);
+
+        for(ComItem c : dao.update()){
+            if(c.getItemId().equals(comId)){
+                comItem = c;
+            }
+        }
+        if(comItem == null){
+            finish();
         }
 
+        dao.viewCountUpdate(comItem);
+
+        commentDown = new CommentDown(comItem.getItemId(), this);
+
         textTitle.setText(comItem.getTitle());
-        textUserId.setText("아이디 : " + comItem.getUserEmail());
+        textUserId.setText("작성자 : " + comItem.getUserEmail());
         textDate.setText("등록일 : " + comItem.getDate());
         textView.setText(comItem.getText());
         textViewCount.setText("조회수 : " + String.valueOf(comItem.getViewCount()));
         textCommentCount.setText("댓글 : " + String.valueOf(comItem.getCommentCount()));
         StringBuilder builder = new StringBuilder();
         builder.append("Tag : ");
-        for(String s : comItem.getTag()) {
-            if(s != null) {
-                builder.append(s);
-                textTag.setText(builder);
+        if(comItem.getTag() != null){
+            for(String s : comItem.getTag()) {
+                if(s != null) {
+                    builder.append(s);
+                    textTag.setText(builder);
+                }
+                builder.append(", ");
             }
-            builder.append(", ");
         }
+        if(comItem.getUserEmail().equals(commentDown.userEmail())){
+            btnComItemDelete.setVisibility(View.VISIBLE);
+            btnComItemDelete.setEnabled(true);
+            btnComItemDelete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(ComItemDetailActivity.this);
+                    builder.setTitle("삭제 확인");
+                    builder.setMessage("삭제할까요?");
+                    builder.setPositiveButton("예", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dao.delete(comItem);
+                            finish();
+                        }
+                    });
+                    builder.setNegativeButton("아니오", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+                        }
+                    });
+                    AlertDialog dlg = builder.create();
+                    dlg.show();
+                }
+            });
+        }
+
 
         int temp = 0;
 
@@ -95,9 +136,11 @@ public class ComItemDetailActivity extends AppCompatActivity implements CommentD
             storageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                 @Override
                 public void onSuccess(Uri uri) {
-                    GlideApp.with(ComItemDetailActivity.this)
-                            .load(uri)
-                            .into(imageView);
+                    if(imageView != null && ComItemDetailActivity.this != null) {
+                        GlideApp.with(ComItemDetailActivity.this)
+                                .load(uri)
+                                .into(imageView);
+                    }
                 }
             });
             LinearLayout imageLayout = findViewById(R.id.comImageLayout);
@@ -115,6 +158,7 @@ public class ComItemDetailActivity extends AppCompatActivity implements CommentD
             @Override
             public void onClick(View v) {
                 commentUpdate();
+                commentEdText.setText("");
             }
         });
 
@@ -143,24 +187,55 @@ public class ComItemDetailActivity extends AppCompatActivity implements CommentD
 
     @Override
     public void CommentCallback() {
+        LinearLayout comLayout = findViewById(R.id.commentItemLayout);
+        comLayout.removeAllViews();
+
         List<CommentItem> commentItemList = commentDown.update();
         commentCount = commentItemList.size();
+        comItem.setCommentCount(commentCount);
+        dao.commentCountUpdate(comItem);
+        textCommentCount.setText("댓글 : " + String.valueOf(commentCount));
 
         for(int i = 0; i < commentCount; i++){
             if(commentItemList.get(i).getCommentUserId().equals(commentDown.userEmail())){
                 CommentMasterItem commentMasterItem = new CommentMasterItem(this);
-                LinearLayout comLayout = findViewById(R.id.commentItemLayout);
                 TextView textUserEmail = commentMasterItem.findViewById(R.id.commentUserIdM);
                 TextView textDate = commentMasterItem.findViewById(R.id.commentDateM);
                 TextView textView = commentMasterItem.findViewById(R.id.commentTextM);
-                textUserEmail.setText(commentItemList.get(i).getCommentUserId());
-                textDate.setText(commentItemList.get(i).getCommentDate());
+                Button btnCommentDelete = commentMasterItem.findViewById(R.id.btnCommentDeleteM);
+                final CommentItem commentItem = commentItemList.get(i);
+                textUserEmail.setText("작성자 : " + commentItem.getCommentUserId());
+                textDate.setText("날짜 : " + commentItem.getCommentDate());
                 textView.setText(commentItemList.get(i).getCommentText());
                 comLayout.addView(commentMasterItem);
+
+                btnCommentDelete.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(ComItemDetailActivity.this);
+                        builder.setTitle("삭제 확인");
+                        builder.setMessage("삭제할까요?");
+                        builder.setPositiveButton("예", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                commentDown.delete(commentItem);
+                            }
+                        });
+                        builder.setNegativeButton("아니오", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                            }
+                        });
+                        AlertDialog dlg = builder.create();
+                        dlg.show();
+
+                    }
+                });
+
             }else {
                 CommentItemLayout commentItem = new CommentItemLayout(this);
-                LinearLayout comLayout = findViewById(R.id.comItemLayout);
-                TextView textUserEmail = commentItem.findViewById(R.id.commentItemLayout);
+                TextView textUserEmail = commentItem.findViewById(R.id.commentUserId);
                 TextView textDate = commentItem.findViewById(R.id.commentDate);
                 TextView textView = commentItem.findViewById(R.id.commentText);
                 textUserEmail.setText(commentItemList.get(i).getCommentUserId());
@@ -201,7 +276,6 @@ public class ComItemDetailActivity extends AppCompatActivity implements CommentD
 
     @Override
     protected void onDestroy() {
-        dao.viewCountUpdate(comItem);
         super.onDestroy();
     }
 }

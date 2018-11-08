@@ -7,6 +7,7 @@ import java.util.List;
 
 public class DiaryItem {
 
+    private boolean bookMark;
     private String diaryTitle;
     private List<String> diaryImages;
     private String diaryText;
@@ -73,6 +74,14 @@ public class DiaryItem {
 
     public void setDiaryId(String diaryId) {
         this.diaryId = diaryId;
+    }
+
+    public boolean isBookMark() {
+        return bookMark;
+    }
+
+    public void setBookMark(boolean bookMark) {
+        this.bookMark = bookMark;
     }
 
     @Override

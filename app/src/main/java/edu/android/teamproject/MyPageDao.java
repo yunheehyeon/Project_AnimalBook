@@ -27,6 +27,7 @@ import com.google.firebase.storage.UploadTask;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import static com.facebook.FacebookSdk.getApplicationContext;
 
@@ -69,6 +70,7 @@ public class MyPageDao implements ChildEventListener {
         if(object instanceof EndCallback){
             myPageInstance.endCallback = (EndCallback) object;
         }
+
         return myPageInstance;
     }
 
@@ -110,7 +112,6 @@ public class MyPageDao implements ChildEventListener {
 
     @Override
     public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
         if(uid.equals(dataSnapshot.getKey())){
             myPageProfile = dataSnapshot.getValue(MyPageProfile.class);
             callback.proFileCallback();
@@ -185,7 +186,6 @@ public class MyPageDao implements ChildEventListener {
             public void onSuccess(byte[] bytes) {
                 Bitmap bitmap = BitmapFactory.decodeByteArray( bytes, 0, bytes.length );
                 myPageImage = bitmap;
-                Log.i("aaa", "callback:" + callback);
                 callback.proFileImageCallback();
             }
         }).addOnFailureListener(new OnFailureListener() {

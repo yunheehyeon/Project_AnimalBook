@@ -3,14 +3,16 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:focusable="true"
+    android:focusableInTouchMode="true">
 
     <EditText
         android:id="@+id/commentEdText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:inputType="textPersonName"
+        android:inputType="text"
         android:hint="댓글을 입력하세요"
         android:background="@drawable/bordel"
         android:layout_margin="8dp"
@@ -19,7 +21,7 @@
     <Button
         android:id="@+id/btnCommentUpdateM"
         android:layout_width="40dp"
-        android:layout_height="20dp"
+        android:layout_height="25dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"

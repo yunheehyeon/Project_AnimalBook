@@ -62,9 +62,9 @@ public class  DiaryItemEdit extends AppCompatActivity implements View.OnClickLis
     private Button btnInsert, btnPlusTag, btnConfirm, btnCancel;
 
 
-    public static Intent newIntent(Context context, int diaryPosition) {
+    public static Intent newIntent(Context context, String diaryId) {
         Intent intent = new Intent(context, DiaryItemEdit.class);
-        intent.putExtra(DIARY_POSITION, diaryPosition);
+        intent.putExtra(DIARY_POSITION, diaryId);
 
         return  intent;
     }
@@ -89,8 +89,6 @@ public class  DiaryItemEdit extends AppCompatActivity implements View.OnClickLis
         btnConfirm = findViewById(R.id.btnConfirm);
         btnCancel = findViewById(R.id.btnCancel);
 
-        //TedPermission 라이브러리 -> 카메라 권한 획득 추가
-
         btnPlusTag.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -113,16 +111,24 @@ public class  DiaryItemEdit extends AppCompatActivity implements View.OnClickLis
         });
 
 
-        int diaryPosition = getIntent().getIntExtra(DIARY_POSITION, DIARY_ADD);
-        if(diaryPosition != DIARY_ADD){
-            setDiaryItem(diaryPosition);
+
+
+
+        String diaryId = getIntent().getStringExtra(DIARY_POSITION);
+        if(diaryId != null){
+            setDiaryItem(diaryId);
         }
 
     }
 
-    private void setDiaryItem(int diaryPosition) {
+    private void setDiaryItem(String diaryId) {
         List<DiaryItem> diaryItems = dao.upDate();
-        DiaryItem diaryItem = diaryItems.get(diaryPosition);
+        for(DiaryItem d : diaryItems){
+            if(d.getDiaryId().equals(diaryId)){
+                DiaryItem diaryItem = d;
+            }
+        }
+
 
     }
 
@@ -294,17 +300,21 @@ public class  DiaryItemEdit extends AppCompatActivity implements View.OnClickLis
 
 
     private void addImage(Uri resultUri) {
-            PhotoItemLayout photoItemLayout = new PhotoItemLayout(DiaryItemEdit.this);
-            photoItemLayout.setId(photoNum+1000);
-            photoItemLayouts.add(photoItemLayout);
-            LinearLayout tagLayout = findViewById(R.id.imageItemLayout);
-            tagLayout.addView(photoItemLayout);
+        PhotoItemLayout photoItemLayout = new PhotoItemLayout(DiaryItemEdit.this);
+        photoItemLayout.setId(photoNum+1000);
+        photoItemLayouts.add(photoItemLayout);
+        LinearLayout tagLayout = findViewById(R.id.imageItemLayout);
+        tagLayout.addView(photoItemLayout);
 
-            ImageView photo = photoItemLayout.findViewById(R.id.photo);
-            photo.setImageURI(resultUri);
+        ImageView photo = photoItemLayout.findViewById(R.id.photo);
+        photo.getLayoutParams().width = 600;
+        photo.getLayoutParams().height = 600;
+        photo.requestLayout();
+        photo.setImageURI(resultUri);
 
-            photoItems.put(photoItemLayout.getId(), resultUri);
-            photoNum++;
+
+        photoItems.put(photoItemLayout.getId(), resultUri);
+        photoNum++;
 
         for(final PhotoItemLayout p : photoItemLayouts){
             Button btnDeletePhoto = p.findViewById(R.id.btnDeletePhoto);

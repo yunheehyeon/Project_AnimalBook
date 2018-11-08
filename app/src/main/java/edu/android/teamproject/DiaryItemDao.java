@@ -28,6 +28,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import static com.facebook.FacebookSdk.getApplicationContext;
 
@@ -43,7 +45,7 @@ public class DiaryItemDao implements ChildEventListener {
 
     private FirebaseDatabase database;
     private DatabaseReference reference;
-    private ArrayList<DiaryItem> diaryList = new ArrayList<>();
+
     private FirebaseAuth mAuth;
     private String providerId,uid,name,email;
     private Uri photoUrl;
@@ -52,6 +54,11 @@ public class DiaryItemDao implements ChildEventListener {
 
     private DiaryItemCallback callback;
     private EndCallback endCallback;
+
+    private ArrayList<DiaryItem> diaryList = new ArrayList<>();
+    private List<DiaryItem> myDiaryList = new ArrayList<>();
+    private Map<String, DiaryItem> diaryMap = new TreeMap<>();
+    private Map<String, DiaryItem> myDiaryMap = new TreeMap<>();
 
     private static DiaryItemDao diaryItemInstance;
 
@@ -92,10 +99,14 @@ public class DiaryItemDao implements ChildEventListener {
 
     }
     public ArrayList upDate(){
+        diaryList = new ArrayList<DiaryItem>(diaryMap.values());
         return diaryList;
     }
 
     public void insert(DiaryItem diaryItem) {
+        diaryList = new ArrayList<>();
+        reference = database.getReference().child("DiaryItem").child(uid);
+        reference.addChildEventListener(this);
 
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         Date now = new Date();
@@ -105,23 +116,65 @@ public class DiaryItemDao implements ChildEventListener {
         reference.push().setValue(diaryItem);
     }
 
+    public void delete(DiaryItem diaryItem){
+        reference.child("DiaryItem").child(uid);
+        reference.addChildEventListener(this);
+        reference.child(diaryItem.getDiaryId()).removeValue();
+    }
+
+    public void updateBookmark(DiaryItem diaryItem){
+        Log.i("aaa", diaryItem.getDiaryId());
+        reference = database.getReference().child("DiaryItem").child(uid).child(diaryItem.getDiaryId()).child("bookMark");
+        reference.addChildEventListener(this);
+
+        reference.setValue(diaryItem.isBookMark());
+    }
+
+    public List<DiaryItem> updateMyDiaryList(){
+        myDiaryList = new ArrayList<DiaryItem>(myDiaryMap.values());
+        return myDiaryList;
+    }
+
     @Override
     public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-        Log.i("aaa", dataSnapshot.getKey());
+        Log.i("aaa", "aaa" + dataSnapshot.getKey());
         DiaryItem diaryItem = dataSnapshot.getValue(DiaryItem.class);
         diaryItem.setDiaryId(dataSnapshot.getKey());
-        diaryList.add(diaryItem);
+        diaryMap.put(dataSnapshot.getKey(), diaryItem);
+
+        if(diaryItem.isBookMark()){
+            myDiaryMap.put(dataSnapshot.getKey(), diaryItem);
+        }
+
         callback.itemCallback();
     }
 
     @Override
     public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
+        DiaryItem diaryItem = dataSnapshot.getValue(DiaryItem.class);
+        diaryItem.setDiaryId(dataSnapshot.getKey());
+        diaryMap.put(dataSnapshot.getKey(), diaryItem);
+
+        if(diaryItem.isBookMark()){
+            myDiaryMap.put(dataSnapshot.getKey(), diaryItem);
+        }else {
+            myDiaryMap.remove(dataSnapshot.getKey());
+        }
+
+        callback.itemCallback();
     }
 
     @Override
     public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+        DiaryItem diaryItem = dataSnapshot.getValue(DiaryItem.class);
+        diaryItem.setDiaryId(dataSnapshot.getKey());
 
+        diaryMap.remove(dataSnapshot.getKey());
+
+        myDiaryMap.remove(dataSnapshot.getKey());
+
+        callback.itemCallback();
     }
 
     @Override
@@ -133,13 +186,14 @@ public class DiaryItemDao implements ChildEventListener {
     public void onCancelled(@NonNull DatabaseError databaseError) {
 
     }
-    public static final String diary = "Diary/";
+    public static final String diary = "images/";
     private int minTerm = 0;
     public List<String> photoUpload(Context context, final List<Uri> uris) {
 
         final ProgressDialog progressDialog = new ProgressDialog(
                 context);
 
+        progressDialog.setCancelable(false);
         progressDialog.setMessage("저장중입니다.");
         progressDialog.show();
 
@@ -152,7 +206,7 @@ public class DiaryItemDao implements ChildEventListener {
             SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd_mmss");
             Date now = new Date();
             String filename = formatter.format(now)+ minTerm + ".png";
-
+            minTerm++;
             filenames.add(filename);
             storageRef.child(diary + filename).putFile(uri)
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -172,7 +226,6 @@ public class DiaryItemDao implements ChildEventListener {
                         }
                     });
 
-            minTerm++;
         }
 
         return filenames;

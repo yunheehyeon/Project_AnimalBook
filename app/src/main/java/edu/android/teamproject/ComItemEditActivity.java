@@ -283,6 +283,9 @@ public class ComItemEditActivity extends AppCompatActivity implements View.OnCli
         tagLayout.addView(photoItemLayout);
 
         ImageView photo = photoItemLayout.findViewById(R.id.photo);
+        photo.getLayoutParams().width = 600;
+        photo.getLayoutParams().height = 600;
+        photo.requestLayout();
         photo.setImageURI(resultUri);
 
         photoItems.put(photoItemLayout.getId(), resultUri);

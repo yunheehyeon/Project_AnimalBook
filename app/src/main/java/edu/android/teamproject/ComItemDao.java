@@ -25,6 +25,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import static com.facebook.FacebookSdk.getApplicationContext;
 
@@ -49,7 +51,9 @@ public class ComItemDao implements ChildEventListener{
     private UserInfo profile;
 
     private List<ComItem> comItems = new ArrayList<>();
-
+    private List<ComItem> myComItems = new ArrayList<>();
+    private Map<String, ComItem> comItemMap  = new TreeMap<>();
+    private Map<String, ComItem> myComItemMap  = new TreeMap<>();
     private static ComItemDao comItemDaoInstance;
 
     public static ComItemDao getComItemInstance(Object object){
@@ -89,7 +93,7 @@ public class ComItemDao implements ChildEventListener{
     }
 
     public void insert(ComItem comItem) {
-        database = FirebaseDatabase.getInstance();
+        comItems = new ArrayList<>();
         reference = database.getReference().child("ComItem");
         reference.addChildEventListener(this);
 
@@ -105,7 +109,13 @@ public class ComItemDao implements ChildEventListener{
     }
 
     public List<ComItem> update(){
+        comItems = new ArrayList<ComItem>(comItemMap.values());
         return comItems;
+    }
+
+    public List<ComItem> myComItemUpdate(){
+        myComItems = new ArrayList<ComItem>(myComItemMap.values());
+        return myComItems;
     }
 
 
@@ -120,34 +130,51 @@ public class ComItemDao implements ChildEventListener{
         reference = database.getReference().child("ComItem").child(comItem.getItemId()).child("commentCount");
         reference.addChildEventListener(this);
 
-        reference.setValue((comItem.getCommentCount()+1));
+        reference.setValue(comItem.getCommentCount());
+    }
+
+    public void delete(ComItem comItem){
+        reference = database.getReference().child("ComItem");
+        reference.addChildEventListener(this);
+        reference.child(comItem.getItemId()).removeValue();
     }
 
     @Override
     public void onChildAdded( DataSnapshot dataSnapshot,  String s) {
         ComItem comItem = dataSnapshot.getValue(ComItem.class);
         comItem.setItemId(dataSnapshot.getKey());
-        comItems.add(comItem);
+        comItemMap.put(dataSnapshot.getKey(), comItem);
 
-        callback.dateCallback();
+        if(comItem.getUserId().equals(uid)){
+            myComItemMap.put(dataSnapshot.getKey(), comItem);
+        }
+        if(callback != null) {
+            callback.dateCallback();
+        }
     }
 
     @Override
     public void onChildChanged( DataSnapshot dataSnapshot,  String s) {
+        Log.i("aaa", "chan");
         ComItem comItem = dataSnapshot.getValue(ComItem.class);
         String key = dataSnapshot.getKey();
         comItem.setItemId(key);
-        for(int i = 0; i < comItems.size(); i++){
-            if(comItems.get(i).getItemId().equals(key)){
-                comItems.set(i, comItem);
-            }
-        }
+        comItemMap.put(dataSnapshot.getKey(), comItem);
+
         callback.dateCallback();
     }
 
     @Override
     public void onChildRemoved( DataSnapshot dataSnapshot) {
+        ComItem comItem = dataSnapshot.getValue(ComItem.class);
+        String key = dataSnapshot.getKey();
+        comItem.setItemId(key);
+        comItemMap.remove(dataSnapshot.getKey());
 
+        myComItemMap.remove(dataSnapshot.getKey());
+
+
+        callback.dateCallback();
     }
 
     @Override
@@ -160,13 +187,13 @@ public class ComItemDao implements ChildEventListener{
 
     }
 
-    public static final String community = "Community/";
+    public static final String community = "images/";
     private int minTerm = 0;
     public List<String> photoUpload(Context context, final List<Uri> uris) {
 
         final ProgressDialog progressDialog = new ProgressDialog(
                 context);
-
+        progressDialog.setCancelable(false);
         progressDialog.setMessage("저장중입니다.");
         progressDialog.show();
 
@@ -177,7 +204,7 @@ public class ComItemDao implements ChildEventListener{
             SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd_mmss");
             Date now = new Date();
             String filename = formatter.format(now)+ minTerm + ".png";
-
+            minTerm++;
             filenames.add(filename);
             storageRef.child(community + filename).putFile(uri)
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -197,7 +224,6 @@ public class ComItemDao implements ChildEventListener{
                         }
                     });
 
-            minTerm++;
         }
 
         return filenames;

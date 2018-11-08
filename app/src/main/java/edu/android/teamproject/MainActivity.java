@@ -1,31 +1,39 @@
 package edu.android.teamproject;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
-import android.support.v4.app.Fragment;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.Toast;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity implements MyPageFragment.MyPageCallback {
+
     GoogleMap mMap;
     SupportMapFragment mapFragment;
     public static final int REQ_CODE = 1000;
+
+    private DiaryItemFragment diaryFragment;
+    private ComItemListFragment comItemListFragment;
+    private GmapFragment gmapFragment;
+    private MyPageFragment fragmentMyPage;
+    private FragmentManager fragmentManager;
 
     private BottomNavigationView.OnNavigationItemSelectedListener itemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -34,35 +42,17 @@ public class MainActivity extends AppCompatActivity{
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.navigation_home:
-                    FragmentManager diaryManager = getSupportFragmentManager();
-                    DiaryItemFragment diaryFragment = new DiaryItemFragment();
-                    if (diaryFragment != null) {
-                        diaryManager.beginTransaction().replace(R.id.container, diaryFragment).commit();
-                    }
+                        fragmentManager.beginTransaction().replace(R.id.container, diaryFragment).commit();
                     return true;
                 case R.id.navigation_com:
-                    FragmentManager manager = getSupportFragmentManager();
-                    ComItemListFragment fragment = new ComItemListFragment();
-                    if(fragment!= null){
-                        manager.beginTransaction().replace(R.id.container, fragment).commit();
-                    }
+                        fragmentManager.beginTransaction().replace(R.id.container, comItemListFragment).commit();
                     return true;
                 case R.id.navigation_map:
-                    FragmentManager managerGMap = getSupportFragmentManager();
-                    GmapFragment gmapFragment = new GmapFragment();
-                    if(gmapFragment!= null){
-                        managerGMap.beginTransaction().replace(R.id.container, gmapFragment).commit();
-                    }
-
+                        fragmentManager.beginTransaction().replace(R.id.container, gmapFragment).commit();
                     return true;
                 case R.id.navigation_my:
-                    FragmentManager managerMyPage = getSupportFragmentManager();
-                    MyPageFragment fragmentMyPage = new MyPageFragment();
-                    if(fragmentMyPage != null){
-                        managerMyPage.beginTransaction().replace(R.id.container, fragmentMyPage).commit();
-                    }
+                        fragmentManager.beginTransaction().replace(R.id.container, fragmentMyPage).commit();
                     return true;
-
             }
             return false;
         }
@@ -81,11 +71,103 @@ public class MainActivity extends AppCompatActivity{
         navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(itemSelectedListener);
 
-        FragmentManager diaryManager = getSupportFragmentManager();
-        DiaryItemFragment diaryFragment = new DiaryItemFragment();
+        fragmentManager = getSupportFragmentManager();
+
+        diaryFragment = new DiaryItemFragment();
         if (diaryFragment != null) {
-            diaryManager.beginTransaction().replace(R.id.container, diaryFragment).commit();
+            fragmentManager.beginTransaction().replace(R.id.container, diaryFragment).commit();
         }
+        comItemListFragment = new ComItemListFragment();
+        gmapFragment = new GmapFragment();
+        fragmentMyPage = new MyPageFragment();
+
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) !=
+                PackageManager.PERMISSION_GRANTED) {
+
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.SEND_SMS)) {
+                Toast.makeText(this, "카메라 권한이 필요합니다.", Toast.LENGTH_LONG).show();
+            } else {
+
+            }
+
+            // 권한요청 다이얼로그 띄움
+            String[] permission = {Manifest.permission.CAMERA};
+            ActivityCompat.requestPermissions(
+                    this, // 권한을 요청하는 액티비티 주소
+                    permission, // 요청을 하는 관한들의 배열
+                    REQ_CODE);  // 권한요청 후 결과처리에 필요한 코드
+        }
+
     }
 
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+
+        fragmentManager = getSupportFragmentManager();
+
+        switch (navigation.getSelectedItemId()) {
+            case R.id.navigation_home:
+                diaryFragment = new DiaryItemFragment();
+                fragmentManager.beginTransaction().replace(R.id.container, diaryFragment).commitAllowingStateLoss();
+                break;
+            case R.id.navigation_com:
+                comItemListFragment = new ComItemListFragment();
+                fragmentManager.beginTransaction().replace(R.id.container, comItemListFragment).commitAllowingStateLoss();
+                break;
+            case R.id.navigation_map:
+                gmapFragment = new GmapFragment();
+                fragmentManager.beginTransaction().replace(R.id.container, gmapFragment).commitAllowingStateLoss();
+                break;
+            case R.id.navigation_my:
+                fragmentMyPage = new MyPageFragment();
+                fragmentManager.beginTransaction().replace(R.id.container, fragmentMyPage).commitAllowingStateLoss();
+                break;
+        }
+
+
+    }
+
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.profile, menu);
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.action_profile:
+                showMyPage();
+                break;
+        }
+
+        return true;
+    }
+
+    @SuppressLint("ResourceType")
+    private void showMyPage() {
+        Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.fragment_my_page);
+        dialog.setTitle("My Profile");
+
+        dialog.show();
+
+    }
+
+    public static String DIARY_ID = "diaryid";
+
+    @Override
+    public void BookMarkDataCallback(String diaryId) {
+        diaryFragment = new DiaryItemFragment();
+        fragmentManager.beginTransaction().replace(R.id.container, diaryFragment).commitAllowingStateLoss();
+        navigation.getMenu().getItem(0).setChecked(true);
+
+        Bundle args = new Bundle();
+        args.putString(DIARY_ID, diaryId);
+        diaryFragment.setArguments(args);
+    }
 }

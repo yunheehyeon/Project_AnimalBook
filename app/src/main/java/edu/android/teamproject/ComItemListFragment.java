@@ -118,26 +118,28 @@ public class ComItemListFragment extends Fragment implements ComItemDao.ComItemC
             ComItemListViewHolder holder = (ComItemListViewHolder) viewHolder;
 
             holder.textTitle.setText(comItems.get(i).getTitle());
-            holder.textUserId.setText(comItems.get(i).getUserEmail());
+            holder.textUserId.setText("작성자 : " + comItems.get(i).getUserEmail());
             holder.textViewCount.setText("조회수 : " + String.valueOf(comItems.get(i).getViewCount()));
-            holder.textDate.setText(comItems.get(i).getDate());
+            holder.textDate.setText("등록일 : " + comItems.get(i).getDate());
             holder.textCommentCount.setText("댓글 : " + String.valueOf(comItems.get(i).getCommentCount()));
             if(comItems.get(i).getItemId() != null){
                 holder.imageView.setImageResource(R.drawable.isimage);
             }
             StringBuilder builder = new StringBuilder();
             builder.append("Tag : ");
-            for(String s : comItems.get(i).getTag()) {
-                if(s != null) {
-                    builder.append(s);
-                    holder.textTag.setText(builder);
+            if(comItems.get(i).getTag() != null) {
+                for (String s : comItems.get(i).getTag()) {
+                    if (s != null) {
+                        builder.append(s);
+                        holder.textTag.setText(builder);
+                    }
+                    builder.append(", ");
                 }
-                builder.append(", ");
             }
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    startComItemActivity(i);
+                    startComItemActivity(comItems.get(i).getItemId());
                 }
             });
 
@@ -150,8 +152,8 @@ public class ComItemListFragment extends Fragment implements ComItemDao.ComItemC
 
     }
 
-    private void startComItemActivity(int i){
-        Intent intent = ComItemDetailActivity.newIntent(getActivity(), i);
+    private void startComItemActivity(String comId){
+        Intent intent = ComItemDetailActivity.newIntent(getActivity(), comId);
         startActivity(intent);
     }
 

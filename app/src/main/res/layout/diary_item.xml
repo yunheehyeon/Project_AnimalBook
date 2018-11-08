@@ -12,45 +12,53 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <android.support.v4.view.ViewPager
-            android:id="@+id/imageContainer"
-            android:layout_width="120dp"
-            android:layout_height="120dp"
+        <TextView
+            android:id="@+id/textDiaryTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:background="@drawable/bordel">
+            android:textSize="20sp"/>
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/imageContainer"
+            android:layout_width="0dp"
+            android:layout_height="200dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textDiaryTitle">
 
         </android.support.v4.view.ViewPager>
 
         <TextView
-            android:id="@+id/comItemTag"
+            android:id="@+id/textDiary"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
-            android:text="내용"
+            android:text="내용 없음"
+            android:textSize="20sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imageContainer" />
+            app:layout_constraintTop_toBottomOf="@+id/textDate" />
 
         <TextView
             android:id="@+id/textDate"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
             android:text="등록 날짜"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/btnFavorites"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textTag" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/imageContainer" />
 
         <TextView
             android:id="@+id/textTag"
@@ -59,74 +67,42 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
-            android:text="태그"
+            android:layout_marginBottom="8dp"
+            android:text="Tag : 없음"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/comItemTag" />
+            app:layout_constraintTop_toBottomOf="@+id/textDiary" />
 
-        <Button
+        <ImageView
             android:id="@+id/btnFavorites"
-            android:layout_width="60dp"
+            android:layout_width="20dp"
             android:layout_height="30dp"
             android:layout_margin="8dp"
+            android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
-            android:background="@color/buttonBackground1"
-            android:text="즐겨찾기"
+            android:background="@drawable/book_mark_off"
             android:textSize="15sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/btnShare"
-            app:layout_constraintTop_toBottomOf="@+id/textTag" />
+            app:layout_constraintBottom_toTopOf="@+id/textDiary"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/imageContainer" />
 
         <Button
             android:id="@+id/btnShare"
-            android:layout_width="40dp"
+            android:layout_width="44dp"
             android:layout_height="30dp"
             android:layout_margin="8dp"
+            android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
-            android:background="@color/buttonBackground2"
-            android:text="공유"
+            android:background="@drawable/share_button"
             android:textSize="15sp"
             android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/btnUpdate"
-            app:layout_constraintTop_toBottomOf="@+id/textTag" />
-
-        <Button
-            android:id="@+id/btnUpdate"
-            android:layout_width="40dp"
-            android:layout_height="30dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
-            android:background="@color/buttonBackground3"
-            android:text="수정"
-            android:textSize="15sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/btnDelete"
-            app:layout_constraintTop_toBottomOf="@+id/textTag" />
-
-        <Button
-            android:id="@+id/btnDelete"
-            android:layout_width="40dp"
-            android:layout_height="30dp"
-            android:layout_margin="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
-            android:background="@color/buttonBackground4"
-            android:text="삭제"
-            android:textSize="15sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textTag" />
+            app:layout_constraintBottom_toTopOf="@+id/textDiary"
+            app:layout_constraintStart_toEndOf="@+id/btnFavorites"
+            app:layout_constraintTop_toBottomOf="@+id/imageContainer" />
 
     </android.support.constraint.ConstraintLayout>
 
