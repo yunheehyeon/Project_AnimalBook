@@ -8,13 +8,14 @@ public class GmapListItem {
     private String addr;
     private String lsind_Type;
     private String tel;
-    private int mapx;
-    private int mapy;
+
+    private double mapx;
+    private double mapy;
 
     public GmapListItem(){}
 
 
-    public GmapListItem(String name, String addr, String lsind_Type, String tel, int mapx, int mapy) {
+    public GmapListItem(String name, String addr, String lsind_Type, String tel, double mapx, double mapy) {
         this.name = name;
         this.addr = addr;
         this.lsind_Type = lsind_Type;
@@ -59,19 +60,19 @@ public class GmapListItem {
         this.tel = tel;
     }
 
-    public int getMapx() {
+    public double getMapx() {
         return mapx;
     }
 
-    public void setMapx(int mapx) {
+    public void setMapx(double mapx) {
         this.mapx = mapx;
     }
 
-    public int getMapy() {
+    public double getMapy() {
         return mapy;
     }
 
-    public void setMapy(int mapy) {
+    public void setMapy(double mapy) {
         this.mapy = mapy;
     }
 

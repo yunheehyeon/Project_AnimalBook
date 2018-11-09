@@ -19,7 +19,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 
 import com.google.gson.JsonArray;
@@ -33,6 +32,9 @@ import com.squareup.okhttp.Response;
 
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 
@@ -50,12 +52,12 @@ public class GmapFragment extends Fragment {
         }
     };
 
-    Button btn, btn_http;
+    Button btn, btn_Asc;
     private ListView listView;
     private TextView tv;
     private Request request;
-    private List<GmapListItem> hos_list;
-    String name, addr, lsind_Type, tel,mapx,mapy;
+    private List<GmapListItem> listItems;
+    String name, addr, lsind_Type, tel, mapx, mapy;
 
 
     public GmapFragment() {
@@ -63,6 +65,7 @@ public class GmapFragment extends Fragment {
     }
 
     private GmapListAdapter gmapListAdapter;
+    ArrayList<GmapListItem> itemList = new ArrayList<GmapListItem>();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -71,7 +74,7 @@ public class GmapFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_gmap, container, false);
 
         listView = (ListView) view.findViewById(R.id.list1);
-        gmapListAdapter = new GmapListAdapter();
+        gmapListAdapter = new GmapListAdapter(itemList);
         listView.setAdapter(gmapListAdapter);
 
         btn = view.findViewById(R.id.btnStartGmapActivity);
@@ -82,98 +85,111 @@ public class GmapFragment extends Fragment {
             }
         });
 
-        btn_http = view.findViewById(R.id.btn_http);
 
-        btn_http.setOnClickListener(new View.OnClickListener() {
+        try {
+            run();
+        } catch (Exception e) {
+            e.getMessage();
+        }
+
+        btn_Asc = view.findViewById(R.id.btn_Asc);
+
+        btn_Asc.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
-                    run();
-                } catch (Exception e) {
-                    Toast.makeText(getActivity(), "Error", Toast.LENGTH_LONG).show();
-                }
+                Comparator<GmapListItem> textAsc = new Comparator<GmapListItem>() {
+                    @Override
+                    public int compare(GmapListItem listItem1, GmapListItem listItem2) {
+                        return listItem1.getName().compareTo(listItem2.getName());
+                    }
+                };
+
+//                Comparator comparator = Collections.reverseOrder(); //역순
+                Collections.sort(itemList,textAsc);
+                handler.sendEmptyMessage(0);
+
             }
+
+
         });
-
-
         return view;
     }
 
-    private void startGmapActivity() {
-        Intent intent = new Intent(getActivity(), GmapActivity.class);
+        private void startGmapActivity () {
+            Intent intent = new Intent(getActivity(), GmapActivity.class);
 
-        startActivity(intent);
-    }
+            startActivity(intent);
+        }
 
-    private final OkHttpClient client = new OkHttpClient();
+        private final OkHttpClient client = new OkHttpClient();
 
-    public void run() throws Exception {
-        request = new Request.Builder()
-                .url("http://openapi.seoul.go.kr:8088/554a7a6b426b6a773731616b426a52/json/vtrHospitalInfo/1/1000/")
-                .get()
-                .addHeader("cache-control", "no-cache")
-                .addHeader("postman-token", "6e96ef76-aa93-c287-0959-a2dc6d9035e2")
-                .build();
-        Log.i(TAG, "requset=" + request);
+        public void run () throws Exception {
+            request = new Request.Builder()
+                    .url("http://openapi.seoul.go.kr:8088/554a7a6b426b6a773731616b426a52/json/vtrHospitalInfo/1/1000/")
+                    .get()
+                    .addHeader("cache-control", "no-cache")
+                    .addHeader("postman-token", "6e96ef76-aa93-c287-0959-a2dc6d9035e2")
+                    .build();
+            Log.i(TAG, "requset=" + request);
 
-        Call call = client.newCall(request);
-        Log.i(TAG, "newCall=" + call);
+            Call call = client.newCall(request);
+            Log.i(TAG, "newCall=" + call);
 
 
-        call.enqueue(new Callback() {
-            @Override
-            public void onFailure(Request request, IOException e) {
-                Log.i(TAG, "failed: " + e.getMessage());
-            }
-
-            @Override
-            public void onResponse(Response response) throws IOException {
-                Log.i(TAG, "ok:" + response.body().string());
-
-                response = client.newCall(request).execute();
-                Log.i(TAG, "response=" + response);
-
-                if (!response.isSuccessful()) {
-                    Log.i(TAG, "failed");
-
+            call.enqueue(new Callback() {
+                @Override
+                public void onFailure(Request request, IOException e) {
+                    Log.i(TAG, "failed: " + e.getMessage());
                 }
 
+                @Override
+                public void onResponse(Response response) throws IOException {
+                    Log.i(TAG, "ok:" + response.body().string());
 
-                String jsonString = response.body().string();
-                JsonParser jsonParser = new JsonParser();
+                    response = client.newCall(request).execute();
+                    Log.i(TAG, "response=" + response);
 
-                try {
-                    JsonObject jsonObject = (JsonObject) jsonParser.parse(jsonString);
-                    JsonObject hos_Info = jsonObject.getAsJsonObject("vtrHospitalInfo");
+                    if (!response.isSuccessful()) {
+                        Log.i(TAG, "failed");
 
-                    JsonArray row = hos_Info.getAsJsonArray("row");
-                    Log.i(TAG, "row size = " + row.size());
-                    for (int i = 0; i < row.size(); i++) {
-                        JsonObject rowInfo = (JsonObject) row.get(i);
-                        Log.i(TAG, rowInfo.toString());
-
-                        name = (String) rowInfo.get("NM").toString();
-                        addr = (String) rowInfo.get("ADDR").toString();
-                        lsind_Type = (String) rowInfo.get("LSIND_TYPE").toString();
-                        tel = (String) rowInfo.get("TEL").toString();
-                        mapx = (String) rowInfo.get("XCODE").toString();
-                        mapy = (String) rowInfo.get("YCODE").toString();
-
-                        gmapListAdapter.addItem(name, addr, lsind_Type, tel);
                     }
 
-                    handler.sendEmptyMessage(0);
 
-                } catch (Exception e) {
-                    e.printStackTrace();
+                    String jsonString = response.body().string();
+                    JsonParser jsonParser = new JsonParser();
+
+                    try {
+                        JsonObject jsonObject = (JsonObject) jsonParser.parse(jsonString);
+                        JsonObject hos_Info = jsonObject.getAsJsonObject("vtrHospitalInfo");
+
+                        JsonArray row = hos_Info.getAsJsonArray("row");
+                        Log.i(TAG, "row size = " + row.size());
+                        for (int i = 0; i < row.size(); i++) {
+                            JsonObject rowInfo = (JsonObject) row.get(i);
+                            Log.i(TAG, rowInfo.toString());
+
+                            name = (String) rowInfo.get("NM").toString();
+                            addr = (String) rowInfo.get("ADDR").toString();
+                            lsind_Type = (String) rowInfo.get("LSIND_TYPE").toString();
+                            tel = (String) rowInfo.get("TEL").toString();
+                            mapx = (String) rowInfo.get("XCODE").toString();
+                            mapy = (String) rowInfo.get("YCODE").toString();
+
+                            gmapListAdapter.addItem(name, addr, lsind_Type, tel);
+                        }
+
+                        handler.sendEmptyMessage(0);
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+
                 }
+            });
 
 
-            }
-        });
+        }
 
 
     }
-
-
-}

@@ -14,6 +14,15 @@ public class GmapListAdapter extends BaseAdapter {
 
     public ArrayList<GmapListItem> listViewItemList = new ArrayList<GmapListItem>();
 
+    public GmapListAdapter(ArrayList<GmapListItem> itemList){
+        if (itemList == null){
+            listViewItemList = new ArrayList<GmapListItem>();
+        }else {
+            listViewItemList = itemList;
+        }
+    }
+
+
     @Override
     public int getCount() {
         return listViewItemList.size();
@@ -36,7 +45,7 @@ public class GmapListAdapter extends BaseAdapter {
 
         // "listview_item" Layout을 inflate하여 convertView 참조 획득.
         if (convertView == null) {
-            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            LayoutInflater inflater = LayoutInflater.from(context);
             convertView = inflater.inflate(R.layout.gmap_list_item, parent, false);
         }
         TextView name = (TextView) convertView.findViewById(R.id.name);

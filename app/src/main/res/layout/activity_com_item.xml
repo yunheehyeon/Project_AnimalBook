@@ -127,7 +127,7 @@
                 android:text="댓글쓰기"
                 android:textSize="9sp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/btnBookmark"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/comItemTag"
                 app:layout_constraintVertical_bias="0.0" />
 
@@ -144,20 +144,6 @@
                 app:layout_constraintTop_toTopOf="parent"
                 android:enabled="false"
                 android:visibility="invisible"/>
-
-            <Button
-                android:id="@+id/btnBookmark"
-                android:layout_width="40dp"
-                android:layout_height="20dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="8dp"
-                android:background="@drawable/bordel"
-                android:text="북마크"
-                android:textSize="9sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/comItemTag" />
 
             <TextView
                 android:id="@+id/comItemTag"

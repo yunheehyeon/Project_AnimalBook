@@ -3,6 +3,8 @@ package edu.android.teamproject;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
@@ -15,18 +17,21 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 
-public class MainActivity extends AppCompatActivity implements MyPageFragment.MyPageCallback {
+public class MainActivity extends AppCompatActivity implements MyPageFragment.MyPageCallback, MyPageDao.DataCallback {
 
     GoogleMap mMap;
     SupportMapFragment mapFragment;
@@ -37,6 +42,9 @@ public class MainActivity extends AppCompatActivity implements MyPageFragment.My
     private GmapFragment gmapFragment;
     private MyPageFragment fragmentMyPage;
     private FragmentManager fragmentManager;
+    private MyPageProfile myPageProfile;
+
+    private MyPageDao dao;
 
     private BottomNavigationView.OnNavigationItemSelectedListener itemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -45,16 +53,16 @@ public class MainActivity extends AppCompatActivity implements MyPageFragment.My
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.navigation_home:
-                        fragmentManager.beginTransaction().replace(R.id.container, diaryFragment).commit();
+                    setDiaryFragment();
                     return true;
                 case R.id.navigation_com:
-                        fragmentManager.beginTransaction().replace(R.id.container, comItemListFragment).commit();
+                    setComItemListFragment();
                     return true;
                 case R.id.navigation_map:
-                        fragmentManager.beginTransaction().replace(R.id.container, gmapFragment).commit();
+                    setGmapFragment();
                     return true;
                 case R.id.navigation_my:
-                        fragmentManager.beginTransaction().replace(R.id.container, fragmentMyPage).commit();
+                    setFragmentMyPage();
                     return true;
             }
             return false;
@@ -85,6 +93,8 @@ public class MainActivity extends AppCompatActivity implements MyPageFragment.My
         setContentView(R.layout.activity_main);
 
         Intent intent = getIntent();
+        dao = MyPageDao.getMyPageInstance(this);
+
 
         navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(itemSelectedListener);
@@ -92,14 +102,12 @@ public class MainActivity extends AppCompatActivity implements MyPageFragment.My
 
         fragmentManager = getSupportFragmentManager();
 
-        diaryFragment = new DiaryItemFragment();
-        if (diaryFragment != null) {
-            fragmentManager.beginTransaction().replace(R.id.container, diaryFragment).commit();
-        }
-        comItemListFragment = new ComItemListFragment();
-        gmapFragment = new GmapFragment();
-        fragmentMyPage = new MyPageFragment();
 
+
+        if (diaryFragment == null) {
+            diaryFragment = new DiaryItemFragment();
+        }
+        fragmentManager.beginTransaction().replace(R.id.container, diaryFragment).commit();
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) !=
                 PackageManager.PERMISSION_GRANTED) {
@@ -128,29 +136,45 @@ public class MainActivity extends AppCompatActivity implements MyPageFragment.My
 
         switch (navigation.getSelectedItemId()) {
             case R.id.navigation_home:
-                diaryFragment = new DiaryItemFragment();
-                fragmentManager.beginTransaction().replace(R.id.container, diaryFragment).commitAllowingStateLoss();
+                setDiaryFragment();
                 break;
             case R.id.navigation_com:
-                comItemListFragment = new ComItemListFragment();
-                fragmentManager.beginTransaction().replace(R.id.container, comItemListFragment).commitAllowingStateLoss();
+                setComItemListFragment();
                 break;
             case R.id.navigation_map:
-                gmapFragment = new GmapFragment();
-                fragmentManager.beginTransaction().replace(R.id.container, gmapFragment).commitAllowingStateLoss();
+                setGmapFragment();
                 break;
             case R.id.navigation_my:
-                fragmentMyPage = new MyPageFragment();
-                fragmentManager.beginTransaction().replace(R.id.container, fragmentMyPage).commitAllowingStateLoss();
+                setFragmentMyPage();
                 break;
         }
+    }
 
+    private void setDiaryFragment(){
+        diaryFragment = new DiaryItemFragment();
+        fragmentManager.beginTransaction().replace(R.id.container, diaryFragment).commitAllowingStateLoss();
+    }
+    private void setComItemListFragment(){
+        comItemListFragment = new ComItemListFragment();
+        fragmentManager.beginTransaction().replace(R.id.container, comItemListFragment).commitAllowingStateLoss();
+
+    }
+    private void setGmapFragment(){
+        gmapFragment = new GmapFragment();
+        fragmentManager.beginTransaction().replace(R.id.container, gmapFragment).commitAllowingStateLoss();
+
+
+    }
+    private void setFragmentMyPage(){
+        if(fragmentMyPage == null) {
+            fragmentMyPage = new MyPageFragment();
+        }
+        fragmentManager.beginTransaction().replace(R.id.container, fragmentMyPage).commitAllowingStateLoss();
 
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.profile, menu);
+        getMenuInflater().inflate(R.menu.profile, menu);
 
         return true;
     }
@@ -160,21 +184,34 @@ public class MainActivity extends AppCompatActivity implements MyPageFragment.My
 
         switch (item.getItemId()) {
             case R.id.action_profile:
-                showMyPage();
-                break;
+                Context context = getApplicationContext();
+                LayoutInflater inflater = (LayoutInflater) context.getSystemService(LAYOUT_INFLATER_SERVICE);
+
+                View view = inflater.inflate(R.layout.simple_profile, (ViewGroup)findViewById(R.id.simpleProfileLayout));
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                LinearLayout layout = view.findViewById(R.id.simpleProfileLayout);
+
+                myPageProfile = dao.update();
+
+                layout.removeAllViews();
+
+                for(MyPageProfile.ProfileItem p : myPageProfile.getProfileItems()){
+                    MyProfileItemLayout myProfileItemLayout = new MyProfileItemLayout(this);
+                    TextView myProfileItem = myProfileItemLayout.findViewById(R.id.myProfileItem);
+                    TextView myProfileText = myProfileItemLayout.findViewById(R.id.myProfileText);
+                    myProfileItem.setText(p.getProfileItemName());
+                    myProfileText.setText(p.getProfileItemText());
+
+                    layout.addView(myProfileItemLayout);
+                }
+
+                builder.setView(view);
+
+                AlertDialog ad = builder.create();
+                ad.show();
         }
 
-        return true;
-    }
-
-    @SuppressLint("ResourceType")
-    private void showMyPage() {
-        Dialog dialog = new Dialog(this);
-        dialog.setContentView(R.layout.fragment_my_page);
-        dialog.setTitle("My Profile");
-
-        dialog.show();
-
+        return super.onOptionsItemSelected(item);
     }
 
     public static String DIARY_ID = "diaryid";
@@ -189,4 +226,24 @@ public class MainActivity extends AppCompatActivity implements MyPageFragment.My
         args.putString(DIARY_ID, diaryId);
         diaryFragment.setArguments(args);
     }
+
+    @Override
+    public void proFileCallback() {
+        myPageProfile = dao.update();
+    }
+
+    @Override
+    public void proFileImageCallback() {
+
+    }
+
+    class MyProfileItemLayout extends LinearLayout {
+
+        public MyProfileItemLayout(Context context) {
+            super(context);
+            LayoutInflater inflater = getLayoutInflater();
+            inflater.inflate(R.layout.myprofile_item, this, true);
+        }
+    }
+
 }
