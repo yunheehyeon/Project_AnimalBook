@@ -10,7 +10,7 @@
 
     <!-- SplashActivity images Maping-->
     <style name="SplashTheme" parent="@android:style/Theme.Light.NoTitleBar">
-        <item name="android:windowBackground">@drawable/back_images</item>
+        <item name="android:windowBackground">@drawable/login_page</item>
 
     </style>
 
