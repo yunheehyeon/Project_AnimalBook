@@ -1,12 +1,20 @@
 package edu.android.teamproject;
 
 
+import android.content.Context;
 import android.content.Intent;
 
 
+import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 
 
@@ -16,6 +24,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -48,6 +57,7 @@ public class GmapFragment extends Fragment {
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
+
             gmapListAdapter.notifyDataSetChanged();
         }
     };
@@ -56,8 +66,8 @@ public class GmapFragment extends Fragment {
     private ListView listView;
     private TextView tv;
     private Request request;
-    private List<GmapListItem> listItems;
-    String name, addr, lsind_Type, tel, mapx, mapy;
+    String name, addr_old, addr, lsind_Type, tel, mapx, mapy;
+    double myLat, myLng;
 
 
     public GmapFragment() {
@@ -73,15 +83,53 @@ public class GmapFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_gmap, container, false);
 
+        LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+        // GPS 프로바이더 사용가능여부
+        locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        // 네트워크 프로바이더 사용가능여부
+        locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+
+        LocationListener locationListener = new LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+                double lat = location.getLatitude();
+                double lng = location.getLongitude();
+
+                myLat = lat;
+                myLng = lng;
+            }
+
+            @Override
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+
+            }
+
+            @Override
+            public void onProviderEnabled(String provider) {
+
+            }
+
+            @Override
+            public void onProviderDisabled(String provider) {
+
+            }
+        };
+        if (ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION) !=
+                PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(),
+                android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        }
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 100, 1, locationListener);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 100, 1, locationListener);
+
+
         listView = (ListView) view.findViewById(R.id.list1);
         gmapListAdapter = new GmapListAdapter(itemList);
         listView.setAdapter(gmapListAdapter);
 
-        btn = view.findViewById(R.id.btnStartGmapActivity);
-        btn.setOnClickListener(new View.OnClickListener() {
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onClick(View v) {
-                startGmapActivity();
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                startGmapActivity(position);
             }
         });
 
@@ -115,9 +163,39 @@ public class GmapFragment extends Fragment {
         return view;
     }
 
-        private void startGmapActivity () {
+        private void startGmapActivity (int position) {
             Intent intent = new Intent(getActivity(), GmapActivity.class);
+            Geocoder geocoder = new Geocoder(getActivity());
 
+            List<Address> list = null;
+
+            try {
+
+                list =  geocoder.getFromLocationName(itemList.get(position).getAddr(), 1);
+
+                double lat = list.get(0).getLatitude();
+                double lng = list.get(0).getLongitude();
+
+                Object[] objects = {lat, lng, itemList.get(position).getName(), myLat, myLng};
+
+                intent.putExtra("1", objects);
+
+            } catch (IOException e) {
+                try {
+                    list = geocoder.getFromLocationName(itemList.get(position).getAddr_old(), 1);
+
+                    double lat = list.get(0).getLatitude();
+                    double lng = list.get(0).getLongitude();
+
+                    Object[] objects = {lat, lng, itemList.get(position).getName(), myLat, myLng};
+
+                    intent.putExtra("1", objects);
+
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+
+            }
             startActivity(intent);
         }
 
@@ -154,7 +232,6 @@ public class GmapFragment extends Fragment {
 
                     }
 
-
                     String jsonString = response.body().string();
                     JsonParser jsonParser = new JsonParser();
 
@@ -170,12 +247,13 @@ public class GmapFragment extends Fragment {
 
                             name = (String) rowInfo.get("NM").toString();
                             addr = (String) rowInfo.get("ADDR").toString();
+                            addr_old = rowInfo.get("ADDR_OLD").toString();
                             lsind_Type = (String) rowInfo.get("LSIND_TYPE").toString();
                             tel = (String) rowInfo.get("TEL").toString();
                             mapx = (String) rowInfo.get("XCODE").toString();
                             mapy = (String) rowInfo.get("YCODE").toString();
 
-                            gmapListAdapter.addItem(name, addr, lsind_Type, tel);
+                            gmapListAdapter.addItem(name, addr_old, addr, lsind_Type, tel);
                         }
 
                         handler.sendEmptyMessage(0);

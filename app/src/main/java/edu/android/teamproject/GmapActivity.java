@@ -10,6 +10,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -36,14 +37,14 @@ public class GmapActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
     private GoogleMap mMap;
-    private EditText mSearchEdit;
-    private Button btn_Search;
+    private Button btnMyPosition;
     String info;
+
 
     Geocoder coder;
 
 
-    private static final String TAG = "edu.android.and39";
+    private static final String TAG = "edu.android.teamproject";
     private static final int REQ_FINE_LOCATION = 100;
 
     // 위치 정보(최근 위치, 주기적 업데이트 시작/취소)와 관련된 클래스
@@ -53,14 +54,33 @@ public class GmapActivity extends AppCompatActivity implements OnMapReadyCallbac
     // 주기적 위치 정보를 처리하는 콜백
     private LocationCallback locationCallback;
 
+    LatLng latLng, myLatLng;
+    String name;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gmap);
 
-        mSearchEdit = findViewById(R.id.mSearchEdit);
-        btn_Search = findViewById(R.id.btn_Search);
+
+        Intent intent = getIntent();
+
+        Object[] msg = (Object[]) intent.getSerializableExtra("1");
+        double lat = (double) msg[0];
+        double lng = (double) msg[1];
+        name = String.valueOf(msg[2]);
+        double myLat = (double) msg[3];
+        double myLng = (double) msg[4];
+        Log.i(TAG, lat +"");
+        Log.i(TAG, lng +"");
+        Log.i(TAG, myLat +"");
+        Log.i(TAG,  myLng +"");
+
+        latLng = new LatLng(lat, lng);
+        Log.i(TAG, latLng + " ");
+
+        myLatLng = new LatLng(myLat, myLng);
+
 
 
         locationClient = LocationServices.getFusedLocationProviderClient(this);
@@ -105,9 +125,9 @@ public class GmapActivity extends AppCompatActivity implements OnMapReadyCallbac
         if (requestCode == REQ_FINE_LOCATION) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 // 가장 최근 위치 정보를 확인 -> 그 위치로 지도 이동
-                getLastLocation();
+//                getLastLocation();
                 // 주기적 위치 업데이트 요청
-                requestLocationUpdate();
+//                requestLocationUpdate();
 
             } else {
                 Toast.makeText(this, "위치 권한이 있어야 앱을 사용할 수 있습니다.", Toast.LENGTH_SHORT).show();
@@ -169,9 +189,15 @@ public class GmapActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMap = googleMap;
 
         LatLng itwill = new LatLng(37.4995367, 127.0293303);
-        mMap.addMarker(new MarkerOptions().position(itwill).title("itwill"));
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(17));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(itwill));
+
+        MarkerOptions markerOptions1 = new MarkerOptions().position(latLng).title(name);
+        MarkerOptions markerOptions2 = new MarkerOptions().position(myLatLng).title("내위치");
+        mMap.addMarker(markerOptions1);
+        mMap.addMarker(markerOptions2);
+        mMap.setMinZoomPreference(10);
+        mMap.setMaxZoomPreference(30);
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
 
 
     }
@@ -192,5 +218,10 @@ public class GmapActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onPause();
 
         locationClient.removeLocationUpdates(locationCallback);
+    }
+
+    public void onClickMyPosition(View view) {
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(myLatLng));
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
     }
 }

@@ -5,18 +5,19 @@ package edu.android.teamproject;
 public class GmapListItem {
 
     private String name;
+    private String addr_old;
     private String addr;
     private String lsind_Type;
     private String tel;
-
     private double mapx;
     private double mapy;
 
     public GmapListItem(){}
 
 
-    public GmapListItem(String name, String addr, String lsind_Type, String tel, double mapx, double mapy) {
+    public GmapListItem(String name, String addr_old, String addr, String lsind_Type, String tel, double mapx, double mapy) {
         this.name = name;
+        this.addr_old = addr_old;
         this.addr = addr;
         this.lsind_Type = lsind_Type;
         this.tel = tel;
@@ -32,7 +33,13 @@ public class GmapListItem {
         this.name = name;
     }
 
+    public String getAddr_old() {
+        return addr_old;
+    }
 
+    public void setAddr_old(String addr_old) {
+        this.addr_old = addr_old;
+    }
 
     public String getAddr() {
         return addr;

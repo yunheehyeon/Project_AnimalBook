@@ -63,11 +63,12 @@ public class GmapListAdapter extends BaseAdapter {
         return convertView;
     }
 
-    public void addItem(String name,String addr, String lsind_Type,String tel){
+    public void addItem(String name, String addr_old, String addr, String lsind_Type,String tel){
         Log.i("edu.android.teamproject", name + " " + addr);
         GmapListItem item = new GmapListItem();
         item.setName(name);
         item.setAddr(addr);
+        item.setAddr_old(addr_old);
         item.setLsind_Type(lsind_Type);
         item.setTel(tel);
         listViewItemList.add(item);
