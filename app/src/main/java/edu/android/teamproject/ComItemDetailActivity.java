@@ -64,12 +64,12 @@ public class ComItemDetailActivity extends AppCompatActivity implements CommentD
         String comId = getIntent().getStringExtra(ITEM_ID);
         dao = ComItemDao.getComItemInstance(this);
 
-        for(ComItem c : dao.update()){
-            if(c.getItemId().equals(comId)){
+        for (ComItem c : dao.update()) {
+            if (c.getItemId().equals(comId)) {
                 comItem = c;
             }
         }
-        if(comItem == null){
+        if (comItem == null) {
             finish();
         }
 
@@ -85,16 +85,16 @@ public class ComItemDetailActivity extends AppCompatActivity implements CommentD
         textCommentCount.setText("댓글 : " + String.valueOf(comItem.getCommentCount()));
         StringBuilder builder = new StringBuilder();
         builder.append("Tag : ");
-        if(comItem.getTag() != null){
-            for(String s : comItem.getTag()) {
-                if(s != null) {
+        if (comItem.getTag() != null) {
+            for (String s : comItem.getTag()) {
+                if (s != null) {
                     builder.append(s);
                     textTag.setText(builder);
                 }
                 builder.append(", ");
             }
         }
-        if(comItem.getUserEmail().equals(commentDown.userEmail())){
+        if (comItem.getUserEmail().equals(commentDown.userEmail())) {
             btnComItemDelete.setVisibility(View.VISIBLE);
             btnComItemDelete.setEnabled(true);
             btnComItemDelete.setOnClickListener(new View.OnClickListener() {
@@ -121,29 +121,29 @@ public class ComItemDetailActivity extends AppCompatActivity implements CommentD
                 }
             });
         }
+        if (comItem.getImages() != null){
+            for (String fileName : comItem.getImages()) {
 
-        for(String fileName : comItem.getImages()){
+                final ImageView imageView = new ImageView(this);
+                FirebaseStorage storage = FirebaseStorage.getInstance();
+                StorageReference storageRef = storage.
+                        getReferenceFromUrl("gs://timproject-14aaa.appspot.com").child(ComItemDao.community + fileName);
 
-            final ImageView imageView = new ImageView(this);
-            FirebaseStorage storage = FirebaseStorage.getInstance();
-            StorageReference storageRef = storage.
-                    getReferenceFromUrl("gs://timproject-14aaa.appspot.com").child(ComItemDao.community + fileName);
-
-            storageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                @Override
-                public void onSuccess(Uri uri) {
-                    if(imageView != null && ComItemDetailActivity.this != null) {
-                        GlideApp.with(ComItemDetailActivity.this)
-                                .load(uri)
-                                .into(imageView);
+                storageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {
+                        if (imageView != null && ComItemDetailActivity.this != null) {
+                            GlideApp.with(ComItemDetailActivity.this)
+                                    .load(uri)
+                                    .into(imageView);
+                        }
                     }
-                }
-            });
-            LinearLayout imageLayout = findViewById(R.id.comImageLayout);
-            imageLayout.addView(imageView);
-            imageView.setPadding(8, 8, 8, 8);
-        }
-
+                });
+                LinearLayout imageLayout = findViewById(R.id.comImageLayout);
+                imageLayout.addView(imageView);
+                imageView.setPadding(8, 8, 8, 8);
+            }
+    }
         final CommentAddMenu commentAddMenu = new CommentAddMenu(this);
         LinearLayout comLayout = findViewById(R.id.commentMenuLayout);
         comLayout.addView(commentAddMenu);

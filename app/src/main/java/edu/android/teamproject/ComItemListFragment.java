@@ -91,9 +91,14 @@ public class ComItemListFragment extends Fragment implements ComItemDao.ComItemC
                     Collections.sort(comItems, new Comparator<ComItem>() {
                         @Override
                         public int compare(ComItem o1, ComItem o2) {
-                            String str1 = stringParsing(String.valueOf(o1.getViewCount()));
-                            String str2 = stringParsing(String.valueOf(o2.getViewCount()));
-                            return str2.compareTo(str1);
+                            int num1 = o1.getViewCount();
+                            int num2 = o2.getViewCount();
+                            if(num1 < num2){
+                                return 1;
+                            }else if(num1 > num2){
+                                return -1;
+                            }
+                            return 0;
                         }
                     });
 
