@@ -58,12 +58,12 @@ public class GmapFragment extends Fragment {
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-
+//
 //                Collections.sort(itemList, new Comparator<GmapListItem>() {
 //                    @Override
 //                    public int compare(GmapListItem o1, GmapListItem o2) {
 //                        List<Address> list1, list2 = null;
-//
+//                        int ret = 0;
 //                        double lat1 = 0;
 //                        double lng1 = 0;
 //                        double lat2 = 0;
@@ -92,14 +92,15 @@ public class GmapFragment extends Fragment {
 //                        double num1 = distanceByDegreeAndroid(myLat, myLng, lat1, lng1);
 //
 //                        double num2 = distanceByDegreeAndroid(myLat, myLng, lat2, lng2);
-//
-//                        if(num1 > num2){
-//                            return 1;
-//                        }else if(num1 < num2){
-//                            return -1;
+//                        Log.i(TAG, num1 + "|" + num2);
+//                        if(num1 < num2){
+//                            ret =  1;
+//                        }else if(num1 > num2){
+//                            ret = -1;
 //                        }
-//                        return 0;
+//                        return ret;
 //                    }
+//
 //                });
 
             gmapListAdapter.notifyDataSetChanged();
@@ -266,7 +267,7 @@ public class GmapFragment extends Fragment {
     public void run() throws Exception {
 
         request = new Request.Builder()
-                .url("http://openapi.seoul.go.kr:8088/554a7a6b426b6a773731616b426a52/json/vtrHospitalInfo/1/1000/")
+                .url("http://openapi.seoul.go.kr:8088/554a7a6b426b6a773731616b426a52/json/vtrHospitalInfo/1/100/")
                 .get()
                 .addHeader("cache-control", "no-cache")
                 .addHeader("postman-token", "6e96ef76-aa93-c287-0959-a2dc6d9035e2")
