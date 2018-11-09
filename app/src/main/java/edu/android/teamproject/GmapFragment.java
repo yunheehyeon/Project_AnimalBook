@@ -30,6 +30,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 
+import com.bumptech.glide.util.LogTime;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -58,6 +59,49 @@ public class GmapFragment extends Fragment {
         @Override
         public void handleMessage(Message msg) {
 
+//                Collections.sort(itemList, new Comparator<GmapListItem>() {
+//                    @Override
+//                    public int compare(GmapListItem o1, GmapListItem o2) {
+//                        List<Address> list1, list2 = null;
+//
+//                        double lat1 = 0;
+//                        double lng1 = 0;
+//                        double lat2 = 0;
+//                        double lng2 = 0;
+//                        try {
+//                            list1 = geocoder.getFromLocationName(o1.getAddr(), 1);
+//                            lat1 = list1.get(0).getLatitude();
+//                            lng1 = list1.get(0).getLongitude();
+//                            list2 = geocoder.getFromLocationName(o2.getAddr(), 1);
+//                            lat2 = list2.get(0).getLatitude();
+//                            lng2 = list2.get(0).getLongitude();
+//                        } catch (Exception e) {
+//                            try {
+//                                list1 = geocoder.getFromLocationName(o1.getAddr_old(), 1);
+//                                lat1 = list1.get(0).getLatitude();
+//                                lng1 = list1.get(0).getLongitude();
+//                                list2 = geocoder.getFromLocationName(o2.getAddr_old(), 1);
+//                                lat2 = list2.get(0).getLatitude();
+//                                lng2 = list2.get(0).getLongitude();
+//                                e.printStackTrace();
+//                            } catch (Exception e1) {
+//                                e1.printStackTrace();
+//                            }
+//
+//                        }
+//                        double num1 = distanceByDegreeAndroid(myLat, myLng, lat1, lng1);
+//
+//                        double num2 = distanceByDegreeAndroid(myLat, myLng, lat2, lng2);
+//
+//                        if(num1 > num2){
+//                            return 1;
+//                        }else if(num1 < num2){
+//                            return -1;
+//                        }
+//                        return 0;
+//                    }
+//                });
+
             gmapListAdapter.notifyDataSetChanged();
         }
     };
@@ -68,10 +112,17 @@ public class GmapFragment extends Fragment {
     private Request request;
     String name, addr_old, addr, lsind_Type, tel, mapx, mapy;
     double myLat, myLng;
-
+    Geocoder geocoder;
 
     public GmapFragment() {
         // Required empty public constructor
+    }
+
+    @Override
+    public void onStart() {
+       geocoder = new Geocoder(getActivity());
+
+        super.onStart();
     }
 
     private GmapListAdapter gmapListAdapter;
@@ -153,7 +204,7 @@ public class GmapFragment extends Fragment {
                 };
 
 //                Comparator comparator = Collections.reverseOrder(); //역순
-                Collections.sort(itemList,textAsc);
+                Collections.sort(itemList, textAsc);
                 handler.sendEmptyMessage(0);
 
             }
@@ -163,15 +214,37 @@ public class GmapFragment extends Fragment {
         return view;
     }
 
-        private void startGmapActivity (int position) {
-            Intent intent = new Intent(getActivity(), GmapActivity.class);
-            Geocoder geocoder = new Geocoder(getActivity());
+    //안드로이드 - 두지점(위도,경도) 사이의 거리
+    public double distanceByDegreeAndroid(double _latitude1, double _longitude1, double _latitude2, double _longitude2) {
+        Location startPos = new Location("PointA");
+        Location endPos = new Location("PointB");
 
-            List<Address> list = null;
+        startPos.setLatitude(_latitude1);
+        startPos.setLongitude(_longitude1);
+        endPos.setLatitude(_latitude2);
+        endPos.setLongitude(_longitude2);
 
+        double distance = startPos.distanceTo(endPos);
+
+        return distance;
+    }
+
+    private void startGmapActivity(int position) {
+        Intent intent = new Intent(getActivity(), GmapActivity.class);
+        Geocoder geocoder = new Geocoder(getActivity());
+        List<Address> list = null;
+        try {
+            list = geocoder.getFromLocationName(itemList.get(position).getAddr(), 1);
+
+            double lat = list.get(0).getLatitude();
+            double lng = list.get(0).getLongitude();
+            Object[] objects = {lat, lng, itemList.get(position).getName(), myLat, myLng};
+
+            intent.putExtra("1", objects);
+
+        } catch (Exception e) {
             try {
-
-                list =  geocoder.getFromLocationName(itemList.get(position).getAddr(), 1);
+                list = geocoder.getFromLocationName(itemList.get(position).getAddr_old(), 1);
 
                 double lat = list.get(0).getLatitude();
                 double lng = list.get(0).getLongitude();
@@ -180,94 +253,86 @@ public class GmapFragment extends Fragment {
 
                 intent.putExtra("1", objects);
 
-            } catch (IOException e) {
-                try {
-                    list = geocoder.getFromLocationName(itemList.get(position).getAddr_old(), 1);
-
-                    double lat = list.get(0).getLatitude();
-                    double lng = list.get(0).getLongitude();
-
-                    Object[] objects = {lat, lng, itemList.get(position).getName(), myLat, myLng};
-
-                    intent.putExtra("1", objects);
-
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                }
-
+            } catch (Exception e1) {
+                e1.printStackTrace();
             }
-            startActivity(intent);
         }
-
-        private final OkHttpClient client = new OkHttpClient();
-
-        public void run () throws Exception {
-            request = new Request.Builder()
-                    .url("http://openapi.seoul.go.kr:8088/554a7a6b426b6a773731616b426a52/json/vtrHospitalInfo/1/1000/")
-                    .get()
-                    .addHeader("cache-control", "no-cache")
-                    .addHeader("postman-token", "6e96ef76-aa93-c287-0959-a2dc6d9035e2")
-                    .build();
-            Log.i(TAG, "requset=" + request);
-
-            Call call = client.newCall(request);
-            Log.i(TAG, "newCall=" + call);
-
-
-            call.enqueue(new Callback() {
-                @Override
-                public void onFailure(Request request, IOException e) {
-                    Log.i(TAG, "failed: " + e.getMessage());
-                }
-
-                @Override
-                public void onResponse(Response response) throws IOException {
-                    Log.i(TAG, "ok:" + response.body().string());
-
-                    response = client.newCall(request).execute();
-                    Log.i(TAG, "response=" + response);
-
-                    if (!response.isSuccessful()) {
-                        Log.i(TAG, "failed");
-
-                    }
-
-                    String jsonString = response.body().string();
-                    JsonParser jsonParser = new JsonParser();
-
-                    try {
-                        JsonObject jsonObject = (JsonObject) jsonParser.parse(jsonString);
-                        JsonObject hos_Info = jsonObject.getAsJsonObject("vtrHospitalInfo");
-
-                        JsonArray row = hos_Info.getAsJsonArray("row");
-                        Log.i(TAG, "row size = " + row.size());
-                        for (int i = 0; i < row.size(); i++) {
-                            JsonObject rowInfo = (JsonObject) row.get(i);
-                            Log.i(TAG, rowInfo.toString());
-
-                            name = (String) rowInfo.get("NM").toString();
-                            addr = (String) rowInfo.get("ADDR").toString();
-                            addr_old = rowInfo.get("ADDR_OLD").toString();
-                            lsind_Type = (String) rowInfo.get("LSIND_TYPE").toString();
-                            tel = (String) rowInfo.get("TEL").toString();
-                            mapx = (String) rowInfo.get("XCODE").toString();
-                            mapy = (String) rowInfo.get("YCODE").toString();
-
-                            gmapListAdapter.addItem(name, addr_old, addr, lsind_Type, tel);
-                        }
-
-                        handler.sendEmptyMessage(0);
-
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-
-
-                }
-            });
-
-
-        }
-
-
+        startActivity(intent);
     }
+
+    private final OkHttpClient client = new OkHttpClient();
+
+
+    public void run() throws Exception {
+
+        request = new Request.Builder()
+                .url("http://openapi.seoul.go.kr:8088/554a7a6b426b6a773731616b426a52/json/vtrHospitalInfo/1/1000/")
+                .get()
+                .addHeader("cache-control", "no-cache")
+                .addHeader("postman-token", "6e96ef76-aa93-c287-0959-a2dc6d9035e2")
+                .build();
+//        Log.i(TAG, "requset=" + request);
+
+        Call call = client.newCall(request);
+//        Log.i(TAG, "newCall=" + call);
+
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Request request, IOException e) {
+//                Log.i(TAG, "failed: " + e.getMessage());
+            }
+
+            @Override
+            public void onResponse(Response response) throws IOException {
+//                Log.i(TAG, "ok:" + response.body().string());
+
+                response = client.newCall(request).execute();
+//                Log.i(TAG, "response=" + response);
+
+                if (!response.isSuccessful()) {
+//                    Log.i(TAG, "failed");
+                }
+                String jsonString = response.body().string();
+                JsonParser jsonParser = new JsonParser();
+
+                try {
+                    JsonObject jsonObject = (JsonObject) jsonParser.parse(jsonString);
+                    JsonObject hos_Info = jsonObject.getAsJsonObject("vtrHospitalInfo");
+
+                    JsonArray row = hos_Info.getAsJsonArray("row");
+//                    Log.i(TAG, "row size = " + row.size());
+                    for (int i = 0; i < row.size(); i++) {
+                        JsonObject rowInfo = (JsonObject) row.get(i);
+//                        Log.i(TAG, rowInfo.toString());
+//                        List<Address> list = null;
+                        name = (String) rowInfo.get("NM").toString();
+                        addr = (String) rowInfo.get("ADDR").toString();
+                        addr_old = rowInfo.get("ADDR_OLD").toString();
+                        lsind_Type = (String) rowInfo.get("LSIND_TYPE").toString();
+                        tel = (String) rowInfo.get("TEL").toString();
+                        mapx = (String) rowInfo.get("XCODE").toString();
+                        mapy = (String) rowInfo.get("YCODE").toString();
+                        double x = 0.0;
+                        double y = 0.0;
+//                        try {
+//                            list = geocoder.getFromLocationName(addr, 1);
+//                            Log.i(TAG,"" + list.get(0).getLatitude());
+//                            x = list.get(0).getLatitude();
+//                            y = list.get(0).getLongitude();
+//                        } catch (IOException e) {
+//                            list = geocoder.getFromLocationName(addr_old, 1);
+//                            Log.i(TAG,"" + list.get(0).getLatitude());
+//                            x = list.get(0).getLatitude();
+//                            y = list.get(0).getLongitude();
+//                        }
+                        gmapListAdapter.addItem(name, addr_old, addr, lsind_Type, tel, x, y);
+                    }
+                    handler.sendEmptyMessage(0);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+}

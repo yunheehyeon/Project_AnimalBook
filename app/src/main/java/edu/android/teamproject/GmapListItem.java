@@ -94,4 +94,6 @@ public class GmapListItem {
                 ", mapy=" + mapy +
                 '}';
     }
+
+
 }
